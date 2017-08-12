@@ -1,0 +1,5 @@
+
+12.8.'17
+- objects (starship etc.) as arrays 
+- pixelwise collision check
+- checkin to GitHub

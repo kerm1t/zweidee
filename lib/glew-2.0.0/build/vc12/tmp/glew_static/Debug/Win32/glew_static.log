@@ -1,0 +1,11 @@
+﻿Build started 26.03.2017 17:36:58.
+     1>Project "C:\Projekte\starduck3d_nOK\lib\glew-2.0.0\build\vc12\glew_static.vcxproj" on node 2 (Build target(s)).
+     1>Lib:
+         C:\winapp\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"..\..\lib\Debug\Win32\glew32sd.lib" /NOLOGO /MACHINE:X86 tmp\glew_static\Debug\Win32\glew.res
+         tmp\glew_static\Debug\Win32\glew.obj
+         glew_static.vcxproj -> C:\Projekte\starduck3d_nOK\lib\glew-2.0.0\build\vc12\..\..\lib\Debug\Win32\glew32sd.lib
+     1>Done Building Project "C:\Projekte\starduck3d_nOK\lib\glew-2.0.0\build\vc12\glew_static.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.24
