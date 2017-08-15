@@ -39,6 +39,8 @@ int iT = 1;
 
 static float framesPerSecond = 0.0f;            // This will store our fps
 static float lastTime = 0.0f;                   // This will hold the time from the last frame
+dword lasttickcount = 0;
+dword accumulatedTimeSinceLastUpdate = 0;
 
 bool b_WM_resized = false;
 
@@ -57,14 +59,19 @@ void CalculateFrameRate()
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
 void RenderThread(void *args)
 {
+  lasttickcount = GetTickCount();
   while (true)
   {
+    accumulatedTimeSinceLastUpdate += (GetTickCount() - lasttickcount); // GetTickCount [ms] dword
+    lasttickcount = GetTickCount();
+    if (accumulatedTimeSinceLastUpdate > 12)
+    {
     if (GetAsyncKeyState(VK_SPACE)) m_proj.fire();
     if (GetAsyncKeyState(VK_UP))    m_proj.up();
     if (GetAsyncKeyState(VK_DOWN))  m_proj.down();
     if (GetAsyncKeyState(VK_LEFT))  m_proj.left();
     if (GetAsyncKeyState(VK_RIGHT)) m_proj.right();
- 
+    }
     if (b_WM_resized)
     {
       m_proj.m_render.ReSizeGLScene(win_w,win_h);
@@ -78,7 +85,7 @@ void RenderThread(void *args)
 
     m_cam.update_View(); // View = Pos,At,Norm
 
-    m_proj.DoIt(); // render code
+    m_proj.DoIt(accumulatedTimeSinceLastUpdate); // render code
   }
   _endthread();
 }

@@ -46,15 +46,18 @@ int proj::Proj::Init()
   return 0;
 }
 
-int proj::Proj::DoIt()
+int proj::Proj::DoIt(dword & accumulatedTimeSinceLastUpdate)
 {
   wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
   // objects' movement --> has to be done in an own loop / !?thread!?
-  if ((!bPause) || // key [p] pressed
+  if (
+      ((!bPause) || // key [p] pressed
       (bStep))     // key [o] pressed
+   && (accumulatedTimeSinceLastUpdate > 12)
+     )
   {
-
+    accumulatedTimeSinceLastUpdate = 0;
     memset(data, 0, fbuf2d->imageSize); // clear
 
     // ---------------------

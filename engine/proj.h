@@ -28,7 +28,7 @@ namespace proj
     /* ===== FUNCTIONS ===== */
     
     int Init();
-    int DoIt(); // call m_render to draw next frame
+    int DoIt(dword & accumulatedTimeSinceLastUpdate); // call m_render to draw next frame
 
     int fire();
     int up();
