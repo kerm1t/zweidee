@@ -30,7 +30,7 @@ HWND             hWnd=NULL;                     // Holds Our Window Handle
 
 proj::Proj m_proj;
 
-Camera m_cam;
+//Camera m_cam;
 
 int win_h,win_w;
 int mouse_x,mouse_y;
@@ -55,6 +55,9 @@ void CalculateFrameRate()
   }
 }
 
+// Fix Timing
+// https://gafferongames.com/post/fix_your_timestep/
+
 // OpenGL calls moved to own thread
 // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
 void RenderThread(void *args)
@@ -64,28 +67,28 @@ void RenderThread(void *args)
   {
     accumulatedTimeSinceLastUpdate += (GetTickCount() - lasttickcount); // GetTickCount [ms] dword
     lasttickcount = GetTickCount();
-    if (accumulatedTimeSinceLastUpdate > 12)
+
+    if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
     {
-    if (GetAsyncKeyState(VK_SPACE)) m_proj.fire();
-    if (GetAsyncKeyState(VK_UP))    m_proj.up();
-    if (GetAsyncKeyState(VK_DOWN))  m_proj.down();
-    if (GetAsyncKeyState(VK_LEFT))  m_proj.left();
-    if (GetAsyncKeyState(VK_RIGHT)) m_proj.right();
+      accumulatedTimeSinceLastUpdate = 0;
+
+      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire();
+      if (GetAsyncKeyState(VK_UP))    m_proj.up();
+      if (GetAsyncKeyState(VK_DOWN))  m_proj.down();
+      if (GetAsyncKeyState(VK_LEFT))  m_proj.left();
+      if (GetAsyncKeyState(VK_RIGHT)) m_proj.right();
+
+      m_proj.move();
     }
+
     if (b_WM_resized)
     {
       m_proj.m_render.ReSizeGLScene(win_w,win_h);
       b_WM_resized = false;
     }
+//    m_cam.update_View(); // View = Pos,At,Norm
 
-    // Camera user controlled
-//    m_cam.change_Aspect(win_w,win_h);
-    // mouse-move camera
-//    m_cam.Look_with_Mouse(glm::vec2(mouse_x, mouse_y));
-
-    m_cam.update_View(); // View = Pos,At,Norm
-
-    m_proj.DoIt(accumulatedTimeSinceLastUpdate); // render code
+    m_proj.render(); // render update-rate independent from move() (s. above) 
   }
   _endthread();
 }
@@ -129,7 +132,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time
 
-  m_proj.Init();	// <-- Textures erst nach glewInit() laden!!
+  m_proj.init();	// <-- Textures erst nach glewInit() laden!!
                   // a) data loading + b) data description c) render.Init()
   
   hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLSHOOT));
@@ -254,7 +257,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   {
   case WM_MOUSEWHEEL: // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
     zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-    if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 
+//    if (zDelta > 0) m_cam.Pos.z += 0.5; else m_cam.Pos.z -= 0.5; 
     break;
   case WM_MOUSEMOVE:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
@@ -300,11 +303,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 87: // W
       break;
     case 65: // A
-      m_cam.TurnLeft();
-      m_cam.StrafeLeft();
+//      m_cam.TurnLeft();
+//      m_cam.StrafeLeft();
       break;
     case 83: // S
-      m_cam.MoveBack();
+//      m_cam.MoveBack();
       break;
     case 68: // D
       break;

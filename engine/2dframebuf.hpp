@@ -29,9 +29,9 @@ public:
     unsigned int pos = 3 * (_y * width + x);
 //    assert(pos < imageSize);
     if (pos >= imageSize) return;
-    data[pos] = r;
+    data[pos]     = b; // r ?
     data[pos + 1] = g;
-    data[pos + 2] = b;
+    data[pos + 2] = r; // b ?
   }
 
   GLuint framebuf2D() // purpose: get texture-ID

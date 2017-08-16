@@ -5,7 +5,7 @@
 #include "inc_render.h"
 #include "rnd_shaderman.hpp"
 
-#include "camera.hpp"
+//#include "camera.hpp"
 
 namespace proj
 {
@@ -67,7 +67,7 @@ namespace proj
     bool b_splash_screen;
 
     // =============
-    Camera * p_cam;
+//    Camera * p_cam;
 
 //    proj::Scene * m_Scene;
 
@@ -85,7 +85,7 @@ namespace proj
     int Scene_to_VBO();//uint * p_idxVBO);
 //    int DestroyScene_VBO();
 
-    void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
+//    void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
 
     void Bind_VBOs_to_VAOs();
     void DrawVAOs_NEU();

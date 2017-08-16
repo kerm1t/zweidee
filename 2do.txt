@@ -1,5 +1,7 @@
+15.8.'17
++ slow down on Laptop Nvidia (i.e. VSync)
 
 12.8.'17
-- objects (starship etc.) as arrays 
++ objects (starship etc.) as arrays 
 - pixelwise collision check
-- checkin to GitHub
++ checkin to GitHub

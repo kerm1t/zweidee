@@ -25,7 +25,7 @@ proj::Proj::~Proj()
   delete data;
 }
 
-int proj::Proj::Init()
+int proj::Proj::init()
 {
   m_render.Init(); // InitGL + Initshaders, kann auch später aufgerufen werden...
 
@@ -46,18 +46,15 @@ int proj::Proj::Init()
   return 0;
 }
 
-int proj::Proj::DoIt(dword & accumulatedTimeSinceLastUpdate)
+int proj::Proj::move()
 {
-  wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
   // objects' movement --> has to be done in an own loop / !?thread!?
   if (
       ((!bPause) || // key [p] pressed
       (bStep))     // key [o] pressed
-   && (accumulatedTimeSinceLastUpdate > 12)
      )
   {
-    accumulatedTimeSinceLastUpdate = 0;
     memset(data, 0, fbuf2d->imageSize); // clear
 
     // ---------------------
@@ -71,6 +68,11 @@ int proj::Proj::DoIt(dword & accumulatedTimeSinceLastUpdate)
 
     bStep = false;
   }
+  return 0;
+}
+int proj::Proj::render()
+{
+  wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
   m_render.DrawVAOs_NEU();      // Draw The Scene
 
