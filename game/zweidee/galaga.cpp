@@ -19,11 +19,16 @@ int galaga::CGalaga::init()
   spacecraft.box.h = 3;
 
   idx_shots = 0;
+  // enemies:
+  //   xxx
+  //    x
   for (int i = 0; i < NUM_ENEMIES; i++)
   {
     a_enemies[i].on = true;
     a_enemies[i].box.x = 3 + i * 8;
     a_enemies[i].box.y = i;
+    a_enemies[i].box.w = 3;
+    a_enemies[i].box.h = 2;
   }
 
   return TRUE;
@@ -120,16 +125,16 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
   return true;
 }
 
-int galaga::CGalaga::draw(const rect r, const unsigned char * obj, unsigned char * data)
+int galaga::CGalaga::draw_obj(const rect box, const unsigned char * obj, unsigned char * data)
 {
-  const unsigned char _w = r.w;//7;
-  const unsigned char _h = r.h;//3;
+  const unsigned char _w = box.w;
+  const unsigned char _h = box.h;
   for (unsigned char y=0; y<_h; y++)
   {
     for (unsigned char x=0; x<_w; x++)
     {
-      int _x = r.x + x;
-      int _y = r.y + y;
+      int _x = box.x + x; // upper ...
+      int _y = box.y + y; // ... left
       unsigned char iA = y*_w+x;
       if (obj[iA] > 0)
       {
@@ -141,100 +146,26 @@ int galaga::CGalaga::draw(const rect r, const unsigned char * obj, unsigned char
   return true;
 }
 
-//
-//     xxx
-//     xxx
-//
-//     x   xx   x
-//     xxxxxxxxxx
+//        xxx   
+//     x  xox  x
+//     xxxxxxxxx
 int galaga::CGalaga::draw_spacecraft(unsigned char * data)
 {
-//  unsigned char r, g, b;
-/*
-  const unsigned char _w = 7;
-  const unsigned char _h = 3;
-  // Anton's proposal
-  const unsigned char a[_w*_h] = {
-    0,0,1,1,1,0,0,
-    2,0,1,3,1,0,2,
-    2,4,1,1,1,4,2
-  };
-  for (unsigned char y=0; y<_h; y++)
-  {
-    for (unsigned char x=0; x<_w; x++)
-    {
-      int _x = spacecraft.box.x + x;
-      int _y = spacecraft.box.y + y;
-      unsigned char iA = y*_w+x;
-      if (aSpacecraft[iA] > 0)
-      {
-        glm::vec3 col = cols[aSpacecraft[iA]];
-        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
-      }
-    }
-  }
-*/
-//  rect r = {spacecraft.box.x,spacecraft.box.y,7,3};
-  draw(spacecraft.box,aSpacecraft,data);
+  draw_obj(spacecraft.box,aSpacecraft,data);
   return true;
 }
 
 int galaga::CGalaga::draw_spacecraft_turnleft(unsigned char * data)
 {
-//  unsigned char r, g, b;
-/*
-  const unsigned char _w = 5;
-  const unsigned char _h = 3;
-  const unsigned char a[_w*_h] = {
-    0,1,1,1,0,
-    2,1,3,1,5,
-    2,1,1,1,5
-  };
-  for (unsigned char y=0; y<_h; y++)
-  {
-    for (unsigned char x=0; x<_w; x++)
-    {
-      int _x = spacecraft.box.x + x;
-      int _y = 60 - int(_h/2) + y;
-      unsigned char iA = y*_w+x;
-      if (a[iA] > 0)
-      {
-        glm::vec3 col = cols[a[iA]];
-        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
-      }
-    }
-  }
-*/
   rect r = {spacecraft.box.x,spacecraft.box.y,5,3};
-  draw(r,aSpacecraft_turnleft,data);
+  draw_obj(r,aSpacecraft_turnleft,data);
   return true;
 }
 
 int galaga::CGalaga::draw_spacecraft_turnright(unsigned char * data)
 {
-//  unsigned char r, g, b;
-  const unsigned char _w = 5;
-  const unsigned char _h = 3;
-  const unsigned char a[_w*_h] = {
-    0,1,1,1,0,
-    5,1,3,1,2,
-    5,1,1,1,2
-  };
-  for (unsigned char y=0; y<_h; y++)
-  {
-    for (unsigned char x=0; x<_w; x++)
-    {
-      int _x = spacecraft.box.x+2 + x; // +2, as this is 2 pixel smaller than unmoved spaecraft
-      int _y = 60 - int(_h/2) + y;
-      unsigned char iA = y*_w+x;
-      if (a[iA] > 0)
-      {
-        glm::vec3 col = cols[a[iA]];
-        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
-      }
-    }
-  }
-
+  rect r = {spacecraft.box.x+2,spacecraft.box.y,5,3};
+  draw_obj(r,aSpacecraft_turnright,data);
   return true;
 }
 
@@ -269,18 +200,12 @@ int galaga::CGalaga::draw_shots(unsigned char * data)
 
 int galaga::CGalaga::draw_enemies(unsigned char * data)
 {
-  unsigned char r, g, b;
-  r = 255; g = b = 0;
   for (unsigned int i = 0; i < NUM_ENEMIES; i++)
   {
     if (a_enemies[i].on)
     {
-      int x = a_enemies[i].box.x;
-      int y = a_enemies[i].box.y;
-      fbuf2d.setPixel(data, x - 1, y - 1, r, g, b);
-      fbuf2d.setPixel(data, x,     y - 1, r, g, b);
-      fbuf2d.setPixel(data, x + 1, y - 1, r, g, b);
-      fbuf2d.setPixel(data, x,     y,     r, g, b);
+      rect r = {a_enemies[i].box.x,a_enemies[i].box.y,3,2};
+      draw_obj(r,aEnemy,data);
     }
   }
   return true;

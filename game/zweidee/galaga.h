@@ -31,6 +31,21 @@ namespace galaga
     2,1,1,1,5
   };
 
+  const unsigned char spacecraft_turnright_w = 5;
+  const unsigned char spacecraft_turnright_h = 3;
+  const unsigned char aSpacecraft_turnright[spacecraft_turnright_w*spacecraft_turnright_h] = {
+    0,1,1,1,0,
+    5,1,3,1,2,
+    5,1,1,1,2
+  };
+
+  const unsigned char enemy_w = 3;
+  const unsigned char enemy_h = 2;
+  const unsigned char aEnemy[enemy_w*enemy_h] = {
+    3,3,3,
+    0,3,0
+  };
+
   typedef struct
   {
     unsigned int x;
@@ -87,13 +102,12 @@ namespace galaga
   {
   public:
     // ------------ Specific Variables ------------
-//    unsigned int xSpaceCraft;
-//    unsigned int SpacecraftDir;// 0=fwd,1=lft,2=right
-//    unsigned int SpacecraftNum;// 4
     sSpaceCraft spacecraft;
+
 #define NUM_SHOTS  100
     sShot a_shots[NUM_SHOTS]; // ringbuffer
     char idx_shots;
+
 #define NUM_ENEMIES  8
     sEnemy a_enemies[NUM_ENEMIES];
 
@@ -103,7 +117,7 @@ namespace galaga
     int right();
     int fire();
   private:
-    int draw(const rect r, const unsigned char * obj, unsigned char * data);
+    int draw_obj(const rect r, const unsigned char * obj, unsigned char * data);
     int draw_starfield_vert(unsigned char * data); // 2do: replace with random starfield
     int draw_spacecraft(unsigned char * data);
     int draw_spacecraft_turnleft(unsigned char * data);
