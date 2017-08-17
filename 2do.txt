@@ -1,3 +1,6 @@
+16.8.
+- introduce double shot (left+right)
+
 15.8.'17
 + slow down on Laptop Nvidia (i.e. VSync)
 

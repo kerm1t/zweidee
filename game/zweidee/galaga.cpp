@@ -4,11 +4,6 @@
 
 //#include "math.h"
 
-/*galaga::CGalaga(FrameBuf2D & _fbuf2D)
-  : CGame(_fbuf2D)
-{
-};*/
-
 int galaga::CGalaga::init()
 {
   a_episode_len[0] = fbuf2d.width - (2 * 10); // size of progress bar ;-)
@@ -16,15 +11,19 @@ int galaga::CGalaga::init()
   iepisode = 0;
   iloopy = 0;
 
-  SpacecraftNum = 4;
-  xSpaceCraft = (int)(fbuf2d.width / 2);
-  SpacecraftDir = 0;
+  spacecraft.num = 4;
+  spacecraft.dir = 0;
+  spacecraft.box.x = (int)(fbuf2d.width/2) - (int)7/2;
+  spacecraft.box.y = 60-1;
+  spacecraft.box.w = 7;
+  spacecraft.box.h = 3;
+
   idx_shots = 0;
   for (int i = 0; i < NUM_ENEMIES; i++)
   {
     a_enemies[i].on = true;
-    a_enemies[i].x = 3 + i * 8;
-    a_enemies[i].y = i;
+    a_enemies[i].box.x = 3 + i * 8;
+    a_enemies[i].box.y = i;
   }
 
   return TRUE;
@@ -53,21 +52,21 @@ int galaga::CGalaga::doit(unsigned char * data)
   case 1:
 //     lib.draw_arrow(data);
     draw_starfield_vert(data);
-    for (unsigned int i = 0; i<SpacecraftNum; i++) fbuf2d.setPixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
-    switch (SpacecraftDir)
+    for (unsigned int i = 0; i<spacecraft.num; i++) fbuf2d.setPixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
+    switch (spacecraft.dir)
     {
     case 0: draw_spacecraft(data); break;
     case 1: draw_spacecraft_turnleft(data); break;
     case 2: draw_spacecraft_turnright(data); break;
     }
-    SpacecraftDir = 0; // set to neutral again
+    spacecraft.dir = 0; // set to neutral again
     move_shots();
     collisioncheck();  // 1st Collisioncheck, after Shot-move
     draw_shots(data);
     move_enemies();
     draw_enemies(data);
     collisioncheck();  // 2nd Collisioncheck after enemies move (if test only once, shot and enemy might just bypass each other in the same cycle ;-)
-    if (SpacecraftNum == 0) iepisode++;
+    if (spacecraft.num == 0) iepisode++;
     break;
 
   case 2:
@@ -81,23 +80,23 @@ int galaga::CGalaga::doit(unsigned char * data)
 
 int galaga::CGalaga::left()
 {
-  if (xSpaceCraft > 3) xSpaceCraft--;
-  SpacecraftDir = 1;
+  if (spacecraft.box.x > 0) spacecraft.box.x--;
+  spacecraft.dir = 1;
   return true;
 }
 
 int galaga::CGalaga::right()
 {
-  if (xSpaceCraft < fbuf2d.width - 3 - 1) xSpaceCraft++;
-  SpacecraftDir = 2;
+  if (spacecraft.box.x + spacecraft.box.w < fbuf2d.width) spacecraft.box.x++;
+  spacecraft.dir = 2;
   return true;
 }
 
 int galaga::CGalaga::fire()
 {
   a_shots[idx_shots].on = true;
-  a_shots[idx_shots].x = xSpaceCraft;
-  a_shots[idx_shots].y = 60 - 2;
+  a_shots[idx_shots].box.x = spacecraft.box.x + (int)(spacecraft.box.w/2);
+  a_shots[idx_shots].box.y = spacecraft.box.y;
   idx_shots++;
   if (idx_shots == NUM_SHOTS) idx_shots = 0; // wrap around (ringbuffer)
   return true;
@@ -121,6 +120,27 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
   return true;
 }
 
+int galaga::CGalaga::draw(const rect r, const unsigned char * obj, unsigned char * data)
+{
+  const unsigned char _w = r.w;//7;
+  const unsigned char _h = r.h;//3;
+  for (unsigned char y=0; y<_h; y++)
+  {
+    for (unsigned char x=0; x<_w; x++)
+    {
+      int _x = r.x + x;
+      int _y = r.y + y;
+      unsigned char iA = y*_w+x;
+      if (obj[iA] > 0)
+      {
+        glm::vec3 col = cols[obj[iA]];
+        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
+      }
+    }
+  }
+  return true;
+}
+
 //
 //     xxx
 //     xxx
@@ -129,10 +149,11 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
 //     xxxxxxxxxx
 int galaga::CGalaga::draw_spacecraft(unsigned char * data)
 {
-  unsigned char r, g, b;
-
+//  unsigned char r, g, b;
+/*
   const unsigned char _w = 7;
   const unsigned char _h = 3;
+  // Anton's proposal
   const unsigned char a[_w*_h] = {
     0,0,1,1,1,0,0,
     2,0,1,3,1,0,2,
@@ -142,77 +163,77 @@ int galaga::CGalaga::draw_spacecraft(unsigned char * data)
   {
     for (unsigned char x=0; x<_w; x++)
     {
-      int _x = xSpaceCraft-int(_w/2) + x;
-      int _y = 60 - int(_h/2) + y;
+      int _x = spacecraft.box.x + x;
+      int _y = spacecraft.box.y + y;
       unsigned char iA = y*_w+x;
-  // Anton's proposal
-      if (a[iA] == 0) ;
-      if (a[iA] == 1) { r = g = 155; b = 255; } // hellblau
-      if (a[iA] == 2) { r = g = 110; b = 255; } // mittelblau
-      if (a[iA] == 3) { r = 255; g = b = 0;   } // rot
-      if (a[iA] == 4) { r = g = 80;  b = 255; } // dunkelblau
-      if (a[iA] > 0)
+      if (aSpacecraft[iA] > 0)
       {
-        fbuf2d.setPixel(data, _x, _y, r, g, b); // bgr
+        glm::vec3 col = cols[aSpacecraft[iA]];
+        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
       }
     }
   }
-
+*/
+//  rect r = {spacecraft.box.x,spacecraft.box.y,7,3};
+  draw(spacecraft.box,aSpacecraft,data);
   return true;
 }
 
 int galaga::CGalaga::draw_spacecraft_turnleft(unsigned char * data)
 {
-  unsigned char r, g, b;
-  b = 255; g = r = 155;
-
-  int x = xSpaceCraft;
-  int y = 60;
-
-  // Anton's proposal
-  fbuf2d.setPixel(data, x - 1, y - 1, r, g, b); // bgr
-  fbuf2d.setPixel(data, x, y - 1, r, g, b); // bgr
-  fbuf2d.setPixel(data, x + 1, y - 1, r, g, b); // bgr
-
-  fbuf2d.setPixel(data, x - 2, y, 110, 110, 255);
-  fbuf2d.setPixel(data, x - 1, y, r, g, b);
-  fbuf2d.setPixel(data, x, y, r, 0, 0);
-  fbuf2d.setPixel(data, x + 1, y, r, g, b);
-  fbuf2d.setPixel(data, x + 2, y, 190, 190, 255);
-
-  fbuf2d.setPixel(data, x - 2, y + 1, 110, 110, 255);
-  fbuf2d.setPixel(data, x - 1, y + 1, r, g, b);
-  fbuf2d.setPixel(data, x, y + 1, r, g, b);
-  fbuf2d.setPixel(data, x + 1, y + 1, r, g, b);
-  fbuf2d.setPixel(data, x + 2, y + 1, 190, 190, 255);
-
+//  unsigned char r, g, b;
+/*
+  const unsigned char _w = 5;
+  const unsigned char _h = 3;
+  const unsigned char a[_w*_h] = {
+    0,1,1,1,0,
+    2,1,3,1,5,
+    2,1,1,1,5
+  };
+  for (unsigned char y=0; y<_h; y++)
+  {
+    for (unsigned char x=0; x<_w; x++)
+    {
+      int _x = spacecraft.box.x + x;
+      int _y = 60 - int(_h/2) + y;
+      unsigned char iA = y*_w+x;
+      if (a[iA] > 0)
+      {
+        glm::vec3 col = cols[a[iA]];
+        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
+      }
+    }
+  }
+*/
+  rect r = {spacecraft.box.x,spacecraft.box.y,5,3};
+  draw(r,aSpacecraft_turnleft,data);
   return true;
 }
 
 int galaga::CGalaga::draw_spacecraft_turnright(unsigned char * data)
 {
-  unsigned char r, g, b;
-  b = 255; g = r = 155;
-
-  int x = xSpaceCraft;
-  int y = 60;
-
-  // Anton's proposal
-  fbuf2d.setPixel(data, x - 1, y - 1, r, g, b); // bgr
-  fbuf2d.setPixel(data, x, y - 1, r, g, b); // bgr
-  fbuf2d.setPixel(data, x + 1, y - 1, r, g, b); // bgr
-
-  fbuf2d.setPixel(data, x - 2, y, 190, 190, 255);
-  fbuf2d.setPixel(data, x - 1, y, r, g, b);
-  fbuf2d.setPixel(data, x, y, r, 0, 0);
-  fbuf2d.setPixel(data, x + 1, y, r, g, b);
-  fbuf2d.setPixel(data, x + 2, y, 110, 110, 255);
-
-  fbuf2d.setPixel(data, x - 2, y + 1, 190, 190, 255);
-  fbuf2d.setPixel(data, x - 1, y + 1, r, g, b);
-  fbuf2d.setPixel(data, x, y + 1, r, g, b);
-  fbuf2d.setPixel(data, x + 1, y + 1, r, g, b);
-  fbuf2d.setPixel(data, x + 2, y + 1, 110, 110, 255);
+//  unsigned char r, g, b;
+  const unsigned char _w = 5;
+  const unsigned char _h = 3;
+  const unsigned char a[_w*_h] = {
+    0,1,1,1,0,
+    5,1,3,1,2,
+    5,1,1,1,2
+  };
+  for (unsigned char y=0; y<_h; y++)
+  {
+    for (unsigned char x=0; x<_w; x++)
+    {
+      int _x = spacecraft.box.x+2 + x; // +2, as this is 2 pixel smaller than unmoved spaecraft
+      int _y = 60 - int(_h/2) + y;
+      unsigned char iA = y*_w+x;
+      if (a[iA] > 0)
+      {
+        glm::vec3 col = cols[a[iA]];
+        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
+      }
+    }
+  }
 
   return true;
 }
@@ -223,8 +244,8 @@ int galaga::CGalaga::move_shots()
   {
     if (a_shots[i].on)
     {
-      a_shots[i].y--;
-      if (a_shots[i].y == 0) a_shots[i].on = false;
+      a_shots[i].box.y--;
+      if (a_shots[i].box.y == 0) a_shots[i].on = false;
     }
   }
   return true;
@@ -238,8 +259,8 @@ int galaga::CGalaga::draw_shots(unsigned char * data)
   {
     if (a_shots[i].on)
     {
-      int x = a_shots[i].x;
-      int y = a_shots[i].y;
+      int x = a_shots[i].box.x;
+      int y = a_shots[i].box.y;
       fbuf2d.setPixel(data, x, y, r, g, b);
     }
   }
@@ -254,8 +275,8 @@ int galaga::CGalaga::draw_enemies(unsigned char * data)
   {
     if (a_enemies[i].on)
     {
-      int x = a_enemies[i].x;
-      int y = a_enemies[i].y;
+      int x = a_enemies[i].box.x;
+      int y = a_enemies[i].box.y;
       fbuf2d.setPixel(data, x - 1, y - 1, r, g, b);
       fbuf2d.setPixel(data, x,     y - 1, r, g, b);
       fbuf2d.setPixel(data, x + 1, y - 1, r, g, b);
@@ -271,8 +292,8 @@ int galaga::CGalaga::move_enemies()
   {
     if (a_enemies[i].on)
     {
-      if ((iloopy % 2) == 1)        a_enemies[i].y++;
-      if (a_enemies[i].y == 64 - 2) a_enemies[i].y = 0;
+      if ((iloopy % 2) == 1) a_enemies[i].box.y++;
+      if (a_enemies[i].box.y == 64 - 2) a_enemies[i].box.y = 0;
     }
   }
   return true;
@@ -290,8 +311,8 @@ int galaga::CGalaga::collisioncheck()
       {
         if (a_shots[j].on)
         {
-          if ((a_enemies[i].x == a_shots[j].x) &&
-              (a_enemies[i].y == a_shots[j].y))
+          if ((a_enemies[i].box.x == a_shots[j].box.x) &&
+              (a_enemies[i].box.y == a_shots[j].box.y))
           {
             a_enemies[i].on = false;
             a_shots[j].on = false;
@@ -311,8 +332,8 @@ int galaga::CGalaga::collisioncheck()
     {
       a_enemies[i].on = true;
       // comment to get "random" enemy position after 1st wave
-      a_enemies[i].x = 3 + i * 8;
-      a_enemies[i].y = i;
+      a_enemies[i].box.x = 3 + i * 8;
+      a_enemies[i].box.y = i;
       // comment to get "random" enemy position after 1st wave
     }
   }
@@ -322,11 +343,11 @@ int galaga::CGalaga::collisioncheck()
   {
     if (a_enemies[i].on)
     {
-      if ((a_enemies[i].x == xSpaceCraft) &&
-        (a_enemies[i].y == 60))
+      if ((a_enemies[i].box.x == spacecraft.box.x) &&
+          (a_enemies[i].box.y == 60))
       {
         // explode!!
-        SpacecraftNum--;
+        spacecraft.num--;
         a_enemies[i].on = false;
       }
     }

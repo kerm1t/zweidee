@@ -6,25 +6,62 @@
 
 namespace galaga
 {
+  const glm::vec3 cols[6] = { glm::vec3(0,0,0), // none
+                              glm::vec3(155,155,255), // light-blue
+                              glm::vec3(110,110,255), // mid-blue
+                              glm::vec3(255,  0,  0), // red
+                              glm::vec3(80,  80,255), // darker blue
+                              glm::vec3(190,190,255)  // very light blue
+                            };
+
+  const unsigned char spacecraft_w = 7;
+  const unsigned char spacecraft_h = 3;
+  // Anton's proposal
+  const unsigned char aSpacecraft[spacecraft_w*spacecraft_h] = {
+    0,0,1,1,1,0,0,
+    2,0,1,3,1,0,2,
+    2,4,1,1,1,4,2
+  };
+
+  const unsigned char spacecraft_turnleft_w = 5;
+  const unsigned char spacecraft_turnleft_h = 3;
+  const unsigned char aSpacecraft_turnleft[spacecraft_turnleft_w*spacecraft_turnleft_h] = {
+    0,1,1,1,0,
+    2,1,3,1,5,
+    2,1,1,1,5
+  };
+
   typedef struct
   {
     unsigned int x;
     unsigned int y;
+    unsigned int w;
+    unsigned int h;
+  } rect;
+
+  typedef struct
+  {
+    rect box;
   } sPoint;
 
   typedef struct
   {
     bool on;
-    unsigned int x;
-    unsigned int y;
+    rect box;
   } sShot;
 
   typedef struct
   {
     bool on;
-    unsigned int x;
-    unsigned int y;
+    rect box;
   } sEnemy;
+
+  typedef struct
+  {
+    rect box;
+    unsigned int dir; // 0=fwd,1=lft,2=right
+    unsigned int num; // 4
+  } sSpaceCraft;
 
   class CGame
   {
@@ -38,10 +75,6 @@ namespace galaga
     unsigned int iepisode;
     int iloopy;
 
-///    CGame(FrameBuf2D & _fbuf2d) : fbuf2d(_fbuf2d)
-///    {
-///    };
-
     virtual int init() = 0;
     virtual int doit(unsigned char * data) = 0;
     // keys
@@ -54,17 +87,15 @@ namespace galaga
   {
   public:
     // ------------ Specific Variables ------------
-    unsigned int xSpaceCraft;
-    unsigned int SpacecraftDir;// 0=fwd,1=lft,2=right
-    unsigned int SpacecraftNum;// 4
+//    unsigned int xSpaceCraft;
+//    unsigned int SpacecraftDir;// 0=fwd,1=lft,2=right
+//    unsigned int SpacecraftNum;// 4
+    sSpaceCraft spacecraft;
 #define NUM_SHOTS  100
     sShot a_shots[NUM_SHOTS]; // ringbuffer
     char idx_shots;
 #define NUM_ENEMIES  8
     sEnemy a_enemies[NUM_ENEMIES];
-
-///    CGalaga() : CGame(stat_fbuf()){};
-//    CGalaga(FrameBuf2D & _fbuf2d) : CGame(_fbuf2d){};
 
     int init();
     int doit(unsigned char * data);
@@ -72,14 +103,8 @@ namespace galaga
     int right();
     int fire();
   private:
-///    FrameBuf2D stat_fbuf() { FrameBuf2D f = FrameBuf2D(); return f; };
-
+    int draw(const rect r, const unsigned char * obj, unsigned char * data);
     int draw_starfield_vert(unsigned char * data); // 2do: replace with random starfield
-    //     xxx
-    //     xxx
-    //
-    //     x   xx   x
-    //     xxxxxxxxxx
     int draw_spacecraft(unsigned char * data);
     int draw_spacecraft_turnleft(unsigned char * data);
     int draw_spacecraft_turnright(unsigned char * data);
