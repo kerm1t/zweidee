@@ -71,9 +71,13 @@ namespace galaga
     rect box;
   } sEnemy;
 
+  enum spacecraft_state {normal, explode};
+
   typedef struct
   {
     rect box;
+    spacecraft_state state;
+    unsigned char explode_counter;
     unsigned int dir; // 0=fwd,1=lft,2=right
     unsigned int num; // 4
   } sSpaceCraft;
@@ -124,6 +128,7 @@ namespace galaga
     int draw_spacecraft(unsigned char * data);
     int draw_spacecraft_turnleft(unsigned char * data);
     int draw_spacecraft_turnright(unsigned char * data);
+    int draw_spacecraft_explode(unsigned char * data);
     int draw_shots(unsigned char * data);
     int draw_enemies(unsigned char * data);
 

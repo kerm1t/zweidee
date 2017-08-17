@@ -3,6 +3,7 @@
 #include "galaga.h"
 
 //#include "math.h"
+#include "draw_lib.hpp"
 
 int galaga::CGalaga::init()
 {
@@ -11,6 +12,7 @@ int galaga::CGalaga::init()
   iepisode = 0;
   iloopy = 0;
 
+  spacecraft.state = normal;
   spacecraft.num = 4;
   spacecraft.dir = 0;
   spacecraft.box.x = (int)(fbuf2d.width/2) - (int)7/2;
@@ -40,12 +42,11 @@ int galaga::CGalaga::init()
   return TRUE;
 }
 
+// ---------------
+// main game cycle
+// ---------------
 int galaga::CGalaga::doit(unsigned char * data)
 {
-  /*
-      draw some stuff [...]
-  */
-
   switch (iepisode)
   {
   case 0:
@@ -64,12 +65,26 @@ int galaga::CGalaga::doit(unsigned char * data)
 //     lib.draw_arrow(data);
     draw_starfield_vert(data);
     for (unsigned int i = 0; i<spacecraft.num; i++) fbuf2d.setPixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
-    switch (spacecraft.dir)
+    if (spacecraft.state == normal)
     {
-    case 0: draw_spacecraft(data); break;
-    case 1: draw_spacecraft_turnleft(data); break;
-    case 2: draw_spacecraft_turnright(data); break;
+      switch (spacecraft.dir)
+      {
+      case 0: draw_spacecraft(data); break;
+      case 1: draw_spacecraft_turnleft(data); break;
+      case 2: draw_spacecraft_turnright(data); break;
+      }
     }
+    else if (spacecraft.state == explode)
+    {
+      draw_spacecraft_explode(data);
+      spacecraft.explode_counter--;
+      if (spacecraft.explode_counter == 0)
+      {
+        spacecraft.state = normal;
+        spacecraft.num--; // reduce only after explosion fully executed ;-)
+      }
+    }
+    else ;
     spacecraft.dir = 0; // set to neutral again
     move_shots();
 //    collisioncheck();  // 1st Collisioncheck, after Shot-move
@@ -86,11 +101,16 @@ int galaga::CGalaga::doit(unsigned char * data)
 
   iloopy++;
 
+//  glm::vec3 col = glm::vec3(255,255,255);
+//  Bresenham(&fbuf2d,1,1,62,62,col,data);
+//  Bresenham_Circle(&fbuf2d,31,31,20,col,data);
+
   return TRUE;
 }
 
 int galaga::CGalaga::left()
 {
+  if (spacecraft.state == explode) return true;
   if (spacecraft.box.x > 0) spacecraft.box.x--;
   spacecraft.dir = 1;
   return true;
@@ -98,6 +118,7 @@ int galaga::CGalaga::left()
 
 int galaga::CGalaga::right()
 {
+  if (spacecraft.state == explode) return true;
   if (spacecraft.box.x + spacecraft.box.w < fbuf2d.width) spacecraft.box.x++;
   spacecraft.dir = 2;
   return true;
@@ -172,6 +193,15 @@ int galaga::CGalaga::draw_spacecraft_turnright(unsigned char * data)
 {
   rect r = {spacecraft.box.x+2,spacecraft.box.y,5,3};
   draw_obj(r,aSpacecraft_turnright,data);
+  return true;
+}
+
+int galaga::CGalaga::draw_spacecraft_explode(unsigned char * data)
+{
+  int x = spacecraft.box.x + (int)(spacecraft.box.w/2);
+  int y = spacecraft.box.y + (int)(spacecraft.box.h/2);
+  glm::vec3 col = glm::vec3(255,255,0);
+  Bresenham_Circle(&fbuf2d,x,y,rand()%10,col,data);
   return true;
 }
 
@@ -262,8 +292,6 @@ int galaga::CGalaga::collisioncheck()
       {
         if (a_shots[j].on)
         {
-//          if ((a_enemies[i].box.x == a_shots[j].box.x) &&
-//              (a_enemies[i].box.y == a_shots[j].box.y))
           if (DoBoxesIntersect(a_enemies[i].box,a_shots[j].box))
           {
             a_enemies[i].on = false;
@@ -295,12 +323,11 @@ int galaga::CGalaga::collisioncheck()
   {
     if (a_enemies[i].on)
     {
-//      if ((a_enemies[i].box.x == spacecraft.box.x) &&
-//          (a_enemies[i].box.y == 60))
       if (DoBoxesIntersect(a_enemies[i].box,spacecraft.box))
       {
         // explode!!
-        spacecraft.num--;
+        spacecraft.state = explode;
+        spacecraft.explode_counter = 100;
         a_enemies[i].on = false;
       }
     }
