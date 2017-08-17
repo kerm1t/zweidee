@@ -78,6 +78,8 @@ namespace galaga
     unsigned int num; // 4
   } sSpaceCraft;
 
+  bool DoBoxesIntersect(rect a, rect b);
+
   class CGame
   {
   public:

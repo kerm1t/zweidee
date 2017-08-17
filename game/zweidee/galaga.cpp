@@ -31,6 +31,12 @@ int galaga::CGalaga::init()
     a_enemies[i].box.h = 2;
   }
 
+  for (int i = 0; i < NUM_SHOTS; i++)
+  {
+    a_shots[i].box.w = 1;
+    a_shots[i].box.h = 1;
+  }
+
   return TRUE;
 }
 
@@ -66,7 +72,7 @@ int galaga::CGalaga::doit(unsigned char * data)
     }
     spacecraft.dir = 0; // set to neutral again
     move_shots();
-    collisioncheck();  // 1st Collisioncheck, after Shot-move
+//    collisioncheck();  // 1st Collisioncheck, after Shot-move
     draw_shots(data);
     move_enemies();
     draw_enemies(data);
@@ -224,6 +230,26 @@ int galaga::CGalaga::move_enemies()
   return true;
 }
 
+// https://gamedev.stackexchange.com/questions/586/what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
+/*bool galaga::DoBoxesIntersect(rect a, rect b) // for center + width / height
+{
+  // translate (top,left,w,h) to (x,y,w,h) <--- optimize !!!
+  int ax = a.x + (int)(a.w/2);
+  int ay = a.y + (int)(a.h/2);
+  int bx = b.x + (int)(b.w/2);
+  int by = b.y + (int)(b.h/2);
+  return (abs(ax - bx) * 2 < (a.w + b.w)) &&
+         (abs(ay - by) * 2 < (a.h + b.h));
+}
+*/
+bool galaga::DoBoxesIntersect(rect a, rect b) // for top, left, "right", "bottom"
+{
+  return ! (b.x      > (a.x+a.w)
+        || (b.x+b.w) <  a.x
+        ||  b.y      > (a.y+a.h)
+        || (b.y+b.h) <  a.y);
+}
+
 int galaga::CGalaga::collisioncheck()
 {
   // A) shots vs. enemies
@@ -236,8 +262,9 @@ int galaga::CGalaga::collisioncheck()
       {
         if (a_shots[j].on)
         {
-          if ((a_enemies[i].box.x == a_shots[j].box.x) &&
-              (a_enemies[i].box.y == a_shots[j].box.y))
+//          if ((a_enemies[i].box.x == a_shots[j].box.x) &&
+//              (a_enemies[i].box.y == a_shots[j].box.y))
+          if (DoBoxesIntersect(a_enemies[i].box,a_shots[j].box))
           {
             a_enemies[i].on = false;
             a_shots[j].on = false;
@@ -268,8 +295,9 @@ int galaga::CGalaga::collisioncheck()
   {
     if (a_enemies[i].on)
     {
-      if ((a_enemies[i].box.x == spacecraft.box.x) &&
-          (a_enemies[i].box.y == 60))
+//      if ((a_enemies[i].box.x == spacecraft.box.x) &&
+//          (a_enemies[i].box.y == 60))
+      if (DoBoxesIntersect(a_enemies[i].box,spacecraft.box))
       {
         // explode!!
         spacecraft.num--;
