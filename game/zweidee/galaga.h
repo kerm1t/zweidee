@@ -65,18 +65,20 @@ namespace galaga
     rect box;
   } sShot;
 
+  enum obj_state {normal, explode};
+
   typedef struct
   {
     bool on;
+    obj_state state;
+    unsigned char explode_counter;
     rect box;
   } sEnemy;
-
-  enum spacecraft_state {normal, explode};
 
   typedef struct
   {
     rect box;
-    spacecraft_state state;
+    obj_state state;
     unsigned char explode_counter;
     unsigned int dir; // 0=fwd,1=lft,2=right
     unsigned int num; // 4

@@ -27,6 +27,7 @@ int galaga::CGalaga::init()
   for (int i = 0; i < NUM_ENEMIES; i++)
   {
     a_enemies[i].on = true;
+    a_enemies[i].state = normal;
     a_enemies[i].box.x = 3 + i * 8;
     a_enemies[i].box.y = i;
     a_enemies[i].box.w = 3;
@@ -100,10 +101,6 @@ int galaga::CGalaga::doit(unsigned char * data)
   }
 
   iloopy++;
-
-//  glm::vec3 col = glm::vec3(255,255,255);
-//  Bresenham(&fbuf2d,1,1,62,62,col,data);
-//  Bresenham_Circle(&fbuf2d,31,31,20,col,data);
 
   return TRUE;
 }
@@ -201,7 +198,7 @@ int galaga::CGalaga::draw_spacecraft_explode(unsigned char * data)
   int x = spacecraft.box.x + (int)(spacecraft.box.w/2);
   int y = spacecraft.box.y + (int)(spacecraft.box.h/2);
   glm::vec3 col = glm::vec3(255,255,0);
-  Bresenham_Circle(&fbuf2d,x,y,rand()%10,col,data);
+  Bresenham_Circle(&fbuf2d,x-5+(rand()%10),y-5+(rand()%10),rand()%10,col,data); // several circles with differtent pos, radius
   return true;
 }
 
@@ -238,11 +235,23 @@ int galaga::CGalaga::draw_enemies(unsigned char * data)
 {
   for (unsigned int i = 0; i < NUM_ENEMIES; i++)
   {
-    if (a_enemies[i].on)
+    if (a_enemies[i].state == normal)
     {
-      rect r = {a_enemies[i].box.x,a_enemies[i].box.y,3,2};
-      draw_obj(r,aEnemy,data);
+      if (a_enemies[i].on)
+      {
+        rect r = {a_enemies[i].box.x,a_enemies[i].box.y,3,2};
+        draw_obj(r,aEnemy,data);
+      }
+    } else if (a_enemies[i].state == explode)
+    {
+      int x = a_enemies[i].box.x + (int)(a_enemies[i].box.w/2);
+      int y = a_enemies[i].box.y + (int)(a_enemies[i].box.h/2);
+      glm::vec3 col = glm::vec3(255,100,0);
+      Bresenham_Circle(&fbuf2d,x,y,rand()%10,col,data);
+      a_enemies[i].explode_counter--;
+      if (a_enemies[i].explode_counter == 0) a_enemies[i].state = normal;
     }
+    else ;
   }
   return true;
 }
@@ -294,6 +303,8 @@ int galaga::CGalaga::collisioncheck()
         {
           if (DoBoxesIntersect(a_enemies[i].box,a_shots[j].box))
           {
+            a_enemies[i].state = explode;
+            a_enemies[i].explode_counter = 50;
             a_enemies[i].on = false;
             a_shots[j].on = false;
           }
