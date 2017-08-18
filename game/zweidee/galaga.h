@@ -46,10 +46,24 @@ namespace galaga
     0,3,0
   };
 
+  const unsigned char gameover_w = 17;
+  const unsigned char gameover_h = 9;
+  const unsigned char aGameover[gameover_w*gameover_h] = {
+    1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1, // Game
+    1,0,0,0,1,0,1,0,1,1,0,1,1,0,1,0,0,
+    1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,
+    1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,1,1,0,0,1,0,1,0,1,1,1,0,1,1,1,0, // Over
+    1,0,0,1,0,1,0,1,0,1,0,0,0,1,0,0,1,
+    1,0,0,1,0,1,1,1,0,1,1,0,0,1,1,1,0,
+    0,1,1,0,0,0,1,0,0,1,1,1,0,1,0,1,1
+  };
+
   typedef struct
   {
-    unsigned int x;
-    unsigned int y;
+    unsigned int x; // left
+    unsigned int y; // top
     unsigned int w;
     unsigned int h;
   } rect;
@@ -65,12 +79,16 @@ namespace galaga
     rect box;
   } sShot;
 
-  enum obj_state {normal, explode};
+  namespace spacecraft {
+    enum spacecraft_state {normal, explode};
+  }
+  namespace enemy {
+    enum enemy_state {on, off, explode};
+  }
 
   typedef struct
   {
-    bool on;
-    obj_state state;
+    enemy::enemy_state state;
     unsigned char explode_counter;
     rect box;
   } sEnemy;
@@ -78,10 +96,10 @@ namespace galaga
   typedef struct
   {
     rect box;
-    obj_state state;
+    spacecraft::spacecraft_state state;
     unsigned char explode_counter;
-    unsigned int dir; // 0=fwd,1=lft,2=right
-    unsigned int num; // 4
+    unsigned int dir;   // 0=fwd,1=lft,2=right
+    unsigned int lives; // 4
   } sSpaceCraft;
 
   bool DoBoxesIntersect(rect a, rect b);
@@ -125,14 +143,21 @@ namespace galaga
     int right();
     int fire();
   private:
-    int draw_obj(const rect r, const unsigned char * obj, unsigned char * data);
     int draw_starfield_vert(unsigned char * data); // 2do: replace with random starfield
+
+    int draw_obj(const rect r, const unsigned char * obj, unsigned char * data);
+        
     int draw_spacecraft(unsigned char * data);
     int draw_spacecraft_turnleft(unsigned char * data);
     int draw_spacecraft_turnright(unsigned char * data);
     int draw_spacecraft_explode(unsigned char * data);
+    
     int draw_shots(unsigned char * data);
+    
+    int draw_enemy_explosion(const unsigned int i, unsigned char * data);
     int draw_enemies(unsigned char * data);
+    
+    int draw_gameover(unsigned char * data);
 
     int move_shots();
     int move_enemies();
