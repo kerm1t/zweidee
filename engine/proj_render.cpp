@@ -233,6 +233,9 @@ void proj::Render::FPS()
   coords.push_back( 1.0f); coords.push_back(-1.0f);
   coords.push_back( 1.0f); coords.push_back( 1.0f);
 
+  //         +-------+ (1,1)
+  //         |       |
+  //   (0,0) +-------+
   std::vector<GLfloat> uvs;
   uvs.push_back( 0.0f); uvs.push_back(0.0f);
   uvs.push_back( 0.0f); uvs.push_back(1.0f);

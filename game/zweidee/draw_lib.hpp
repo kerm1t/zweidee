@@ -36,18 +36,16 @@ void Bresenham(FrameBuf2D * fbuf, int x0, int y0, int x1, int y1, const glm::vec
 {
     int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
     int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1;
-    int err = dx+dy, e2; /* error value e_xy */
+    int err = dx+dy, e2; // error value e_xy
 
-//    float32 f_intensity = 255.0f; // <-- 16bit?
     while (true)
     {
         fbuf->setPixel(data,x0,y0,255,255,255);
-//      Set_Cell_on_Freelayer(x0,y0,(T_UINT8)f_intensity);
 
         if (x0==x1 && y0==y1) break;
         e2 = 2*err;
-        if (e2 > dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
-        if (e2 < dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
+        if (e2 > dy) { err += dy; x0 += sx; } // e_xy+e_x > 0
+        if (e2 < dx) { err += dx; y0 += sy; } // e_xy+e_y < 0
     }
 }
 

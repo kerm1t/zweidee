@@ -23,12 +23,14 @@ public:
   /*
   (0,0): rgb (1,0): rgb (2,0): rgb
   */
-  void setPixel(unsigned char * data, unsigned int x, unsigned int y, unsigned char r, unsigned char g, unsigned char b)
+  void setPixel(unsigned char * data, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
   {
     unsigned int _y = height - 1 - y; // hack, texture upside down? 2do: check!!
+//    unsigned int _y = y;
     unsigned int pos = 3 * (_y * width + x);
 //    assert(pos < imageSize);
     if (pos >= imageSize) return;
+    if (x > width) return; // test < 0 ?? <-- need signed then
     data[pos]     = b; // r ?
     data[pos + 1] = g;
     data[pos + 2] = r; // b ?

@@ -1,3 +1,18 @@
+18.8.
+- fix: schuss trifft enemy auch, wenn 1 pixel daneben
++ fix: collision spacecraft+enemy, enemy explosion zu lange
+
+17.8.
+--> other levels (glider)
+- obstacles to avoid (moon)
+- Level! (know, that level has been done)
+- end-opponent
+- get points (credit)
+- better weapons
+- larger enemies
++ "game over"
++ restart with SPACE
+
 16.8.
 - introduce double shot (left+right)
 
@@ -6,5 +21,5 @@
 
 12.8.'17
 + objects (starship etc.) as arrays 
-- pixelwise collision check
+(-) pixelwise collision check --> bbox is sufficient
 + checkin to GitHub

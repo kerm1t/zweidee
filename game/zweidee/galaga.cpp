@@ -356,7 +356,6 @@ int galaga::CGalaga::collisioncheck()
     {
       if (DoBoxesIntersect(a_enemies[i].box,spacecraft.box))
       {
-        // explode!!
         spacecraft.state = spacecraft::explode;
         spacecraft.explode_counter = 100;
         a_enemies[i].state = enemy::explode;
