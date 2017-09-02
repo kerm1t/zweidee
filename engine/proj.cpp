@@ -5,19 +5,12 @@
 
 proj::Proj::Proj()
 {
-//  fbuf2d.width = 64;
-//  fbuf2d.height = 64;
-//  fbuf2d.imageSize = fbuf2d.width * fbuf2d.height * 3;
-//  data = new unsigned char[fbuf2d.imageSize];
-
-//  m_galaga.fbuf2D = fbuf2d;
-  // redundant --> remove!
-  m_galaga.fbuf2d.width = 64;
-  m_galaga.fbuf2d.height = 64;
-  m_galaga.fbuf2d.imageSize = 64 * 64 * 3;
+  m_game.fbuf2d.width = 64;
+  m_game.fbuf2d.height = 64;
+  m_game.fbuf2d.imageSize = 64 * 64 * 3;
   
-  fbuf2d = &m_galaga.fbuf2d;
-  data = new unsigned char[fbuf2d->imageSize];
+  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
+  data = new unsigned char[fbuf2d->imageSize]; // data part of proj <-- 2do
 }
 
 proj::Proj::~Proj()
@@ -41,26 +34,24 @@ int proj::Proj::init()
   // ---------------
   // init your game!
   // ---------------
-  m_galaga.init();
+  m_game.init();
 
   return 0;
 }
 
 int proj::Proj::move()
 {
-
-  // objects' movement --> has to be done in an own loop / !?thread!?
   if (
       ((!bPause) || // key [p] pressed
-      (bStep))     // key [o] pressed
+        (bStep))    // key [o] pressed
      )
   {
     memset(data, 0, fbuf2d->imageSize); // clear
 
-    // ---------------------
+    // -----------
     // game cycle
     // -----------
-    m_galaga.doit(data);
+    m_game.doit(data);
 
     // bindet sich an die letzte Textur :-)
     //  glBindTexture(GL_TEXTURE_2D, 1); // TEXTURE_ID shall be > 0 !     (-1!!)
@@ -70,6 +61,7 @@ int proj::Proj::move()
   }
   return 0;
 }
+
 int proj::Proj::render()
 {
   wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
@@ -83,7 +75,7 @@ int proj::Proj::render()
 
 int proj::Proj::fire()
 {
-  m_galaga.fire();
+  m_game.fire();
   return true;
 }
 
@@ -101,13 +93,12 @@ int proj::Proj::down()
 
 int proj::Proj::left()
 {
-  m_galaga.left();
+  m_game.left();
   return true;
 }
 
 int proj::Proj::right()
 {
-  m_galaga.right();
+  m_game.right();
   return true;
 }
-

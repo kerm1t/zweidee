@@ -1,22 +1,22 @@
 ﻿========================================================================
-    WIN32-ANWENDUNG: glShoot-Projektübersicht
+    WIN32-ANWENDUNG: zweidee-Projektübersicht
 ========================================================================
 
-Diese glShoot-Anwendung wurde vom Anwendungs-Assistenten 
+Diese zweidee-Anwendung wurde vom Anwendungs-Assistenten 
 für Sie erstellt.
 
 Diese Datei bietet eine Übersicht über den Inhalt der einzelnen Dateien, 
-aus denen Ihre glShoot-Anwendung besteht.
+aus denen Ihre zweidee-Anwendung besteht.
 
 
-glShoot.vcxproj
+zweidee.vcxproj
     Dies ist die Hauptprojektdatei für VC++-Projekte, die mit dem 
     Anwendungs-Assistenten generiert werden.
     Sie enthält Informationen zur Visual C++-Version, mit der die Datei 
     generiert wurde, sowie Informationen zu Plattformen, Konfigurationen und 
     Projektfunktionen, die mit dem Anwendungs-Assistenten ausgewählt wurden.
 
-glShoot.vcxproj.filters
+zweidee.vcxproj.filters
     Dies ist die Filterdatei für VC++-Projekte, die mithilfe eines 
     Anwendungs-Assistenten erstellt werden. 
     Sie enthält Informationen über die Zuordnung zwischen den Dateien im 
@@ -25,13 +25,13 @@ glShoot.vcxproj.filters
     bestimmten Knoten verwendet (z. B. sind CPP-Dateien dem Filter 
     "Quelldateien" zugeordnet).
 
-glShoot.cpp
+zweidee.cpp
     Dies ist die Hauptquelldatei der Anwendung.
 
 /////////////////////////////////////////////////////////////////////////////
 Der Anwendungs-Assistent hat folgende Ressourcen erstellt:
 
-glShoot.rc
+zweidee.rc
     Dies ist eine Auflistung aller vom Programm verwendeten 
     Microsoft Windows-Ressourcen. Sie enthält die Symbole, Bitmaps und Cursor, 
     die im Unterverzeichnis "RES" gespeichert werden. Diese Datei kann direkt 
@@ -41,22 +41,22 @@ Resource.h
     Dies ist die Standardheaderdatei, die neue Ressourcen-IDs definiert.
     Die Datei wird mit Microsoft Visual C++ gelesen und aktualisiert.
 
-glShoot.ico
+zweidee.ico
     Dies ist eine Symboldatei, die als Anwendungssymbol (32x32) verwendet wird.
-    Dieses Symbol ist in der Hauptressourcendatei "glShoot.rc" 
+    Dieses Symbol ist in der Hauptressourcendatei "zweidee.rc" 
     enthalten.
 
 small.ico
     Dies ist eine Symboldatei, die eine kleinere Version (16x16)
     des Anwendungssymbols enthält. Dieses Symbol ist in der Hauptressourcendatei
-    "glShoot.rc" enthalten.
+    "zweidee.rc" enthalten.
 
 /////////////////////////////////////////////////////////////////////////////
 Andere Standarddateien:
 
 StdAfx.h, StdAfx.cpp
     Diese Dateien werden verwendet, um eine vorkompilierte Headerdatei
-    (PCH-Datei) mit dem Namen "glShoot.pch und eine 
+    (PCH-Datei) mit dem Namen "zweidee.pch und eine 
     vorkompilierte Typendatei mit dem Namen "StdAfx.obj" zu erstellen.
 
 /////////////////////////////////////////////////////////////////////////////

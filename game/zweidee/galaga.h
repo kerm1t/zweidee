@@ -4,6 +4,8 @@
 
 #include "2dframebuf.hpp"
 
+#include "game.h"
+
 namespace galaga
 {
   const glm::vec3 cols[6] = { glm::vec3(0,0,0), // none
@@ -104,27 +106,7 @@ namespace galaga
 
   bool DoBoxesIntersect(rect a, rect b);
 
-  class CGame
-  {
-  public:
-    FrameBuf2D fbuf2d;
-
-#define NUM_EPISODES 3
-    char a_episode_len[NUM_EPISODES];
-    bool a_episode_active[NUM_EPISODES];
-
-    unsigned int iepisode;
-    int iloopy;
-
-    virtual int init() = 0;
-    virtual int doit(unsigned char * data) = 0;
-    // keys
-    virtual int left()  = 0;
-    virtual int right() = 0;
-    virtual int fire()  = 0;
-  };
-
-  class CGalaga : public CGame
+  class CGalaga : public game::CGame
   {
   public:
     // ------------ Specific Variables ------------

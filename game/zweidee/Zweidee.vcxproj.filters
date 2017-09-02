@@ -96,6 +96,12 @@
     <ClInclude Include="draw_lib.hpp">
       <Filter>header\render</Filter>
     </ClInclude>
+    <ClInclude Include="pitstop.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engine\proj.cpp">
@@ -111,6 +117,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="galaga.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="pitstop.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

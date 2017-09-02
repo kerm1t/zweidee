@@ -97,8 +97,6 @@
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
     <ClInclude Include="draw_lib.hpp" />
     <ClInclude Include="galaga.h" />
-    <ClInclude Include="game.h" />
-    <ClInclude Include="pitstop.h" />
     <ClInclude Include="zweidee.h" />
     <ClInclude Include="..\..\engine\proj.h" />
     <ClInclude Include="..\..\engine\proj_render.h" />
@@ -110,7 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="galaga.cpp" />
-    <ClCompile Include="pitstop.cpp" />
     <ClCompile Include="zweidee.cpp" />
     <ClCompile Include="..\..\engine\proj.cpp" />
     <ClCompile Include="..\..\engine\proj_render.cpp" />

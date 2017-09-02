@@ -6,6 +6,7 @@
 
 #include "2dframebuf.hpp"
 #include "../game/zweidee/galaga.h"
+#include "../game/zweidee/pitstop.h"
 
 namespace proj
 {
@@ -41,14 +42,15 @@ namespace proj
     /* ===== Variables ===== */
 
     // Generic Variables
-    galaga::CGalaga m_galaga;
+//    galaga::CGalaga m_game;
+    pitstop::CPitstop m_game;
 
     FrameBuf2D    * fbuf2d;
     unsigned char * data;
 
     /* ===== FUNCTIONS ===== */
     
-    int draw_arrow(unsigned char * data);
-    int draw_progress(unsigned char * data);
+//    int draw_arrow(unsigned char * data);
+//    int draw_progress(unsigned char * data);
   };
 }
