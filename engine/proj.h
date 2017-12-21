@@ -7,6 +7,7 @@
 #include "2dframebuf.hpp"
 #include "../game/zweidee/galaga.h"
 #include "../game/zweidee/pitstop.h"
+#include "../game/zweidee/comanche.h"
 
 namespace proj
 {
@@ -42,8 +43,9 @@ namespace proj
     /* ===== Variables ===== */
 
     // Generic Variables
-//    galaga::CGalaga m_game;
-    pitstop::CPitstop m_game;
+//    galaga::CGalaga   m_game;
+//    pitstop::CPitstop   m_game;
+    comanche::CComanche m_game;
 
     FrameBuf2D    * fbuf2d;
     unsigned char * data;

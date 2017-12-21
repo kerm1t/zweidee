@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,14 +21,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -95,6 +95,7 @@
     <ClInclude Include="..\..\engine\rnd_fbo.hpp" />
     <ClInclude Include="..\..\engine\rnd_shaderman.hpp" />
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
+    <ClInclude Include="comanche.h" />
     <ClInclude Include="draw_lib.hpp" />
     <ClInclude Include="galaga.h" />
     <ClInclude Include="game.h" />
@@ -107,8 +108,10 @@
     <ClInclude Include="..\..\common\targetver.h" />
     <ClInclude Include="..\..\engine\Vec3f.hxx" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="zweidee_types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="comanche.cpp" />
     <ClCompile Include="galaga.cpp" />
     <ClCompile Include="pitstop.cpp" />
     <ClCompile Include="zweidee.cpp" />

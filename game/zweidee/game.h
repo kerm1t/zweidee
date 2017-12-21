@@ -1,5 +1,7 @@
 #pragma once
 
+#include "zweidee_types.h"
+
 namespace game
 {
   class CGame
