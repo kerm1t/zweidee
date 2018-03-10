@@ -86,6 +86,7 @@
     <None Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\lodepng.h" />
     <ClInclude Include="..\..\engine\2dframebuf.hpp" />
     <ClInclude Include="..\..\engine\camera.hpp" />
     <ClInclude Include="..\..\engine\img_bitmap.hpp" />

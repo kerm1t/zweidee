@@ -3,6 +3,13 @@
 namespace zweidee
 {
 
+  struct colrgb
+  {
+    char r;
+    char g;
+    char b;
+  };
+
   struct point
   {
     unsigned int x;
