@@ -111,6 +111,9 @@
     <ClInclude Include="..\..\common\lodepng.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="frogger1tap.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\engine\proj.cpp">
@@ -132,6 +135,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="comanche.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="frogger1tap.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

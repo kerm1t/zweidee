@@ -13,12 +13,15 @@
 
 #include <stdio.h>
 
+#define FBUF2D_WIDTH  64 // 320
+#define FBUF2D_HEIGHT 64 // 200
 
 class FrameBuf2D // which is actually an animated (OpenGL-)Texture
 {
 public:
   unsigned int width, height;
-  unsigned int imageSize;   // = width*height*3
+  unsigned int imagesize;   // = width*height*3
+  unsigned int framecounter;
 
   /*
   (0,0): rgb (1,0): rgb (2,0): rgb
@@ -29,7 +32,7 @@ public:
 //    unsigned int _y = y;
     unsigned int pos = 3 * (_y * width + x);
 //    assert(pos < imageSize);
-    if (pos >= imageSize) return;
+    if (pos >= imagesize) return;
     if (x > width) return; // test < 0 ?? <-- need signed then
     data[pos]     = b; // r ?
     data[pos + 1] = g;
@@ -41,13 +44,13 @@ public:
     // Actual RGB data
     unsigned char * data;
 
-    width  = 64;
-    height = 64;
-    imageSize = width*height*3;
+    width = FBUF2D_WIDTH;
+    height = FBUF2D_HEIGHT;
+    imagesize = width*height*3;
 
     // Create a buffer
-    data = new unsigned char[imageSize];
-    memset(data, 0, imageSize); // clear
+    data = new unsigned char[imagesize];
+    memset(data, 0, imagesize); // clear
 
     /*
       draw some stuff

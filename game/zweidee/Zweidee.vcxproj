@@ -98,6 +98,7 @@
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
     <ClInclude Include="comanche.h" />
     <ClInclude Include="draw_lib.hpp" />
+    <ClInclude Include="frogger1tap.h" />
     <ClInclude Include="galaga.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="pitstop.h" />
@@ -113,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="comanche.cpp" />
+    <ClCompile Include="frogger1tap.cpp" />
     <ClCompile Include="galaga.cpp" />
     <ClCompile Include="pitstop.cpp" />
     <ClCompile Include="zweidee.cpp" />

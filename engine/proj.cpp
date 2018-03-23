@@ -5,12 +5,12 @@
 
 proj::Proj::Proj()
 {
-  m_game.fbuf2d.width = 64;
-  m_game.fbuf2d.height = 64;
-  m_game.fbuf2d.imageSize = 64 * 64 * 3;
+  m_game.fbuf2d.width  = FBUF2D_WIDTH;
+  m_game.fbuf2d.height = FBUF2D_HEIGHT;
+  m_game.fbuf2d.imagesize = m_game.fbuf2d.width * m_game.fbuf2d.height * 3;
   
   fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
-  data = new unsigned char[fbuf2d->imageSize]; // data part of proj <-- 2do
+  data = new unsigned char[fbuf2d->imagesize]; // data part of proj <-- 2do
 }
 
 proj::Proj::~Proj()
@@ -46,7 +46,7 @@ int proj::Proj::move()
         (bStep))    // key [o] pressed
      )
   {
-    memset(data, 0, fbuf2d->imageSize); // clear
+    memset(data, 0, fbuf2d->imagesize); // clear
 
     // -----------
     // game cycle
@@ -57,6 +57,7 @@ int proj::Proj::move()
     //  glBindTexture(GL_TEXTURE_2D, 1); // TEXTURE_ID shall be > 0 !     (-1!!)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbuf2d->width, fbuf2d->height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);   // hier gibt es Schwierigkeiten mit .bmp,
 
+    fbuf2d->framecounter++;
     bStep = false;
   }
   return 0;

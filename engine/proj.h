@@ -8,6 +8,7 @@
 #include "../game/zweidee/galaga.h"
 #include "../game/zweidee/pitstop.h"
 #include "../game/zweidee/comanche.h"
+#include "../game/zweidee/frogger1tap.h"
 
 namespace proj
 {
@@ -43,9 +44,10 @@ namespace proj
     /* ===== Variables ===== */
 
     // Generic Variables
-    galaga::CGalaga   m_game;
+//    galaga::CGalaga   m_game;
 //    pitstop::CPitstop   m_game;
 //    comanche::CComanche m_game;
+    frogger1tap::CFrogger m_game;
 
     FrameBuf2D    * fbuf2d;
     unsigned char * data;
