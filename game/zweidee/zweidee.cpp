@@ -215,7 +215,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
   hInst = hInstance; // Instanzenhandle in der globalen Variablen speichern
 
-  int _w = 800;
+  int _w = 600; // frogger: 600, other: 800
   int _h = 800;
   RECT rect;
   GetClientRect(GetDesktopWindow(), &rect);

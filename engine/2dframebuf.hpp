@@ -13,8 +13,13 @@
 
 #include <stdio.h>
 
-#define FBUF2D_WIDTH  64 // 320
-#define FBUF2D_HEIGHT 64 // 200
+//frogger
+#define FBUF2D_WIDTH  200
+#define FBUF2D_HEIGHT 320
+
+//galaga
+//#define FBUF2D_WIDTH  64
+//#define FBUF2D_HEIGHT 64
 
 class FrameBuf2D // which is actually an animated (OpenGL-)Texture
 {

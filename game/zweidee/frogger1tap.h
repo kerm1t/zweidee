@@ -8,9 +8,13 @@
 
 namespace frogger1tap
 {
-#define N_ZEILEN     6 // muss eine gerade Anzahl sein, sonst schlägt der "move%1" fehl
-#define N_OBSTACLES  2
-#define FROG_Y_INIT 35
+#define PLAYFIELD_H    FBUF2D_HEIGHT
+
+#define N_ZEILEN       16                          // muss eine gerade Anzahl sein, sonst schlägt der "move%1" fehl
+#define N_OBSTACLES     3                          // pro Zeile
+#define FROG_Y_INIT    PLAYFIELD_H/2
+#define LANE_HEIGHT    (int)(PLAYFIELD_H/N_ZEILEN)
+#define OBJ_HEIGHT     LANE_HEIGHT-5               // obstacle + frog
 
   enum frogstate { start, floating, finished };
   enum obst_type { tree, croco };
@@ -47,9 +51,11 @@ namespace frogger1tap
     CFrog     frog;
     CObstacle obst[N_ZEILEN][N_OBSTACLES];
     unsigned char rot = 0;
+    unsigned char ystart = 0;
 
-  public:
     void draw_obst(unsigned char * data);
+    void draw_frog(unsigned char * data);
+  public:
 
     int init();
     int doit(unsigned char * data);
