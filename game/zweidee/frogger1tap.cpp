@@ -9,7 +9,9 @@ void frogger1tap::CFrog::init()
 {
   x = FBUF2D_WIDTH / 2;
   y_dummy = FROG_Y_INIT;
-  state = start;
+  lane = 8;
+//  state = start;
+  state = floating;
 }
 
 int frogger1tap::CFrogger::init()
@@ -43,12 +45,16 @@ void frogger1tap::CFrogger::draw_obst(unsigned char * data)
   for (int z = 0; z < N_ZEILEN; z++)
   {
     int iobst = (rot+z)% N_ZEILEN;
+#define OBST_MODULO PLAYFIELD_H
+    int y = (ystart + z*LANE_HEIGHT) % OBST_MODULO;
+    if (z == frog.lane)
+    {
+      frog.y_dummy = y;
+    }
     for (int o = 0; o < N_OBSTACLES; o++)
     {
       int xstart = obst[iobst][o].x;
       int xend = obst[iobst][o].w;
-#define OBST_MODULO PLAYFIELD_H
-      int y = (ystart + z*LANE_HEIGHT) % OBST_MODULO;
       char r, g, b;
       if (obst[iobst][o].type == croco) { r = 0; g = 255; b = 0; }
       if (obst[iobst][o].type == tree) { r = 155; g = 125; b = 0; }
@@ -122,10 +128,11 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
       int xmov = (iobst % 2) ? 1 : -1;
       for (int o = 0; o < N_OBSTACLES; o++)
       {
-        if (y == frog.y_dummy)
+//        if (y == frog.y_dummy)
+        if (z == frog.lane)
         {
           if ((frog.x >= obst[iobst][o].x) &&
-              (frog.x <= obst[iobst][o].r))
+              (frog.x+OBJ_HEIGHT <= obst[iobst][o].r))
           {
             frog.x += xmov;
             on_water = false;
@@ -153,7 +160,7 @@ int frogger1tap::CFrogger::fire() // == Tap()
 {
   if ((fbuf2d.framecounter % 4) == 0)
   {
-    if (frog.y_dummy == FROG_Y_INIT)
+/*    if (frog.y_dummy == FROG_Y_INIT)
     {
       // init
       frog.y_dummy -= LANE_HEIGHT;
@@ -167,7 +174,10 @@ int frogger1tap::CFrogger::fire() // == Tap()
         rot = N_ZEILEN - 1;
       else
         rot--;
-    }
+    }*/
+//    frog.y_dummy -= LANE_HEIGHT;
+    frog.lane--;
+    if (frog.lane == 0) frog.lane = N_ZEILEN;
   }
   return 0;
 }

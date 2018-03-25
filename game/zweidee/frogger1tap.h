@@ -11,7 +11,7 @@ namespace frogger1tap
 #define PLAYFIELD_H    FBUF2D_HEIGHT
 
 #define N_ZEILEN       16                          // muss eine gerade Anzahl sein, sonst schlägt der "move%1" fehl
-#define N_OBSTACLES     3                          // pro Zeile
+#define N_OBSTACLES     2                          // pro Zeile
 #define FROG_Y_INIT    PLAYFIELD_H/2
 #define LANE_HEIGHT    (int)(PLAYFIELD_H/N_ZEILEN)
 #define OBJ_HEIGHT     LANE_HEIGHT-5               // obstacle + frog
@@ -29,6 +29,7 @@ namespace frogger1tap
     CObstacle * p_obst;
     int x; // pos. auf obstacle
     int y_dummy;
+    int lane;
     void init();
   };
   // background
