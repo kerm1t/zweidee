@@ -72,7 +72,7 @@ void RenderThread(void *args)
     {
       accumulatedTimeSinceLastUpdate = 0;
 
-      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire();
+//      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // Dauerfeuer!
       if (GetAsyncKeyState(VK_UP))    m_proj.up();
       if (GetAsyncKeyState(VK_DOWN))  m_proj.down();
       if (GetAsyncKeyState(VK_LEFT))  m_proj.left();
@@ -289,6 +289,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam)
     {
     case 32: // Space
+      m_proj.fire(); // Einzelfeuer
       break;
     case 37: // ARROW-LEFT
       break;
