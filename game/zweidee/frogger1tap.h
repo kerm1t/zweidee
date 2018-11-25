@@ -13,7 +13,7 @@ namespace frogger1tap
 #define PLAYFIELD_H         FBUF2D_HEIGHT
 
 // Playfield:
-#define PLAYFIELD_X_MIN     30     // nur für's zeichnen!
+#define PLAYFIELD_X_MIN     0//30     // nur für's zeichnen!
 #define AREA_W              PLAYFIELD_W - PLAYFIELD_X_MIN
 /*
    +---+-----------------+
@@ -23,8 +23,9 @@ namespace frogger1tap
    | a |  Area Floating  |
    | r |                 |
    + t +-----------------+
-   |   |    Area Foot    |
+   | *)|    Area Foot    |
    +-.-+-----------------+
+     *) start area is optional
 */
 #define AREA_HEAD           20
 #define AREA_FOOT           20
@@ -38,6 +39,7 @@ namespace frogger1tap
 #define OBJ_HEIGHT          LANE_HEIGHT-5                 // obstacle + frog
 
 #define FROG_Y_INIT         PLAYFIELD_H/2
+#define FROG_W              OBJ_HEIGHT
 
   enum frogstate { start, floating, finished };
   enum obst_type { tree, croco, turtle };
@@ -48,9 +50,8 @@ namespace frogger1tap
   {
   public:
     frogstate state;
-//    const CObstacle & obst; // <-- C2280 CFrogger is a deleted function
     CObstacle * p_obst;
-    int x; // pos. auf obstacle
+    int x;
     int y_dummy;
     int lane;
     void init();

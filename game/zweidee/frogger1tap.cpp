@@ -1,3 +1,11 @@
+/*
+  1-Tap Frogger
+  (C) 2018 anigators / EkwoTECH
+
+  issues:
+  - 2018-04-07, on left side seems to "drown" too fast
+*/
+
 #include "stdafx.h"
 
 #include "frogger1tap.h"
@@ -29,6 +37,7 @@ int frogger1tap::CFrogger::init()
 
   int obstwidthconst = FBUF2D_WIDTH / 6;
 
+  // randomly create obstacles
   for (int z = 0; z < N_ZEILEN; z++)
   {
     int x = 0;
@@ -38,7 +47,6 @@ int frogger1tap::CFrogger::init()
       obst[z][o].x = x + (rand() % obstwidthconst);
       obst[z][o].w = obstwidthconst + rand() % obstwidthconst;
       obst[z][o].r = obst[z][o].x + obst[z][o].w;
-//      obst[z][o].r = std::min(obst[z][o].x, FBUF2D_WIDTH);
       x = obst[z][o].r + LANE_HEIGHT;
     }
   }
@@ -98,7 +106,7 @@ void frogger1tap::CFrogger::draw_frog(unsigned char * data)
   r = g = b = 255;
   for (int y = 0; y < OBJ_HEIGHT; y++)
   {
-    for (int x = 0; x < OBJ_HEIGHT; x++) // quadratic ;-)
+    for (int x = 0; x < FROG_W; x++)
     {
       fbuf2d.setPixel(data, PLAYFIELD_X_MIN + xs+x, ys+y, r, g, b);
     }
@@ -129,17 +137,12 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
 
 
   // move obstacles
-/*  if ((fbuf2d.framecounter % 50) == 0)
-  {
-    if (rot == 0)
-      rot = N_ZEILEN - 1;
-    else
-      rot--;
-  }*/
+  // --------------------------------------------------------------
   // rot (die lanes werden als Ganzes rotiert) ist
   // ersetzt durch ystart (das Spielfeld wird pixelweise gescrollt)
+  // --------------------------------------------------------------
 #define SPEED_VERT_MAX 10
-  int speed_vert = 5; // 1,2,3,4
+  int speed_vert = 5; // 1..10
   if ((fbuf2d.framecounter % (SPEED_VERT_MAX - speed_vert)) == 0)
   {
     ystart++;
@@ -147,7 +150,7 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
   }
 
 #define SPEED_HORIZ_MAX 10
-  int speed_horiz = 8; // 1,2,3,4
+  int speed_horiz = 8; // 1..10
   bool on_water = true;
   if ((fbuf2d.framecounter % (SPEED_HORIZ_MAX - speed_horiz)) == 0)
   {
@@ -160,8 +163,8 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
       {
         if (z == frog.lane)
         {
-          if ((frog.x >= obst[iobst][o].x-5) &&  // fangbereich +/-5
-              (frog.x+OBJ_HEIGHT <= obst[iobst][o].r+5))
+          if ((frog.x >= obst[iobst][o].x-5) &&  // Fangbereich +/-5
+              (frog.x+FROG_W <= obst[iobst][o].r+5))
           {
             frog.x += xmov;
             on_water = false;
@@ -187,27 +190,24 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
 
 int frogger1tap::CFrogger::fire() // == Tap()      <-- Einzelfeuer, s. zweidee.cpp, WndProc()
 {
-//  if ((fbuf2d.framecounter % 4) == 0)
+  if (frog.state == start)
   {
-    if (frog.state == start)
+    // jump into area!
+    frog.state = floating;
+    frog.x = 80;
+
+    // estimate lane
+    for (int z = 0; z < N_ZEILEN; z++)
     {
-      // jump into area!
-      frog.state = floating;
-      frog.x = 80;
-      // estimate lane
-      for (int z = 0; z < N_ZEILEN; z++)
-      {
-        int y = (ystart + z*LANE_HEIGHT) % OBST_MODULO_Y;
-        if (abs(y - frog.y_dummy) < 10) { frog.lane = z; break; }
-      }
-//      frog.lane = 8;
+      int y = (ystart + z*LANE_HEIGHT) % OBST_MODULO_Y;
+      if (abs(y - frog.y_dummy) < 10) { frog.lane = z; break; }
     }
-    else
-    {
-      // we're floating
-      if (frog.lane == 0) frog.lane = N_ZEILEN-1;
-      else frog.lane--;
-    }
+  }
+  else
+  {
+    // we're floating
+    if (frog.lane == 0) frog.lane = N_ZEILEN-1;
+    else frog.lane--;
   }
   return 0;
 }
