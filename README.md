@@ -2,12 +2,12 @@
 
 lean 2d framebuffer for game prototyping
 
-* A framebuffer provides a SetPixel method.
+* A framebuffer provides a setpixel method.
   The framebuffer is applied as a texture on an OpenGL Quad of screen (window) size.
-* A DrawLib adds rudimentary functions to draw, i.e.
-  Bresenham,
-  Bresenhem_Circle
-* A Game class declares virtual function for init, doit, left,right and fire.
+* A drawlib adds rudimentary functions to draw, i.e.
+  bresenham,
+  bresenham_circle
+* A game class declares virtual function for init, doit, left, right and fire.
 
 resolution and ratio are controlled by
 * framebuffer size
