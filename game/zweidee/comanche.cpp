@@ -24,7 +24,7 @@ void comanche::CComanche::DrawVerticalLine(unsigned char * data, int x, int y1, 
 {
   for (int y = y1; y < y2; y++)
   {
-    fbuf2d.setPixel(data, x, y, col.r, col.g, col.b);
+    fbuf2d.setpixel(data, x, y, col.r, col.g, col.b);
   }
 }
 
@@ -76,7 +76,7 @@ int comanche::CComanche::doit(unsigned char * data)
   char r = 255;
   char g = r;
   char b = r;
-  fbuf2d.setPixel(data, x, y, r, g, b);
+  fbuf2d.setpixel(data, x, y, r, g, b);
 
   return 0;
 }

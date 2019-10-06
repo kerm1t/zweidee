@@ -16,6 +16,7 @@ namespace game
     unsigned int iepisode;
     int iloopy;
 
+    // virtual functions have to be all redefined by derived class
     virtual int init() = 0;
     virtual int doit(unsigned char * data) = 0;
     // keys

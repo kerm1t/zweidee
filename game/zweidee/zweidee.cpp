@@ -190,15 +190,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
   return RegisterClassEx(&wcex);
 }
 
-int center_window(HWND parent_window, int width, int height, int &x, int &y)
-{
-  RECT rect;
-  GetClientRect(parent_window, &rect);
-  rect.left = (rect.right / 2) - (width / 2);
-  rect.top = (rect.bottom / 2) - (height / 2);
-  return 0;
-}
-
 //
 //   FUNKTION: InitInstance(HINSTANCE, int)
 //
@@ -215,13 +206,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
   hInst = hInstance; // Instanzenhandle in der globalen Variablen speichern
 
+#define galaga
+#ifdef frogger
   int _w = 600; // frogger: 600, other: 800
   int _h = 800;
+#endif
+#ifdef galaga
+  int _w = 512;
+  int _h = 512;
+#endif
+  // center on screen
   RECT rect;
   GetClientRect(GetDesktopWindow(), &rect);
   int _x = (rect.right / 2) - (_w / 2);
   int _y = (rect.bottom / 2) - (_h / 2);
-
+  // center on screen
   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, _x, _y, _w, _h, NULL, NULL, hInstance, NULL);
 
   if (!hWnd)

@@ -60,6 +60,7 @@ namespace frogger1tap
   {
 
   };
+
   // obstacles (enemies / objects)
   class CObstacle
   {

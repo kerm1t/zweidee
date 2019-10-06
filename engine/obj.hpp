@@ -101,7 +101,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
       //          1mal für uv's,
       //          1mal für col
 
-      uint16 nParts = v_parts.size();
+      uint16 nParts = (uint16)v_parts.size();
       for (uint16 ui = 0; ui < nParts; ui++)
       {
         // ---------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
     void PartsToVAOs(Vec3f vPos = Vec3f(0.0f, 0.0f, 0.0f))
     {
       // --> die infos erstmal am Objekt speichern !?
-      uint16 nParts = v_parts.size();
+      uint16 nParts = (uint16)v_parts.size();
       for (uint16 ui = 0; ui < nParts; ui++)
       {
         proj::c_VAO vao;
@@ -177,7 +177,7 @@ namespace obj // constructor, functions are **implicitly** inline, s. http://sta
         {
           vao.t_Shade = proj::SHADER_COLOR_FLAT;
         }
-        vao.uiVertexCount = v_parts[ui].vertices.size();
+        vao.uiVertexCount = (uint16)v_parts[ui].vertices.size();
         vao.vPos = vPos;
         p_render->vVAOs.push_back(vao);
       }

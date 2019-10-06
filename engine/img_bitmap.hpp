@@ -20,7 +20,7 @@ public:
   /*
     (0,0): rgb (1,0): rgb (2,0): rgb
   */
-/*  void setPixel(unsigned char * data, int x, int y, char r, char g, char b)
+/*  void setpixel(unsigned char * data, int x, int y, char r, char g, char b)
   {
     data[3* ( y * 128 + x)]   = r;
     data[3* ( y * 128 + x)+1] = g;
@@ -86,8 +86,8 @@ public:
       r = ((i+1) % 3) * 255;
       g = ( i    % 3) * 255;
       b = ((i-1) % 3) * 255;
-      setPixel(data, i, i, r, g, b);
-      setPixel(data, (2*40-2)-i, i, r,g,b);
+      setpixel(data, i, i, r, g, b);
+      setpixel(data, (2*40-2)-i, i, r,g,b);
     }
 */
     // Everything is in memory now, the file can be closed

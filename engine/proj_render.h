@@ -15,7 +15,7 @@ namespace proj
     HGLRC hRC;         // Permanent Rendering Context
     HDC   hDC;         // Private GDI Device Context
     HWND  hWnd;        // Holds Our Window Handle
-    HWND  dummyHWND;   // for NVidia SetPixelformat-Fix
+    HWND  dummyHWND;   // for NVidia setpixelformat-Fix
     int width, height;
 
     //        bool b_PNG;

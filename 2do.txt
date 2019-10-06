@@ -1,8 +1,13 @@
-18.8.
+10/6/2019
+- Galaga: distribution of background stars is repeated continuously -> randomize
+- start merge with zweidee-IOS
+- Github readme update
+
+18.8.'17
 - fix: schuss trifft enemy auch, wenn 1 pixel daneben
 + fix: collision spacecraft+enemy, enemy explosion zu lange
 
-17.8.
+17.8.'17
 --> other levels (glider)
 - obstacles to avoid (moon)
 - Level! (know, that level has been done)
@@ -13,7 +18,7 @@
 + "game over"
 + restart with SPACE
 
-16.8.
+16.8.'17
 - introduce double shot (left+right)
 
 15.8.'17

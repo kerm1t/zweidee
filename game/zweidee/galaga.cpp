@@ -64,7 +64,7 @@ int galaga::CGalaga::doit(unsigned char * data)
   case 1:
 //     lib.draw_arrow(data);
     draw_starfield_vert(data);
-    for (unsigned int i = 0; i<spacecraft.lives; i++) fbuf2d.setPixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
+    for (unsigned int i = 0; i<spacecraft.lives; i++) fbuf2d.setpixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
     if (spacecraft.state == spacecraft::normal)
     {
       switch (spacecraft.dir)
@@ -150,11 +150,11 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
     r = ((i + 1) % 3) * 255;
     g = ( i      % 3) * 255;
     b = ((i - 1) % 3) * 255;
-    fbuf2d.setPixel(data, cos((float)i) *                      i, (iloopy + i) % 64, r, g, b);
-    fbuf2d.setPixel(data, cos((float)i) * (fbuf2d.width - 2) - i, (iloopy + i) % 64, r, g, b);
+    fbuf2d.setpixel(data, cos((float)i) *                      i, (iloopy + i) % 64, r, g, b);
+    fbuf2d.setpixel(data, cos((float)i) * (fbuf2d.width - 2) - i, (iloopy + i) % 64, r, g, b);
     // funny effect:
-//    fbuf2d.setPixel(data, (unsigned int)cos(i) *                      i, (iloopy + i) % 64, r, g, b);
-//    fbuf2d.setPixel(data, (unsigned int)cos(i) * (fbuf2D.width - 2) - i, (iloopy + i) % 64, r, g, b);
+//    fbuf2d.setpixel(data, (unsigned int)cos(i) *                      i, (iloopy + i) % 64, r, g, b);
+//    fbuf2d.setpixel(data, (unsigned int)cos(i) * (fbuf2D.width - 2) - i, (iloopy + i) % 64, r, g, b);
   }
   return true;
 }
@@ -173,7 +173,7 @@ int galaga::CGalaga::draw_obj(const rect box, const unsigned char * obj, unsigne
       if (obj[iA] > 0)
       {
         glm::vec3 col = cols[obj[iA]];
-        fbuf2d.setPixel(data, _x, _y, col.r, col.g, col.b); // bgr
+        fbuf2d.setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
       }
     }
   }
@@ -242,7 +242,7 @@ int galaga::CGalaga::draw_shots(unsigned char * data)
     {
       int x = a_shots[i].box.x;
       int y = a_shots[i].box.y;
-      fbuf2d.setPixel(data, x, y, r, g, b);
+      fbuf2d.setpixel(data, x, y, r, g, b);
     }
   }
   return true;

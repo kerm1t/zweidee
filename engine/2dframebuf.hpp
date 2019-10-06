@@ -4,6 +4,9 @@
 //
 // --------------
 
+#ifndef framebuf2d_hpp
+#define framebuf2d_hpp
+#ifdef __cplusplus
 #include "stdafx.h"
 #pragma once
 
@@ -14,12 +17,12 @@
 #include <stdio.h>
 
 //frogger
-#define FBUF2D_WIDTH  200
-#define FBUF2D_HEIGHT 320
+//#define FBUF2D_WIDTH  200
+//#define FBUF2D_HEIGHT 320
 
 //galaga
-//#define FBUF2D_WIDTH  64
-//#define FBUF2D_HEIGHT 64
+#define FBUF2D_WIDTH  64
+#define FBUF2D_HEIGHT 64
 
 class FrameBuf2D // which is actually an animated (OpenGL-)Texture
 {
@@ -31,7 +34,7 @@ public:
   /*
   (0,0): rgb (1,0): rgb (2,0): rgb
   */
-  void setPixel(unsigned char * data, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
+  void setpixel(unsigned char * data, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
   {
     unsigned int _y = height - 1 - y; // hack, texture upside down? 2do: check!!
 //    unsigned int _y = y;
@@ -66,8 +69,8 @@ public:
       r = ((i + 1) % 3) * 255;
       g = ( i      % 3) * 255;
       b = ((i - 1) % 3) * 255;
-      setPixel(data,       i, i, r, g, b);
-      setPixel(data, width-i, i, r, g, b);
+      setpixel(data,       i, i, r, g, b);
+      setpixel(data, width-i, i, r, g, b);
     }
 
     // Create one OpenGL texture
@@ -88,3 +91,5 @@ public:
     return textureID;
   }
 };
+#endif // __cplusplus
+#endif // framebuf2d_hpp

@@ -27,8 +27,8 @@ int pitstop::CPitstop::doit(unsigned char * data)
     }
     for (unsigned int x = 0; x < fbuf2d.width; x++)
     {
-      fbuf2d.setPixel(data, x, y, r, g, b);
-      fbuf2d.setPixel(data, x, y, r, g, b);
+      fbuf2d.setpixel(data, x, y, r, g, b);
+      fbuf2d.setpixel(data, x, y, r, g, b);
     }
   }
   _y--;

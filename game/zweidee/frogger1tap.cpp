@@ -82,7 +82,7 @@ void frogger1tap::CFrogger::draw_obst(unsigned char * data)
         int _x = x % (AREA_W - 1);
         for (int yinc = 0; yinc < OBJ_HEIGHT; yinc++)
         {
-          fbuf2d.setPixel(data, PLAYFIELD_X_MIN + _x, y+yinc, r, g, b);
+          fbuf2d.setpixel(data, PLAYFIELD_X_MIN + _x, y+yinc, r, g, b);
         }
       }
     }
@@ -100,7 +100,7 @@ void frogger1tap::CFrogger::draw_frog(unsigned char * data)
   {
     for (int x = 0; x < OBJ_HEIGHT; x++) // quadratic ;-)
     {
-      fbuf2d.setPixel(data, PLAYFIELD_X_MIN + xs+x, ys+y, r, g, b);
+      fbuf2d.setpixel(data, PLAYFIELD_X_MIN + xs+x, ys+y, r, g, b);
     }
   }
 }
@@ -111,7 +111,7 @@ void frogger1tap::CFrogger::draw_area_start(unsigned char * data)
   {
     for (int x = 0; x < PLAYFIELD_X_MIN; x++) // pro Zeile
     {
-      fbuf2d.setPixel(data, x, y, 100, 100, 100);
+      fbuf2d.setpixel(data, x, y, 100, 100, 100);
     }
   }
 }
