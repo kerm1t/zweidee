@@ -19,6 +19,6 @@ Examples included:
 |---|---|---|---|
 | comanche |   |   |
 | frogger | IOS  | 200 x 320 | 800 x 600 |
-| galaga | 64 x 64  | e.g. 512 x 512 |
+| galaga | | 64 x 64  | e.g. 512 x 512 |
 | pitstop |   |   |
 
