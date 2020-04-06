@@ -4,7 +4,8 @@
 
 #include "proj_render.h"
 
-#include "2dframebuf.hpp"
+//#include "2dframebuf.hpp"
+#include "zweidee.h"
 #include "../game/zweidee/galaga.h"
 #include "../game/zweidee/pitstop.h"
 #include "../game/zweidee/comanche.h"
@@ -49,7 +50,7 @@ namespace proj
 //    comanche::CComanche m_game;
 //    frogger1tap::CFrogger m_game;
 
-    FrameBuf2D    * fbuf2d;
+    zweidee::FrameBuf2D    * fbuf2d;
     unsigned char * data;
 
     /* ===== FUNCTIONS ===== */

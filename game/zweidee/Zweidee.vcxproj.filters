@@ -78,13 +78,7 @@
     <ClInclude Include="frogger1tap.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\2dframebuf.hpp">
-      <Filter>header\proj</Filter>
-    </ClInclude>
     <ClInclude Include="draw_lib.hpp">
-      <Filter>header\proj</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\rnd_fbo.hpp">
       <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\zweidee.h">

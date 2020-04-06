@@ -7,7 +7,7 @@ namespace game
   class CGame
   {
   public:
-    FrameBuf2D fbuf2d;
+    zweidee::FrameBuf2D fbuf2d;
 
 #define NUM_EPISODES 3
     char a_episode_len[NUM_EPISODES];
