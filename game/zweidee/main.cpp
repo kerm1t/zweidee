@@ -4,16 +4,16 @@
 #include "stdafx.h"
 
 #include "resource.h"
-#include "zweidee.h"
-#include "proj.h"
+#include "zweidee.h"	// draw to 2D buffer
+#include "engine.h"		//   run a 2D game
 
-#include <windows.h>                            // Header File For Windows
-#include <windowsx.h>                           // GET_X_LPARAM, GET_Y_LPARAM
+#include <windows.h>    // Header File For Windows
+#include <windowsx.h>   // GET_X_LPARAM, GET_Y_LPARAM
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include <process.h> // _beginthread
+#include <process.h>    // _beginthread
 
 #define MAX_LOADSTRING 100
 
@@ -32,16 +32,14 @@ HGLRC            hRC=NULL;                      // Permanent Rendering Context
 HDC              hDC=NULL;                      // Private GDI Device Context
 HWND             hWnd=NULL;                     // Holds Our Window Handle
 
-proj::Proj m_proj;
-
-//Camera m_cam;
+zweidee::Engine m_engine;
 
 int win_h,win_w;
 int mouse_x,mouse_y;
 
 int iT = 1;
 
-static float framesPerSecond = 0.0f;            // This will store our fps
+static float fps = 0.0f;                        // This will store our fps
 static float lastTime = 0.0f;                   // This will hold the time from the last frame
 dword lasttickcount = 0;
 dword accumulatedTimeSinceLastUpdate = 0;
@@ -51,11 +49,11 @@ bool b_WM_resized = false;
 void CalculateFrameRate()
 {
   float currentTime = GetTickCount() * 0.001f;    
-  ++framesPerSecond;
+  ++fps;
   if( currentTime - lastTime > 1.0f )
   {
     lastTime = currentTime;
-    framesPerSecond = 0.0;
+    fps = 0.0;
   }
 }
 
@@ -77,22 +75,23 @@ void RenderThread(void *args)
       accumulatedTimeSinceLastUpdate = 0;
 
 //      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // Dauerfeuer!
-      if (GetAsyncKeyState(VK_UP))    m_proj.up();
-      if (GetAsyncKeyState(VK_DOWN))  m_proj.down();
-      if (GetAsyncKeyState(VK_LEFT))  m_proj.left();
-      if (GetAsyncKeyState(VK_RIGHT)) m_proj.right();
+      if (GetAsyncKeyState(VK_UP))    m_engine.up();
+      if (GetAsyncKeyState(VK_DOWN))  m_engine.down();
+      if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
+      if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
 
-      m_proj.move();
+	  m_engine.move();
     }
 
     if (b_WM_resized)
     {
-      m_proj.m_render.ReSizeGLScene(win_w,win_h);
+// 2do: move from engine to zweidee -->
+		m_engine.m_render.ReSizeGLScene(win_w,win_h);
       b_WM_resized = false;
     }
 //    m_cam.update_View(); // View = Pos,At,Norm
 
-    m_proj.render(); // render update-rate independent from move() (s. above) 
+	m_engine.render(); // render update-rate independent from move() (s. above) 
   }
   _endthread();
 }
@@ -129,15 +128,17 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   mouse_x = (int)(win_w/2.0f); // init
   mouse_y = (int)(win_h/2.0f);
 
-  m_proj.m_render.width = win_w;
-  m_proj.m_render.height = win_h;
-  hDC = m_proj.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
+// 2do: this should be zweidee -->
+  m_engine.m_render.width = win_w;
+  m_engine.m_render.height = win_h;
+  hDC = m_engine.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
 
   glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time
 
-  m_proj.init();	// <-- Textures erst nach glewInit() laden!!
-                  // a) data loading + b) data description c) render.Init()
+// 2do: this should be zweidee -->
+  m_engine.init();	// <-- Textures erst nach glewInit() laden!!
+                    // a) data loading + b) data description c) render.Init()
   
   hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLSHOOT));
 
@@ -292,17 +293,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam)
     {
     case 32: // Space
-      m_proj.fire(); // Einzelfeuer
+      m_engine.fire(); // Einzelfeuer
       break;
     case 37: // ARROW-LEFT
       break;
     case 39: // ARROW-RIGHT
       break;
     case 79: // O >> Step
-      m_proj.bStep = true;
+      m_engine.bStep = true;
       break;
     case 80: // P >> Pause ON/OFF
-      m_proj.bPause = !(m_proj.bPause);
+      m_engine.bPause = !(m_engine.bPause);
       break;
     case 87: // W
       break;

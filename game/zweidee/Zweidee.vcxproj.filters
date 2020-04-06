@@ -15,12 +15,6 @@
     <Filter Include="header\import">
       <UniqueIdentifier>{c05cfe00-94fa-4d56-b857-52195e3e6124}</UniqueIdentifier>
     </Filter>
-    <Filter Include="header\proj">
-      <UniqueIdentifier>{cbe3a94b-18ff-4e1d-8482-869567bab6df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="header\render">
-      <UniqueIdentifier>{cf29e14f-01c1-4e0f-8a04-5bf8e77c7908}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -36,17 +30,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\engine\camera.hpp">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engine\img_bitmap.hpp">
       <Filter>header\import</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\img_DDS.hpp">
       <Filter>header\import</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\proj.h">
-      <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\targetver.h">
       <Filter>common</Filter>
@@ -78,25 +66,19 @@
     <ClInclude Include="frogger1tap.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="draw_lib.hpp">
-      <Filter>header\proj</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engine\zweidee.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\zweidee_draw.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\engine.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\engine\proj.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\engine\proj_render.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\stdafx.cpp">
       <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="zweidee.cpp">
-      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="galaga.cpp">
       <Filter>source</Filter>
@@ -108,6 +90,12 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="frogger1tap.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engine\engine.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

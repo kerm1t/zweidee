@@ -1,9 +1,9 @@
 
 #include "stdafx.h"
 
-#include "proj.h"
+#include "engine.h"
 
-proj::Proj::Proj()
+zweidee::Engine::Engine()
 {
   m_game.fbuf2d.width  = FBUF2D_WIDTH;
   m_game.fbuf2d.height = FBUF2D_HEIGHT;
@@ -13,12 +13,12 @@ proj::Proj::Proj()
   data = new unsigned char[fbuf2d->imagesize]; // data part of proj <-- 2do
 }
 
-proj::Proj::~Proj()
+zweidee::Engine::~Engine()
 {
   delete data;
 }
 
-int proj::Proj::init()
+int zweidee::Engine::init()
 {
   m_render.Init(); // InitGL + Initshaders, kann auch später aufgerufen werden...
 
@@ -39,7 +39,7 @@ int proj::Proj::init()
   return 0;
 }
 
-int proj::Proj::move()
+int zweidee::Engine::move()
 {
   if (
       ((!bPause) || // key [p] pressed
@@ -63,7 +63,7 @@ int proj::Proj::move()
   return 0;
 }
 
-int proj::Proj::render()
+int zweidee::Engine::render()
 {
   wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
@@ -74,31 +74,31 @@ int proj::Proj::render()
   return 0;
 }
 
-int proj::Proj::fire()
+int zweidee::Engine::fire()
 {
   m_game.fire();
   return true;
 }
 
-int proj::Proj::up()
+int zweidee::Engine::up()
 {
   // not used
   return true;
 }
 
-int proj::Proj::down()
+int zweidee::Engine::down()
 {
   // not used
   return true;
 }
 
-int proj::Proj::left()
+int zweidee::Engine::left()
 {
   m_game.left();
   return true;
 }
 
-int proj::Proj::right()
+int zweidee::Engine::right()
 {
   m_game.right();
   return true;

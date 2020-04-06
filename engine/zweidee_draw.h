@@ -1,7 +1,5 @@
 #pragma once
 
-#include "math.h"
-//#include "2dframebuf.hpp"
 #include "zweidee.h"
 
 namespace zweidee {

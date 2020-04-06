@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
+#include "zweidee_draw.h"
 #include "galaga.h"
-
-//#include "math.h"
-#include "draw_lib.hpp"
 
 int galaga::CGalaga::init()
 {

@@ -87,17 +87,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\lodepng.h" />
-    <ClInclude Include="..\..\engine\camera.hpp" />
     <ClInclude Include="..\..\engine\img_bitmap.hpp" />
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
     <ClInclude Include="..\..\engine\zweidee.h" />
+    <ClInclude Include="..\..\engine\zweidee_draw.h" />
     <ClInclude Include="comanche.h" />
-    <ClInclude Include="draw_lib.hpp" />
     <ClInclude Include="frogger1tap.h" />
     <ClInclude Include="galaga.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="pitstop.h" />
-    <ClInclude Include="..\..\engine\proj.h" />
+    <ClInclude Include="..\..\engine\engine.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />
@@ -108,9 +107,8 @@
     <ClCompile Include="frogger1tap.cpp" />
     <ClCompile Include="galaga.cpp" />
     <ClCompile Include="pitstop.cpp" />
-    <ClCompile Include="zweidee.cpp" />
-    <ClCompile Include="..\..\engine\proj.cpp" />
-    <ClCompile Include="..\..\engine\proj_render.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\..\engine\engine.cpp" />
     <ClCompile Include="..\..\common\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
