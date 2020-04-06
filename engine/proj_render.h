@@ -81,7 +81,7 @@ namespace proj
 
     void Groundplane();
     void FPS();
-    void Triangles_to_VBO(Vec3f v3pos); // most simple VBO/VAO, just in case errors happen...
+//    void Triangles_to_VBO(Vec3f v3pos); // most simple VBO/VAO, just in case errors happen...
     int Scene_to_VBO();//uint * p_idxVBO);
 //    int DestroyScene_VBO();
 

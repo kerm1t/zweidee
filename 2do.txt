@@ -1,3 +1,10 @@
+4/6/2020
+- reduzieren auf moegl. wenige (1?) header Datei
+- releasen u. Antwort an Angelo Pesce (tinyPTC)
+- proj(.h) loswerden --> direkt in game.h uebernehmen
+- CMake
+- Version f. Linux, MacOs, IOS, ... (Amiga!!, C64)
+
 10/6/2019
 - Galaga: distribution of background stars is repeated continuously -> randomize
 - start merge with zweidee-IOS

@@ -2,7 +2,7 @@
 
 #include "proj_render.h"
 
-#include "Vec3f.hxx"
+//#include "Vec3f.hxx"
 //#define GLM_FORCE_RADIANS // <-- strange!
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>

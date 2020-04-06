@@ -4,7 +4,7 @@
 
 #include "../common/types.h"
 
-#include "Vec3f.hxx"
+//#include "Vec3f.hxx"
 #include "math.h"
 
 #define GLEW_STATIC
@@ -50,7 +50,7 @@ namespace proj
 
     bool b_doDraw;
     bool b_Wireframe;
-    Vec3f vPos;
+//    Vec3f vPos;
     uint16 uiVertexCount;
     bool b_moving;
 
@@ -59,7 +59,7 @@ namespace proj
       ui_idTexture = 0;
       b_doDraw     = true;
       b_Wireframe  = false;
-      vPos         = Vec3f(0.0f,0.0f,0.0f);
+//      vPos         = Vec3f(0.0f,0.0f,0.0f);
       b_moving     = false;
     }
   };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "zweidee_types.h"
+#include "zweidee.h"
 
 namespace game
 {

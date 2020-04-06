@@ -91,8 +91,6 @@
     <ClInclude Include="..\..\engine\camera.hpp" />
     <ClInclude Include="..\..\engine\img_bitmap.hpp" />
     <ClInclude Include="..\..\engine\inc_render.h" />
-    <ClInclude Include="..\..\engine\mdl_wavefront.hpp" />
-    <ClInclude Include="..\..\engine\obj.hpp" />
     <ClInclude Include="..\..\engine\rnd_fbo.hpp" />
     <ClInclude Include="..\..\engine\rnd_shaderman.hpp" />
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
@@ -108,9 +106,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />
-    <ClInclude Include="..\..\engine\Vec3f.hxx" />
     <ClInclude Include="types.h" />
-    <ClInclude Include="zweidee_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="comanche.cpp" />

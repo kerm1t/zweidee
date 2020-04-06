@@ -12,9 +12,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="header\obj">
-      <UniqueIdentifier>{aaa31529-569e-48ed-93f9-e6854ec1bae3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="header\import">
       <UniqueIdentifier>{c05cfe00-94fa-4d56-b857-52195e3e6124}</UniqueIdentifier>
     </Filter>
@@ -48,26 +45,17 @@
     <ClInclude Include="..\..\engine\img_DDS.hpp">
       <Filter>header\import</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\mdl_wavefront.hpp">
-      <Filter>header\import</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engine\proj.h">
       <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\proj_render.h">
       <Filter>header\proj</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\Vec3f.hxx">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engine\rnd_fbo.hpp">
       <Filter>header\render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\rnd_shaderman.hpp">
       <Filter>header\render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\obj.hpp">
-      <Filter>header\obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\inc_render.h">
       <Filter>header\render</Filter>
@@ -103,9 +91,6 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="comanche.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="zweidee_types.h">
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\lodepng.h">

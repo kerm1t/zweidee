@@ -1,6 +1,6 @@
 #pragma once
 
-#include "obj.hpp"
+//#include "obj.hpp"
 
 #include "proj_render.h"
 

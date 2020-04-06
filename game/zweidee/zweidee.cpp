@@ -2,7 +2,10 @@
 //
 
 #include "stdafx.h"
+
 #include "zweidee.h"
+#include "proj.h"
+
 #include <windows.h>                            // Header File For Windows
 #include <windowsx.h>                           // GET_X_LPARAM, GET_Y_LPARAM
 

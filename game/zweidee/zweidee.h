@@ -2,6 +2,23 @@
 
 #include "resource.h"
 
-#include "proj.h"
-#include "zweidee_types.h"
-//#include "camera.hpp"
+//#include "proj.h"
+
+namespace zweidee
+{
+
+	struct colrgb
+	{
+		char r;
+		char g;
+		char b;
+	};
+
+	struct point
+	{
+		unsigned int x;
+		unsigned int y;
+		point(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) {}
+	};
+
+}
