@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 
+#include "resource.h"
 #include "zweidee.h"
 #include "proj.h"
 

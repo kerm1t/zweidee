@@ -51,15 +51,6 @@
     <ClInclude Include="..\..\engine\proj_render.h">
       <Filter>header\proj</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\rnd_fbo.hpp">
-      <Filter>header\render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\rnd_shaderman.hpp">
-      <Filter>header\render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\inc_render.h">
-      <Filter>header\render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\targetver.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -72,17 +63,8 @@
     <ClInclude Include="types.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\2dframebuf.hpp">
-      <Filter>header\render</Filter>
-    </ClInclude>
-    <ClInclude Include="zweidee.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="galaga.h">
       <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="draw_lib.hpp">
-      <Filter>header\render</Filter>
     </ClInclude>
     <ClInclude Include="pitstop.h">
       <Filter>header</Filter>
@@ -97,6 +79,21 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="frogger1tap.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\2dframebuf.hpp">
+      <Filter>header\proj</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_lib.hpp">
+      <Filter>header\proj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\inc_render.h">
+      <Filter>header\proj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\rnd_fbo.hpp">
+      <Filter>header\proj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\zweidee.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
