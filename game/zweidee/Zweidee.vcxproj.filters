@@ -48,9 +48,6 @@
     <ClInclude Include="..\..\engine\proj.h">
       <Filter>header\proj</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\engine\proj_render.h">
-      <Filter>header\proj</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\targetver.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -85,9 +82,6 @@
       <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="draw_lib.hpp">
-      <Filter>header\proj</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\inc_render.h">
       <Filter>header\proj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\rnd_fbo.hpp">

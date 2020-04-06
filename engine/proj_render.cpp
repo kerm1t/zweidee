@@ -18,7 +18,7 @@ static stb_fontchar fontdata[STB_SOMEFONT_NUM_CHARS];
 // VBO tutorial: http://www.ozone3d.net/tutorials/opengl_vbo.php
 // using multiple vs. using 1 large VBO: https://www.opengl.org/discussion_boards/showthread.php/176365-Working-with-multiple-VBO-s
 
-proj::Render::Render() // constructor
+zweidee::Render::Render() // constructor
 {
   hRC=NULL;                           // Permanent Rendering Context
   hDC=NULL;                           // Private GDI Device Context
@@ -30,7 +30,7 @@ proj::Render::Render() // constructor
 //  Init_Textures();
 }
 
-int proj::Render::Init()
+int zweidee::Render::Init()
 {
   // only f. fixed pipeline --> glEnable(GL_TEXTURE_2D);
   glClearColor(0.3f,0.5f,1.0f,0.0f);
@@ -47,7 +47,7 @@ int proj::Render::Init()
   return 0;
 }
 
-GLvoid proj::Render::ReSizeGLScene(GLsizei width, GLsizei height) // Resize And Initialize The GL Window
+GLvoid zweidee::Render::ReSizeGLScene(GLsizei width, GLsizei height) // Resize And Initialize The GL Window
 {
   if (height==0)                     // Prevent A Divide By Zero By
   {
@@ -56,7 +56,7 @@ GLvoid proj::Render::ReSizeGLScene(GLsizei width, GLsizei height) // Resize And 
   glViewport(0, 0, width, height);   // Reset The Current Viewport
 }
 
-HDC proj::Render::GL_attach_to_DC(HWND hWnd)
+HDC zweidee::Render::GL_attach_to_DC(HWND hWnd)
 { 
   GLuint PixelFormat;                     // Holds The Results After Searching For A Match
 
@@ -155,7 +155,7 @@ void proj::Render::Init_Textures()
 vertex buffers can hold any information: position, color, uv-coordinates
 VAO's only exist from OpengL >=
 */
-void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
+void zweidee::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
 {
   GLuint gi;
   GLenum err = glGetError();
@@ -216,7 +216,7 @@ void proj::Render::Bind_VBOs_to_VAOs() // s. http://www.arcsynthesis.org/gltut/P
   }
 }
 
-void proj::Render::FPS()
+void zweidee::Render::FPS()
 {
   std::vector<GLfloat> coords;
 
@@ -266,7 +266,7 @@ void proj::Render::FPS()
 
 // rotate: https://www.opengl.org/discussion_boards/showthread.php/179290-Rotation-w-Rectangular-Pixels-(2D-VAO)
 
-void proj::Render::DrawVAOs_NEU()
+void zweidee::Render::DrawVAOs_NEU()
 {
   /*
   Achtung, hier springt das Programm nochmal 'rein nach Drücken des Close Buttons,

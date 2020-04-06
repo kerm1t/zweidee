@@ -90,7 +90,6 @@
     <ClInclude Include="..\..\engine\2dframebuf.hpp" />
     <ClInclude Include="..\..\engine\camera.hpp" />
     <ClInclude Include="..\..\engine\img_bitmap.hpp" />
-    <ClInclude Include="..\..\engine\inc_render.h" />
     <ClInclude Include="..\..\engine\rnd_fbo.hpp" />
     <ClInclude Include="..\..\engine\img_DDS.hpp" />
     <ClInclude Include="..\..\engine\zweidee.h" />
@@ -101,7 +100,6 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="pitstop.h" />
     <ClInclude Include="..\..\engine\proj.h" />
-    <ClInclude Include="..\..\engine\proj_render.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />

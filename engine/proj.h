@@ -26,7 +26,7 @@ namespace proj
 
     /* ===== Variables ===== */
 
-    proj::Render m_render;
+    zweidee::Render m_render;
 
     /* ===== FUNCTIONS ===== */
     

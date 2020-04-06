@@ -2,6 +2,20 @@
 
 //#include "resource.h"
 
+#include <vector>
+#include <string>
+
+#include "../common/types.h"
+
+//#include "Vec3f.hxx"
+#include "math.h"
+
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <gl\gl.h>    // Header File For The OpenGL32 Library
+#include <gl\glu.h>   // Header File For The GLu32 Library
+
+
 #include <stdio.h> // <-- sprintf
 #include "inc_render.h"
 //#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!
@@ -12,6 +26,8 @@
 
 namespace zweidee
 {
+
+/// from .h
 
 	struct colrgb
 	{
@@ -112,6 +128,156 @@ namespace zweidee
 			sh2_unif_ID = glGetUniformLocation(program_fps, "myTexSampler");
 			err = glGetError();
 		}
+	};
+
+/// from .h
+
+
+	// ========
+	// Textures
+	// ========
+#define TEX_ARIALFONT    1 // war vorher 0, da gab's einen Fehler!!
+#define TEX_ROADSURFACE  2
+	//#define TEX_TRAFFICSIGN  3
+	//#define TEX_CAR          4 // <-- this is actually the body
+	//#define TEX_CAR_WINDOWS  5
+	//#define TEX_CAR_TIRE     6
+	//#define TEX_BARRIER      7
+	//  static const unsigned int TEXCOUNT = 7;
+
+	enum tShading { SHADER_COLOR_FLAT, SHADER_TEXTURE };
+
+	/*
+	VAO, s. http://lwjgl.org/wiki/index.php?title=The_Quad_with_DrawArrays
+	explained: http://stackoverflow.com/questions/5970087/understanding-vertex-array-objects-glgenvertexarrays
+	VAO (>=OGL3.0): bundle multiple VBO's for easier handling, don't need to bind ... them each
+	... really good tut: http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
+	*/
+	class c_VAO //: public obj::CObject
+	{
+	public:
+		std::string Name;
+		tShading t_Shade;
+
+		/*    uint16 idVBO_pos;		// OpenGL VBO
+		uint16 idVBO_tex;
+		uint16 idVBO_col;
+		*/
+		uint16 ui_idTexture;    // TextureID
+
+		bool b_doDraw;
+		bool b_Wireframe;
+		//    Vec3f vPos;
+		uint16 uiVertexCount;
+		bool b_moving;
+
+		c_VAO::c_VAO()
+		{
+			ui_idTexture = 0;
+			b_doDraw = true;
+			b_Wireframe = false;
+			//      vPos         = Vec3f(0.0f,0.0f,0.0f);
+			b_moving = false;
+		}
+	};
+
+	/*
+	class c_Texture
+	{
+	public:
+	char c_filename[255];
+	float fXWorld,fYWorld;
+	};
+	*/
+
+
+/// from .h
+
+	class Render : public zweidee::ShaderMan
+	{
+	public:
+		HGLRC hRC;         // Permanent Rendering Context
+		HDC   hDC;         // Private GDI Device Context
+		HWND  hWnd;        // Holds Our Window Handle
+		HWND  dummyHWND;   // for NVidia setpixelformat-Fix
+		int width, height;
+
+		//        bool b_PNG;
+
+		// =================
+		// Objects' pointers
+		// =================
+		// objects shall store VAO-id und Texture-id
+		//		std::vector <obj::CObject> * p_vObjects;
+
+		//        c_Texture aTextures[TEXCOUNT];
+		//		std::vector<c_Texture> vTextures;
+
+		//        GLuint Texture[TEXCOUNT]; // --> checken, dass nicht mit der FBO-Textur kollidiert!
+		std::vector<GLuint> vGLTexture;
+		// =====
+		// VAO's ... VAO = {VBO1,VBO2,VB3,...}
+		// =====
+		/*        #define VBO_2TRIANGLES   0
+		#define VBO_LEFT         1
+		#define VBO_RIGHT        2
+		#define VBO_ROAD         3
+		#define VBO_TRAFFICSIGNS 4
+		#define VBO_GUARDRAIL    5
+		#define VBO_CURBSTONES   6
+		#define VBO_MOVING1      7
+		#define VBO_MOVING2      8
+		#define VBO_CAR			 9 // <-- entfernt!!
+		#define VBO_CAR_WINDOWS 10 // <-- with parts!!
+		#define VBO_CAR_BODY    11
+		#define VBO_CAR_TIRE1   12
+		#define VBO_CAR_TIRE2   13
+		*/        // nur statische integrale Datentypen können innerhalb einer Klasse initialisiert werden...
+		static const unsigned int VBOCOUNT = 99;
+
+		// pointers to all VAO buffer's
+		GLuint positionBuffer[VBOCOUNT];
+		GLuint    colorBuffer[VBOCOUNT]; // either color or ...
+		GLuint       uvBuffer[VBOCOUNT]; // texture
+										 //    GLuint ui_numVBOpos = 0;
+										 //    GLuint ui_numVBOtex = 0;
+										 //    GLuint ui_numVBOcol = 0;
+
+		std::vector<c_VAO>  vVAOs;
+		std::vector<GLuint> vVertexArray;    // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
+
+											 //    std::vector<GLuint> vPositionBuffer; // stores position
+
+		bool b_splash_screen;
+
+		// =============
+		//    Camera * p_cam;
+
+		//    proj::Scene * m_Scene;
+
+		Render();
+		int Init();
+
+		HDC GL_attach_to_DC(HWND hWnd);
+
+		GLvoid ReSizeGLScene(GLsizei width, GLsizei height); // Resize And Initialize The GL Window
+															 //    void Init_Textures();
+
+															 //    void Groundplane();
+		void FPS();
+		//    void Triangles_to_VBO(Vec3f v3pos); // most simple VBO/VAO, just in case errors happen...
+		//    int Scene_to_VBO();//uint * p_idxVBO);
+		//    int DestroyScene_VBO();
+
+		//    void get_xyz_Hack(int iT, float &x, float &y, float &z, float &xto, float &yto, float &zto);
+
+		void Bind_VBOs_to_VAOs();
+		void DrawVAOs_NEU();
+
+	private:
+		static int const fbo_width = 512;
+		static int const fbo_height = 512;
+		GLuint fb, color, depth; // <--- nicer names!
 	};
 
 }
