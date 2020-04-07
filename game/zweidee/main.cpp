@@ -4,8 +4,8 @@
 #include "stdafx.h"
 
 #include "resource.h"
-#include "zweidee.h"	// draw to 2D buffer
-#include "engine.h"		//   run a 2D game
+#include "zweidee.h"    // draw to 2D buffer
+#include "engine.h"	    //   run a 2D game
 
 #include <windows.h>    // Header File For Windows
 #include <windowsx.h>   // GET_X_LPARAM, GET_Y_LPARAM
@@ -74,24 +74,23 @@ void RenderThread(void *args)
     {
       accumulatedTimeSinceLastUpdate = 0;
 
-//      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // Dauerfeuer!
+//      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // no rapid fire :-)
       if (GetAsyncKeyState(VK_UP))    m_engine.up();
       if (GetAsyncKeyState(VK_DOWN))  m_engine.down();
       if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
       if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
 
-	  m_engine.move();
+	    m_engine.move();
     }
 
     if (b_WM_resized)
     {
 // 2do: move from engine to zweidee -->
-		m_engine.m_render.ReSizeGLScene(win_w,win_h);
+		  m_engine.m_render.ReSizeGLScene(win_w,win_h);
       b_WM_resized = false;
     }
-//    m_cam.update_View(); // View = Pos,At,Norm
 
-	m_engine.render(); // render update-rate independent from move() (s. above) 
+  	m_engine.render(); // render update-rate independent from move() (s. above) 
   }
   _endthread();
 }

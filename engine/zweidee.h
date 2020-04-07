@@ -15,15 +15,12 @@
 #include <gl\gl.h>    // Header File For The OpenGL32 Library
 #include <gl\glu.h>   // Header File For The GLu32 Library
 
-//#include "inc_render.h"
 //#define GLM_FORCE_RADIANS // 2do, replace all deg. by rad.!!
 #include "glm.hpp"
 
 
 namespace zweidee
 {
-
-/// from .h
 
 	struct colrgb
 	{
@@ -126,8 +123,6 @@ namespace zweidee
 		}
 	};
 
-/// from .h
-
 
 	// ========
 	// Textures
@@ -198,37 +193,7 @@ namespace zweidee
 		HWND  dummyHWND;   // for NVidia setpixelformat-Fix
 		int width, height;
 
-		//        bool b_PNG;
-
-		// =================
-		// Objects' pointers
-		// =================
-		// objects shall store VAO-id und Texture-id
-		//		std::vector <obj::CObject> * p_vObjects;
-
-		//        c_Texture aTextures[TEXCOUNT];
-		//		std::vector<c_Texture> vTextures;
-
-		//        GLuint Texture[TEXCOUNT]; // --> checken, dass nicht mit der FBO-Textur kollidiert!
 		std::vector<GLuint> vGLTexture;
-		// =====
-		// VAO's ... VAO = {VBO1,VBO2,VB3,...}
-		// =====
-		/*        #define VBO_2TRIANGLES   0
-		#define VBO_LEFT         1
-		#define VBO_RIGHT        2
-		#define VBO_ROAD         3
-		#define VBO_TRAFFICSIGNS 4
-		#define VBO_GUARDRAIL    5
-		#define VBO_CURBSTONES   6
-		#define VBO_MOVING1      7
-		#define VBO_MOVING2      8
-		#define VBO_CAR			 9 // <-- entfernt!!
-		#define VBO_CAR_WINDOWS 10 // <-- with parts!!
-		#define VBO_CAR_BODY    11
-		#define VBO_CAR_TIRE1   12
-		#define VBO_CAR_TIRE2   13
-		*/        // nur statische integrale Datentypen können innerhalb einer Klasse initialisiert werden...
 		static const unsigned int VBOCOUNT = 99;
 
 		// pointers to all VAO buffer's
@@ -628,7 +593,6 @@ namespace zweidee
 			return textureID;
 		}
 
-
 #if 0
 		// ---
 		// FBO
@@ -712,7 +676,12 @@ namespace zweidee
 			myfile.close();
 		}
 #endif
-	};
+	}; // Framebuf2D
+
+//	FrameBuf2D    * fbuf2d;
+//	unsigned char * data;
+
 }
+
 
 #endif // ZWEIDEE_H

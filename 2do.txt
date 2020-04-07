@@ -1,4 +1,10 @@
 4/6/2020
+- not draw on a rectangle, but on a sphere (or an old CRT monitor)
+
+- concept:
+  a) let m_render in engine
+  b) put m_render in main --> pass as argument to engine (maybe better)
+
 - 2dbuf --> zweidee.h
 - proj.cpp/.h --> game.h
 - reduzieren auf moegl. wenige (1?) header Datei

@@ -2,9 +2,9 @@
 
 #include "zweidee.h"
 #include "../game/zweidee/galaga.h"
-#include "../game/zweidee/pitstop.h"
-#include "../game/zweidee/comanche.h"
-#include "../game/zweidee/frogger1tap.h"
+//#include "../game/zweidee/pitstop.h"
+//#include "../game/zweidee/comanche.h"
+//#include "../game/zweidee/frogger1tap.h"
 
 namespace zweidee
 {
@@ -17,7 +17,7 @@ namespace zweidee
 
     /* ===== Constructor ===== */
 
-	Engine();
+    Engine();
     ~Engine();
 
     /* ===== Variables ===== */
