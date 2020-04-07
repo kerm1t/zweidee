@@ -1,15 +1,11 @@
 #pragma once
 
-//#include "proj_render.h"
-
-//#include "2dframebuf.hpp"
 #include "zweidee.h"
-
 #include "game.h"
 
 namespace galaga
 {
-  const glm::vec3 cols[6] = { glm::vec3(0,0,0), // none
+  const glm::vec3 cols[6] = { glm::vec3(0,0,0),       // none
                               glm::vec3(155,155,255), // light-blue
                               glm::vec3(110,110,255), // mid-blue
                               glm::vec3(255,  0,  0), // red

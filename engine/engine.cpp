@@ -20,10 +20,10 @@ zweidee::Engine::~Engine()
 
 int zweidee::Engine::init()
 {
-	m_render.Init(); // InitGL + Initshaders, kann auch sp?ter aufgerufen werden...
+	m_render.Init(); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
 
-	m_render.FPS(); // <-- wenn ich das ins VAO f?lle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
-					//     beim LoadObjects(s.u.) call
+	m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+				          //     beim LoadObjects(s.u.) call
 
 	GLuint texID = fbuf2d->framebuf2D();
 	m_render.vGLTexture.push_back(texID);

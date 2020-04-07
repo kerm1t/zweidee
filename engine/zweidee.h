@@ -1,10 +1,10 @@
 #ifndef ZWEIDEE_H
 #define ZWEIDEE_H
 
-#include <stdio.h> // <-- sprintf
+#include <stdio.h>    // <-- sprintf
 #include <vector>
-#include <iostream> // <-- fbo to pgm|ppm
-#include <fstream> // <-- fbo to pgm|ppm
+#include <iostream>   // <-- fbo to pgm|ppm
+#include <fstream>    // <-- fbo to pgm|ppm
 #include <string>
 
 #include "../common/types.h"
@@ -36,25 +36,19 @@ namespace zweidee
 		point(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) {}
 	};
 
+
 	class ShaderMan // Shader manager
 	{
 	public:
 		// =============
 		// GLSL / Shader
 		// =============
+		GLuint program_zweidee;
+    GLuint sh_attr_pos;
+		GLuint sh_attr_tex;
+		GLuint sh_unif_ID;
 
-
-
-		// ** Shader2 **
-		GLuint program_fps; // = sh2
-							// attrib + uniform
-		GLuint sh2_attr_pos;
-		GLuint sh2_attr_tex;
-		GLuint sh2_unif_ID;
-
-
-
-		void InitShader2()
+		void InitShader()
 		{
 			GLenum err = glGetError();
 
@@ -76,7 +70,6 @@ namespace zweidee
 				"{\n"
 				"  UV = (vp_clipspace+1.0) * 0.5;\n"
 				"  gl_Position = vec4(vp_clipspace.x, vp_clipspace.y, 0.0, 1.0);\n"
-				//      "  gl_Position.xy *= 0.5;\n"
 				"  gl_Position.xy *= 1.0;\n"
 				"}"
 			};
@@ -105,20 +98,20 @@ namespace zweidee
 			glGetShaderInfoLog(fshaderFPS, 512, NULL, buffer); // <-- debug
 			err = glGetError();
 			// 2do: check that buffer = "No errors."
-			program_fps = glCreateProgram(); // create empty program object
-			glAttachShader(program_fps, vshaderFPS); // attach shader
-			glAttachShader(program_fps, fshaderFPS); // attach shader
-			glLinkProgram(program_fps); // link
+      program_zweidee = glCreateProgram(); // create empty program object
+			glAttachShader(program_zweidee, vshaderFPS); // attach shader
+			glAttachShader(program_zweidee, fshaderFPS); // attach shader
+			glLinkProgram(program_zweidee); // link
 			err = glGetError();
-			glUseProgram(program_fps);
+			glUseProgram(program_zweidee);
 			err = glGetError();
 
 			// attribs
-			sh2_attr_pos = glGetAttribLocation(program_fps, "vp_clipspace");
+			sh_attr_pos = glGetAttribLocation(program_zweidee, "vp_clipspace");
 			err = glGetError();
-			sh2_attr_tex = glGetAttribLocation(program_fps, "vertexUV");     // UV geht auch
+			sh_attr_tex = glGetAttribLocation(program_zweidee, "vertexUV");     // UV geht auch
 			err = glGetError();
-			sh2_unif_ID = glGetUniformLocation(program_fps, "myTexSampler");
+			sh_unif_ID = glGetUniformLocation(program_zweidee, "myTexSampler");
 			err = glGetError();
 		}
 	};
@@ -128,13 +121,6 @@ namespace zweidee
 	// Textures
 	// ========
 #define TEX_ARIALFONT    1 // war vorher 0, da gab's einen Fehler!!
-#define TEX_ROADSURFACE  2
-	//#define TEX_TRAFFICSIGN  3
-	//#define TEX_CAR          4 // <-- this is actually the body
-	//#define TEX_CAR_WINDOWS  5
-	//#define TEX_CAR_TIRE     6
-	//#define TEX_BARRIER      7
-	//  static const unsigned int TEXCOUNT = 7;
 
 	enum tShading { SHADER_COLOR_FLAT, SHADER_TEXTURE };
 
@@ -144,21 +130,16 @@ namespace zweidee
 	VAO (>=OGL3.0): bundle multiple VBO's for easier handling, don't need to bind ... them each
 	... really good tut: http://www.arcsynthesis.org/gltut/Positioning/Tutorial%2005.html
 	*/
-	class c_VAO //: public obj::CObject
+	class c_VAO
 	{
 	public:
 		std::string Name;
 		tShading t_Shade;
 
-		/*    uint16 idVBO_pos;		// OpenGL VBO
-		uint16 idVBO_tex;
-		uint16 idVBO_col;
-		*/
 		uint16 ui_idTexture;    // TextureID
 
 		bool b_doDraw;
 		bool b_Wireframe;
-		//    Vec3f vPos;
 		uint16 uiVertexCount;
 		bool b_moving;
 
@@ -167,22 +148,10 @@ namespace zweidee
 			ui_idTexture = 0;
 			b_doDraw = true;
 			b_Wireframe = false;
-			//      vPos         = Vec3f(0.0f,0.0f,0.0f);
 			b_moving = false;
 		}
 	};
 
-	/*
-	class c_Texture
-	{
-	public:
-	char c_filename[255];
-	float fXWorld,fYWorld;
-	};
-	*/
-
-
-/// from .h
 
 	class Render : public zweidee::ShaderMan
 	{
@@ -200,16 +169,9 @@ namespace zweidee
 		GLuint positionBuffer[VBOCOUNT];
 		GLuint    colorBuffer[VBOCOUNT]; // either color or ...
 		GLuint       uvBuffer[VBOCOUNT]; // texture
-										 //    GLuint ui_numVBOpos = 0;
-										 //    GLuint ui_numVBOtex = 0;
-										 //    GLuint ui_numVBOcol = 0;
 
 		std::vector<c_VAO>  vVAOs;
-		std::vector<GLuint> vVertexArray;    // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
-
-											 //    std::vector<GLuint> vPositionBuffer; // stores position
-
-		bool b_splash_screen;
+		std::vector<GLuint> vVertexArray;       // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
 
 		Render() // constructor
 		{
@@ -219,31 +181,27 @@ namespace zweidee
 
 		int Init()
 		{
-			// only f. fixed pipeline --> glEnable(GL_TEXTURE_2D);
 			glClearColor(0.3f, 0.5f, 1.0f, 0.0f);
 
 			glClearDepth(1.0f);
 			glDepthFunc(GL_LESS);
-			glEnable(GL_DEPTH_TEST); // <-- !
-									 // schneidet "zu viel" weg -->    glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
 
-			InitShader2(); // Splash screen
-
-			b_splash_screen = true;
+			InitShader(); // vertices to texture zweidee framebuffer
 
 			return 0;
 		}
 
 		HDC GL_attach_to_DC(HWND hWnd)
 		{
-			GLuint PixelFormat;                     // Holds The Results After Searching For A Match
+			GLuint PixelFormat;                   // Holds The Results After Searching For A Match
 
 #define ERR_HDC           0
 #define ERR_PIXELFORMAT   0
 #define ERR_CONTEXT       0
 #define ERR_GLMAKECURRENT 0
 
-			static PIXELFORMATDESCRIPTOR pfd =       // pfd Tells Windows How We Want Things To Be
+			static PIXELFORMATDESCRIPTOR pfd =    // pfd Tells Windows How We Want Things To Be
 			{
 				sizeof(PIXELFORMATDESCRIPTOR),      // Size Of This Pixel Format Descriptor
 				1,                                  // Version Number
@@ -264,7 +222,7 @@ namespace zweidee
 				0,                                  // Reserved
 				0, 0, 0                             // Layer Masks Ignored
 			};
-			if (!(hDC = GetDC(hWnd)))                 // Did We Get A Device Context?
+			if (!(hDC = GetDC(hWnd)))             // Did We Get A Device Context?
 			{
 				MessageBox(NULL, "Can't Create A GL Device Context.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 				return ERR_HDC;
@@ -400,15 +358,15 @@ namespace zweidee
 													// attach a) position and
 													//        b) texture/uv-buffers
 			glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
-			glVertexAttribPointer(sh2_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
-			glEnableVertexAttribArray(sh2_attr_pos);
+			glVertexAttribPointer(sh_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
+			glEnableVertexAttribArray(sh_attr_pos);
 			err = glGetError();
 
 			glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
 			err = glGetError();
-			glVertexAttribPointer(sh2_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // texAttrib
+			glVertexAttribPointer(sh_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // texAttrib
 			err = glGetError(); // Fehler 1281
-			glEnableVertexAttribArray(sh2_attr_tex);
+			glEnableVertexAttribArray(sh_attr_tex);
 			err = glGetError();
 
 			glBindVertexArray(0); // Unbind
@@ -458,14 +416,12 @@ namespace zweidee
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glUseProgram(program_fps);
+			glUseProgram(program_zweidee);
 
 			GLenum err = GL_NO_ERROR;
 
 			// draw Scene + Objects
-			unsigned int ui_start = 1;
-			if (b_splash_screen) ui_start = 0;
-			for (unsigned int ui = ui_start; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
+			for (unsigned int ui = 0; ui < vVAOs.size(); ui++) // start with 1 as 0 is fps-counter
 			{
 
 				if (vVAOs[ui].t_Shade == SHADER_TEXTURE)
@@ -483,7 +439,7 @@ namespace zweidee
 					err = glGetError();
 
 					if (ui == 0) // hack!!
-						glUniform1i(sh2_unif_ID, 0); // hack!!
+						glUniform1i(sh_unif_ID, 0); // hack!!
 					else
 						//        glUniform1i(sh1_unif_sampler, 0)
 						;
@@ -533,9 +489,7 @@ namespace zweidee
 		unsigned int imagesize;   // = width*height*3
 		unsigned int framecounter;
 
-		/*
-		(0,0): rgb (1,0): rgb (2,0): rgb
-		*/
+		// (0,0): rgb (1,0): rgb (2,0): rgb
 		void setpixel(unsigned char * data, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
 		{
 			unsigned int _y = height - 1 - y; // hack, texture upside down? 2do: check!!
@@ -562,9 +516,7 @@ namespace zweidee
 			data = new unsigned char[imagesize];
 			memset(data, 0, imagesize); // clear
 
-										/*
-										draw some stuff
-										*/
+			// test: draw some stuff
 			for (unsigned int i = 1; i < (height - 1); i++)
 			{
 				char r, g, b;
@@ -586,7 +538,7 @@ namespace zweidee
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 			// Give the image to OpenGL
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);   // hier gibt es Schwierigkeiten mit .bmp,
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);  // hier gibt es Schwierigkeiten mit .bmp,
 
 			delete data;
 

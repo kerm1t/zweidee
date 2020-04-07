@@ -1,6 +1,6 @@
 /*
   1-Tap Frogger
-  (C) 2018 anigators / EkwoTECH
+  (C) 2020 anigators
 
   issues:
   - 2018-04-07, on left side seems to "drown" too fast
@@ -33,7 +33,7 @@ int frogger1tap::CFrogger::init()
   
   rot = N_ZEILEN-1;
 
-  srand(time(NULL)); // initialize random seed
+  srand((unsigned int)time(NULL)); // initialize random seed
 
   int obstwidthconst = FBUF2D_WIDTH / 6;
 
@@ -41,7 +41,7 @@ int frogger1tap::CFrogger::init()
   for (int z = 0; z < N_ZEILEN; z++)
   {
     int x = 0;
-    for (int o = 0; o < N_OBSTACLES; o++) // pro Zeile
+    for (int o = 0; o < N_OBSTACLES; o++) // per line
     {
       obst[z][o].type = (obst_type)(rand() % 2);
       obst[z][o].x = x + (rand() % obstwidthconst);
@@ -85,8 +85,8 @@ void frogger1tap::CFrogger::draw_obst(unsigned char * data)
 
       for (int x = xstart; x < xend; x++)
       {
-        if (x % LANE_HEIGHT == 0) continue; // graph. trick (schwarze Linien)
-        if (x % LANE_HEIGHT == 1) continue; // graph. trick (schwarze Linien)
+        if (x % LANE_HEIGHT == 0) continue; // blk lines are sexy
+        if (x % LANE_HEIGHT == 1) continue; // blk lines are sexy
         int _x = x % (AREA_W - 1);
         for (int yinc = 0; yinc < OBJ_HEIGHT; yinc++)
         {
