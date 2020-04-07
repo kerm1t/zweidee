@@ -37,12 +37,9 @@ namespace zweidee
 	};
 
 
-	class ShaderMan // Shader manager
+	class ShaderMan // GLSL Shader manager
 	{
 	public:
-		// =============
-		// GLSL / Shader
-		// =============
 		GLuint program_zweidee;
     GLuint sh_attr_pos;
 		GLuint sh_attr_tex;
@@ -54,14 +51,6 @@ namespace zweidee
 
 			char buffer[512];
 
-			/*
-			4 coord.systems: Object, World, View, Clip
-			==========================================
-			Object --> Model Matrix --> World
-			World --> View matrix --> View
-			View --> Projection Matrix (w. implicit homogeneous divide) --> Clip
-			*/
-			/* vertex shader : output always to "homogeneous clip space", i.e. (-1:1, -1:1, -1:1, -1:1) */
 			const GLchar * vshd_src_FPS[] = {
 				"#version 330 core\n" // 410 not supported by SONY OpenGL driver
 				"in vec2 vp_clipspace;\n"
@@ -86,21 +75,21 @@ namespace zweidee
 
 
 			// Shader for FPS
-			GLuint vshaderFPS = glCreateShader(GL_VERTEX_SHADER);
-			glShaderSource(vshaderFPS, 1, vshd_src_FPS, 0);
-			glCompileShader(vshaderFPS);
-			glGetShaderInfoLog(vshaderFPS, 512, NULL, buffer); // <-- debug, kann man sich schoen im debugger ansehen!!
+			GLuint vshader_zweidee = glCreateShader(GL_VERTEX_SHADER);
+			glShaderSource(vshader_zweidee, 1, vshd_src_FPS, 0);
+			glCompileShader(vshader_zweidee);
+			glGetShaderInfoLog(vshader_zweidee, 512, NULL, buffer); // <-- debug
 			err = glGetError();
 			// 2do: check that buffer = "No errors."
-			GLuint fshaderFPS = glCreateShader(GL_FRAGMENT_SHADER);
-			glShaderSource(fshaderFPS, 1, fshd_src_FPS, 0); // set array of strings as source code
-			glCompileShader(fshaderFPS); // compile
-			glGetShaderInfoLog(fshaderFPS, 512, NULL, buffer); // <-- debug
+			GLuint fshader_zweidee = glCreateShader(GL_FRAGMENT_SHADER);
+			glShaderSource(fshader_zweidee, 1, fshd_src_FPS, 0);    // set array of strings as source code
+			glCompileShader(fshader_zweidee); // compile
+			glGetShaderInfoLog(fshader_zweidee, 512, NULL, buffer); // <-- debug
 			err = glGetError();
 			// 2do: check that buffer = "No errors."
       program_zweidee = glCreateProgram(); // create empty program object
-			glAttachShader(program_zweidee, vshaderFPS); // attach shader
-			glAttachShader(program_zweidee, fshaderFPS); // attach shader
+			glAttachShader(program_zweidee, vshader_zweidee); // attach shader
+			glAttachShader(program_zweidee, fshader_zweidee); // attach shader
 			glLinkProgram(program_zweidee); // link
 			err = glGetError();
 			glUseProgram(program_zweidee);
@@ -265,7 +254,6 @@ namespace zweidee
 			*/
 
 			if (!(hRC = wglCreateContext(hDC))) // Are We Able To Get A Rendering Context?
-												//  if (!(hRC=wglCreateContextAttribsARB(HDC hDC, HGLRC hshareContext, const int *attribList);
 			{
 				MessageBox(NULL, "Can't Create A GL Rendering Context.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 				return ERR_CONTEXT;
@@ -284,7 +272,7 @@ namespace zweidee
 		{
 			if (height == 0)                   // Prevent A Divide By Zero By
 			{
-				height = 1;                    // Making Height Equal One
+				height = 1;                      // Making Height Equal One
 			}
 			glViewport(0, 0, width, height);   // Reset The Current Viewport
 		}
@@ -355,8 +343,8 @@ namespace zweidee
 
 			unsigned int iVAO = 0;
 			glBindVertexArray(vVertexArray[iVAO]);  // select/bind array and
-													// attach a) position and
-													//        b) texture/uv-buffers
+			                                        // attach a) position and
+			                                        //        b) texture/uv-buffers
 			glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
 			glVertexAttribPointer(sh_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
 			glEnableVertexAttribArray(sh_attr_pos);
@@ -378,25 +366,14 @@ namespace zweidee
 			for (unsigned int iVAO = 1; iVAO < vVAOs.size(); iVAO++) // <-- start with 1, as 0 is for FPS-coords
 			{
 				glBindVertexArray(vVertexArray[iVAO]);  // select/bind array and
-														// attach a)  position and
-														//        b1) col or
-														//        b2) texture/uv-buffers
-														//    glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
-														//    glVertexAttribPointer(sh1_attr_pos, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
-														//    glEnableVertexAttribArray(sh1_attr_pos);
-
 				if (vVAOs[iVAO].t_Shade == SHADER_COLOR_FLAT) // flat (number of elements per Vertex = 3)
 				{
-					//      glBindBuffer(GL_ARRAY_BUFFER, colorBuffer[iVAO]);
-					//      glVertexAttribPointer(sh1_attr_col, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // aeltere OpenGL-Version: glColorPointer
-					//      glEnableVertexAttribArray(sh1_attr_col); // s. http://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_03
+					// not used
 				}
 				else if (vVAOs[iVAO].t_Shade == SHADER_TEXTURE) // texture (number of elements per Vertex = 2)
 				{
 					glBindBuffer(GL_ARRAY_BUFFER, uvBuffer[iVAO]); // u,v-texture-coords
-																   //      glVertexAttribPointer(sh1_attr_tex, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 					err = glGetError();
-					//      glEnableVertexAttribArray(sh1_attr_tex);
 				}
 				glBindVertexArray(0); // Unbind
 			}
@@ -410,8 +387,6 @@ namespace zweidee
 			z.B. ist dann vVAOs[ui].b_moving = TRUE und die if Abfrage (s.u.) wird angesprungen
 			*/
 
-			//    char buf[512];
-			//    GLenum glErr;
 			glm::vec3 v3;
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -446,16 +421,16 @@ namespace zweidee
 				}
 				else // vVAOs[ui].t_Shade == SHADER_COLOR_FLAT
 				{
-					//      glUniform1i(sh1_unif_col_tex, 0); // shader into color-branch
+					// not used
 				}
 				err = glGetError();
 
 				glBindVertexArray(vVertexArray[ui]); // <--- NVidia: hier Problem, wenn ui = 13 (beim ersten colorierten + texturierten Objekt!!)
 
-													 /*
-													 wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
-													 glGetError hätte etwas melden sollen!!
-													 */
+				/*
+				wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
+				glGetError hätte etwas melden sollen!!
+				*/
 
 				glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
 				err = glGetError();                                     //     it can be either positionbuffer, colorbuffer or uvbuffer
@@ -464,7 +439,7 @@ namespace zweidee
 
 			} // for ...
 
-			  //    if (b_PNG) FBO_to_PPM();
+			//    if (b_PNG) FBO_to_PPM();
 		}
 	private:
 		static int const fbo_width = 512;
