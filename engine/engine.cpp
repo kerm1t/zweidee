@@ -5,7 +5,7 @@
 
 zweidee::Engine::Engine()
 {
-  m_game.fbuf2d.width  = FBUF2D_WIDTH;
+  m_game.fbuf2d.width  = FBUF2D_WIDTH; // 2do: this shall be from the input
   m_game.fbuf2d.height = FBUF2D_HEIGHT;
   m_game.fbuf2d.imagesize = m_game.fbuf2d.width * m_game.fbuf2d.height * 3;
   

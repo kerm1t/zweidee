@@ -9,9 +9,7 @@
 #include "stdafx.h"
 
 #include "frogger1tap.h"
-#include "img_bitmap.hpp"
 #include <time.h>
-//#include <algorithm>
 
 void frogger1tap::CFrog::init()
 {

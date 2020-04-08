@@ -1,7 +1,7 @@
 4/6/2020
-- VStudio projects: galaga, frogger, pitstop, comanche, demo1, demo2
++ VStudio projects: galaga, frogger, pitstop, comanche, demo1, demo2
 - not draw on a rectangle, but on a sphere (or an old CRT monitor)
-- create second project: just draw some stuff on screen, i.e. without engine
++ create second project: just draw some stuff on screen, i.e. without engine
 - concept:
   a) let m_render in engine
   b) put m_render in main --> pass as argument to engine (maybe better)

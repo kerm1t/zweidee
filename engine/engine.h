@@ -1,30 +1,58 @@
 #pragma once
 
 #include "zweidee.h"
-#include "../game/zweidee/galaga.h"
-//#include "../game/zweidee/pitstop.h"
-//#include "../game/zweidee/comanche.h"
-//#include "../game/zweidee/frogger1tap.h"
+#ifdef GALAGA
+#include "../samples/galaga/galaga.h"
+#endif
+#ifdef PITSTOP
+#include "../samples/pitstop/pitstop.h"
+#endif
+#ifdef COMANCHE
+#include "../samples/comanche/comanche.h"
+#endif
+#ifdef FROGGER
+#include "../samples/frogger/frogger1tap.h"
+#endif
 
 namespace zweidee
 {
 
   class Engine // formerly "proj"
   {
+  private:
+    // Variables
+
+    // Generic Variables
+#ifdef GALAGA
+    galaga::CGalaga m_game;
+#endif
+#ifdef PITSTOP
+    pitstop::CPitstop m_game;
+#endif
+#ifdef COMANCHE
+    comanche::CComanche m_game;
+#endif
+#ifdef FROGGER
+    frogger1tap::CFrogger m_game;
+#endif
+
+    zweidee::FrameBuf2D * fbuf2d;
+    unsigned char * data;
+
   public:
     bool bPause;
     bool bStep;
 
-    /* ===== Constructor ===== */
+    // Constructor
 
     Engine();
     ~Engine();
 
-    /* ===== Variables ===== */
+    // Variables
 
     zweidee::Render m_render;
 
-    /* ===== FUNCTIONS ===== */
+    // Functions
     
     int init();
     int move();
@@ -35,17 +63,5 @@ namespace zweidee
     int down();
     int left();
     int right();
-
-  private:
-    /* ===== Variables ===== */
-
-    // Generic Variables
-    galaga::CGalaga   m_game;
-//    pitstop::CPitstop   m_game;
-//    comanche::CComanche m_game;
-//    frogger1tap::CFrogger m_game;
-
-    zweidee::FrameBuf2D    * fbuf2d;
-    unsigned char * data;
   };
 }

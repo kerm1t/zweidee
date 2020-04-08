@@ -448,13 +448,16 @@ namespace zweidee
 
 
 	//frogger
-	//#define FBUF2D_WIDTH  200
-	//#define FBUF2D_HEIGHT 320
+#ifdef FROGGER
+  #define FBUF2D_WIDTH  200 // 2do: input parameter
+	#define FBUF2D_HEIGHT 320
+#endif
 
 	//galaga
-#define FBUF2D_WIDTH  64
+#ifdef GALAGA
+#define FBUF2D_WIDTH  64 // 2do: input parameter
 #define FBUF2D_HEIGHT 64
-
+#endif
 
 	class FrameBuf2D // which is actually an animated (OpenGL-)Texture
 	{
@@ -580,7 +583,7 @@ namespace zweidee
 
 			std::ofstream myfile;
 			std::string filename;
-			filename = "d:\\glShoot_FBO.ppm";
+			filename = "d:\\Zweidee_FBO.ppm";
 			myfile.open(filename.c_str());
 			myfile << "P6" << std::endl;
 			myfile << std::to_string((_ULonglong)fbo_width) << " " << std::to_string((_ULonglong)fbo_height) << std::endl; // "w h"

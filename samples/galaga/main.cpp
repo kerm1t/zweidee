@@ -110,7 +110,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   // init global strings
   LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);  // window title etc. see .rc
-  LoadString(hInstance, IDC_GLSHOOT, szWindowClass, MAX_LOADSTRING);
+  LoadString(hInstance, IDC_ZWEIDEE, szWindowClass, MAX_LOADSTRING);
   MyRegisterClass(hInstance);
 
   // init application
@@ -138,7 +138,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   m_engine.init();	// <-- Textures erst nach glewInit() laden!!
                     // a) data loading + b) data description c) render.Init()
   
-  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLSHOOT));
+  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
 
   _beginthread(RenderThread, 0, 0);
 
@@ -171,10 +171,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
   wcex.cbClsExtra		= 0;
   wcex.cbWndExtra		= 0;
   wcex.hInstance		= hInstance;
-  wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GLSHOOT));
+  wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ZWEIDEE));
   wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
   wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-  wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_GLSHOOT);
+  wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_ZWEIDEE);
   wcex.lpszClassName	= szWindowClass;
   wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
