@@ -1,5 +1,7 @@
 4/8/2020
 - Galaga superhot mode, i.e. enemies only move upon moving self
+- function pointers to renderThread, s. _beginthread(RenderThread, 0, 0);
+- have some bullet / enemy ratio & limited ammo
 
 4/7/2020
 - put most functionality from main.cpp into a .h file
