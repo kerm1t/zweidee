@@ -47,10 +47,5 @@ namespace zweidee
 
     zweidee::FrameBuf2D    * fbuf2d;
     unsigned char * data;
-
-    /* ===== FUNCTIONS ===== */
-    
-//    int draw_arrow(unsigned char * data);
-//    int draw_progress(unsigned char * data);
   };
 }

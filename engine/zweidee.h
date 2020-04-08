@@ -73,7 +73,6 @@ namespace zweidee
 				"}"
 			};
 
-
 			// Shader for FPS
 			GLuint vshader_zweidee = glCreateShader(GL_VERTEX_SHADER);
 			glShaderSource(vshader_zweidee, 1, vshd_src_FPS, 0);

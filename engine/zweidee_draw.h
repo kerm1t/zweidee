@@ -2,37 +2,10 @@
 
 #include "zweidee.h"
 
-namespace zweidee {
-	int draw_progress(unsigned char * data)
-	{
-		/*  char r, g, b;
-		r = g = b = 255;
-		for (int i = 0; i < iloopy; i++)
-		{
-		int x = 10+i;
-		fbuf2D.setpixel(data, x, 64/2-1, r, g, b);
-		fbuf2D.setpixel(data, x, 64 / 2, r, g, b);
-		fbuf2D.setpixel(data, x, 64 / 2 + 1, r, g, b);
-		}
-		*/  return true;
-	}
-
-	int draw_arrow(unsigned char * data)
-	{
-		/*  char r, g, b;
-
-		for (int i = 0; i < 64; i++)
-		{
-		r = ((i + 1) % 3) * 255;
-		g = (i % 3) * 255;
-		b = ((i - 1) % 3) * 255;
-		fbuf2D.setpixel(data,                i, (iloopy + i) % 64, r, g, b);  //   "\"   left part of arrow
-		fbuf2D.setpixel(data, (2 * 64 - 2) - i, (iloopy + i) % 64, r, g, b);  //   "/"  right part of arrow
-		}
-		*/  return true;
-	}
-
-	void Bresenham(FrameBuf2D * fbuf, int x0, int y0, int x1, int y1, const glm::vec3 col, unsigned char * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+namespace zweidee
+{
+	void Bresenham(FrameBuf2D * fbuf, int x0, int y0, int x1, int y1,
+    const glm::vec3 col, unsigned char * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 	{
 		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
 		int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
@@ -49,7 +22,8 @@ namespace zweidee {
 		}
 	}
 
-	void Bresenham_Circle(FrameBuf2D * fbuf, int x0, int y0, int radius, const glm::vec3 col, unsigned char * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+	void Bresenham_Circle(FrameBuf2D * fbuf, int x0, int y0, int radius,
+    const glm::vec3 col, unsigned char * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 	{
 		int f = 1 - radius;
 		int ddF_x = 0;

@@ -1,5 +1,9 @@
-// zweidee.cpp : Definiert den Einstiegspunkt für die Anwendung.
-//
+////////////////////////////
+// main.cpp
+// - independent render loop
+//   - engine.move
+//   - engine.render
+////////////////////////////
 
 #include "stdafx.h"
 #include "resource.h"
@@ -8,7 +12,7 @@
 #include "engine.h"	    //   run a 2D game
 
 #include <windows.h>    // Header File For Windows
-#include <windowsx.h>   // GET_X_LPARAM, GET_Y_LPARAM
+//#include <windowsx.h>   // GET_X_LPARAM, GET_Y_LPARAM
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -123,7 +127,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   }
 
 // 2do: this should be zweidee -->
-  m_engine.m_render.width = win_w;
+  m_engine.m_render.width = win_w; // this will size the viewport
   m_engine.m_render.height = win_h;
   hDC = m_engine.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
 
@@ -181,23 +185,25 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
   hInst = hInstance; // store instance handle
-
+  // Nonsense:
+  // one is the viewport, i.e. window size
+  // the other is the internal texture size, i.e. the game playfield 
 #define galaga
 #ifdef frogger
-  int _w = 600; // frogger: 600, other: 800
-  int _h = 800;
+  int w = 600; // frogger: 600, other: 800
+  int h = 800;
 #endif
 #ifdef galaga
-  int _w = 512;
-  int _h = 512;
+  int w = 512;
+  int h = 512;
 #endif
   // center on screen
   RECT rect;
   GetClientRect(GetDesktopWindow(), &rect);
-  int _x = (rect.right / 2) - (_w / 2);
-  int _y = (rect.bottom / 2) - (_h / 2);
+  int x = (rect.right - w) / 2;
+  int y = (rect.bottom -h) / 2;
   // center on screen
-  hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, _x, _y, _w, _h, NULL, NULL, hInstance, NULL);
+  hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, x, y, w, h, NULL, NULL, hInstance, NULL);
 
   if (!hWnd)
   {
