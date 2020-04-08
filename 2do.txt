@@ -1,5 +1,9 @@
+4/8/2020
+- Galaga superhot mode, i.e. enemies only move upon moving self
+
 4/7/2020
 - put most functionality from main.cpp into a .h file
+  --> smallmain branch
 
 4/6/2020
 + VStudio projects: galaga, frogger, pitstop, comanche, demo1, demo2
