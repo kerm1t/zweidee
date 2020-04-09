@@ -89,7 +89,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   zweidee::hRC = NULL;
   zweidee::hDC = NULL;
   zweidee::hWnd = NULL;
-  
+  zweidee::fps = 0.0f;
+  zweidee::lastTime = 0.0f;
+
   // init global strings
   LoadString(hInstance, IDS_APP_TITLE, zweidee::szTitle, MAX_LOADSTRING);  // window title etc. see .rc
   LoadString(hInstance, IDC_ZWEIDEE, zweidee::szWindowClass, MAX_LOADSTRING);
