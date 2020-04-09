@@ -19,15 +19,9 @@
 
 #include <process.h>    // _beginthread
 
-                                                  // forward declaration of functions in this code module
+// forward declaration of functions in this code module
 ATOM             MyRegisterClass(HINSTANCE hInstance);
-//BOOL             InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-//INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
-
-HGLRC            hRC = NULL;                      // Permanent Rendering Context
-HDC              hDC = NULL;                      // Private GDI Device Context
-//HWND             hWnd = NULL;                     // Holds Our Window Handle
 
 zweidee::Engine m_engine;
 
@@ -37,24 +31,11 @@ int playfield_h = 256;
 // windows dimension (the later may be changed with resize
 int win_h = 512;
 int win_w = 512;
-
-static float fps = 0.0f;                        // This will store our fps
-static float lastTime = 0.0f;                   // This will hold the time from the last frame
-dword lasttickcount = 0;
-dword accumulatedTimeSinceLastUpdate = 0;
-
 bool b_WM_resized = false;
 
-void CalculateFrameRate()
-{
-  float currentTime = GetTickCount() * 0.001f;
-  ++fps;
-  if (currentTime - lastTime > 1.0f)
-  {
-    lastTime = currentTime;
-    fps = 0.0;
-  }
-}
+
+dword lasttickcount = 0;
+dword accumulatedTimeSinceLastUpdate = 0;
 
 // Fix Timing
 // https://gafferongames.com/post/fix_your_timestep/
@@ -105,6 +86,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   MSG msg;
   HACCEL hAccelTable;
 
+  zweidee::hRC = NULL;
+  zweidee::hDC = NULL;
   zweidee::hWnd = NULL;
   
   // init global strings
@@ -121,7 +104,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   // 2do: this should be zweidee -->
   m_engine.m_render.width = win_w; // this will size the viewport
   m_engine.m_render.height = win_h;
-  hDC = m_engine.m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
+  zweidee::hDC = m_engine.m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
 
   glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time

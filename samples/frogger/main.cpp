@@ -41,24 +41,11 @@ zweidee::Engine m_engine;
 
 int win_h;
 int win_w;
-
-static float fps = 0.0f;                        // This will store our fps
-static float lastTime = 0.0f;                   // This will hold the time from the last frame
-dword lasttickcount = 0;
-dword accumulatedTimeSinceLastUpdate = 0;
-
 bool b_WM_resized = false;
 
-void CalculateFrameRate()
-{
-  float currentTime = GetTickCount() * 0.001f;    
-  ++fps;
-  if( currentTime - lastTime > 1.0f )
-  {
-    lastTime = currentTime;
-    fps = 0.0;
-  }
-}
+
+dword lasttickcount = 0;
+dword accumulatedTimeSinceLastUpdate = 0;
 
 // Fix Timing
 // https://gafferongames.com/post/fix_your_timestep/
