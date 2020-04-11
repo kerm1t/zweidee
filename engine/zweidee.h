@@ -533,25 +533,6 @@ namespace zweidee
     GLuint fb, color, depth; // <--- nicer names!
   };
 
-
-  //frogger
-#ifdef FROGGER
-#define FBUF2D_WIDTH  200 // 2do: input parameter
-#define FBUF2D_HEIGHT 320
-#endif
-
-  //galaga
-#ifdef GALAGA
-#define FBUF2D_WIDTH  64 // 2do: input parameter
-#define FBUF2D_HEIGHT 64
-#endif
-
-  //galaga
-#ifdef CLUSTER
-#define FBUF2D_WIDTH  128 // 2do: input parameter
-#define FBUF2D_HEIGHT 32
-#endif
-
   class FrameBuf2D // which is actually an animated (OpenGL-)Texture
   {
   public:
@@ -573,13 +554,13 @@ namespace zweidee
       data[pos + 2] = r; // b ?
     }
 
-    GLuint framebuf2D() // purpose: get texture-ID
+    GLuint Init(int w, int h) // purpose: get texture-ID
     {
       // Actual RGB data
       unsigned char * data;
 
-      width = FBUF2D_WIDTH;
-      height = FBUF2D_HEIGHT;
+      width = w;
+      height = h;
       imagesize = width*height * 3;
 
       // Create a buffer

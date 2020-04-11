@@ -23,22 +23,24 @@
 ATOM             MyRegisterClass(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
+
 //zweidee::Engine m_engine;
 zweidee::CRender m_render;
 
+
 // Galaga screen dimension, 2do --> hand over to zweide::engine/ ::render!!
-int playfield_w = 128;
-int playfield_h = 32;
+#define FBUF2D_WIDTH 64
+#define FBUF2D_HEIGHT 48
+#define FBUF2D_SIZE FBUF2D_WIDTH * FBUF2D_HEIGHT
 // windows dimension (the later may be changed with resize
-int win_w = 1024;
-int win_h = 256;
+int win_w = FBUF2D_WIDTH * 10;
+int win_h = FBUF2D_HEIGHT * 10;
 bool b_WM_resized = false;
 
 
 ///////////////
 // Init
 ///////////////
-int FPA[4096];
 
 
 
@@ -65,14 +67,13 @@ void RenderThread(void *args)
       // do stuff here
       ////////////////
 
-      for (int i = 0; i < 4096; i++)
+      for (int i = 0; i < FBUF2D_SIZE; i++)
       {
-        FPA[i] = rand() / 200;
-        int x = i % 128;
-        int y = i / 128;
-        zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
+        int x = i % FBUF2D_WIDTH;
+        int y = i / FBUF2D_WIDTH;
+        zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
       }
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
 
 
       ////////////////
@@ -113,22 +114,22 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   LoadString(hInstance, IDC_ZWEIDEE, zweidee::szWindowClass, MAX_LOADSTRING);
   MyRegisterClass(hInstance);
 
-  ///////////////
-  // Init
-  ///////////////
   if (!zweidee::InitInstance(hInstance, nCmdShow, win_w, win_h)) // init application
   {
     return FALSE;
   }
 
 
+  ///////////////
+  // Init
+  ///////////////
 
   // from engine contructor!!
-  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
-  zweidee::fbuf2d.height = FBUF2D_HEIGHT;
-  zweidee::fbuf2d.imagesize = zweidee::fbuf2d.width * zweidee::fbuf2d.height * 3;
+//  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
+//  zweidee::fbuf2d.height = FBUF2D_HEIGHT;
+//  zweidee::fbuf2d.imagesize = zweidee::fbuf2d.width * zweidee::fbuf2d.height * 3;
 //  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
-  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
+//  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
 
 
 
@@ -148,28 +149,18 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
   GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
+
+  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
+
   m_render.vGLTexture.push_back(texID);
   m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
   ///////////////
   // Init
   ///////////////
 
-  srand(12);
-  for (int i = 0; i < 4096; i++)
-  {
-    FPA[i] = rand()/200;
-  }
-//  FPA[5 * 128 + 10] = 1;
-//  FPA[5 * 128 + 11] = 1;
-//  FPA[5 * 128 + 12] = 1;
 
-  for (int i = 0; i < 4096; i++)
-  {
-    int x = i % 128;
-    int y = i / 128;
-    zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
-  }
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+
+
 
   ///////////////
   // Do stuff
@@ -231,12 +222,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   switch (message)
   {
-  case WM_MOUSEWHEEL:
-    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645617(v=vs.85).aspx
-    break;
-  case WM_MOUSEMOVE:
-    // http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
-    break;
   case WM_COMMAND:
     wmId = LOWORD(wParam);
     wmEvent = HIWORD(wParam);
@@ -255,33 +240,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     //	case WM_PAINT:
     // ... painting by OpenGL
-  case WM_KEYDOWN:
-
-    switch (wParam)
-    {
-    case 32: // Space
-//      m_engine.fire(); // single fire
-      break;
-    case 37: // ARROW-LEFT
-      break;
-    case 39: // ARROW-RIGHT
-      break;
-    case 79: // O >> Step
-//      m_engine.bStep = true;
-      break;
-    case 80: // P >> Pause ON/OFF
-//      m_engine.bPause = !(m_engine.bPause);
-      break;
-    case 87: // W
-      break;
-    case 65: // A
-      break;
-    case 83: // S
-      break;
-    case 68: // D
-      break;
-    }
-    break;
   case WM_SIZE:
     win_w = LOWORD(lParam);
     win_h = HIWORD(lParam);

@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Galaga", "samples\galaga\ga
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cluster", "samples\cluster\cluster.vcxproj", "{53F80C91-CD78-4A96-88A1-E759E92B3FA3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "samples\test\test.vcxproj", "{EAE75A99-1A89-4800-BA3C-84E4B943DB86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -27,6 +29,10 @@ Global
 		{53F80C91-CD78-4A96-88A1-E759E92B3FA3}.Debug|Win32.Build.0 = Debug|Win32
 		{53F80C91-CD78-4A96-88A1-E759E92B3FA3}.Release|Win32.ActiveCfg = Release|Win32
 		{53F80C91-CD78-4A96-88A1-E759E92B3FA3}.Release|Win32.Build.0 = Release|Win32
+		{EAE75A99-1A89-4800-BA3C-84E4B943DB86}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EAE75A99-1A89-4800-BA3C-84E4B943DB86}.Debug|Win32.Build.0 = Debug|Win32
+		{EAE75A99-1A89-4800-BA3C-84E4B943DB86}.Release|Win32.ActiveCfg = Release|Win32
+		{EAE75A99-1A89-4800-BA3C-84E4B943DB86}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
