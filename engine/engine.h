@@ -36,8 +36,8 @@ namespace zweidee
     frogger1tap::CFrogger m_game;
 #endif
 
-    zweidee::FrameBuf2D * fbuf2d;
-    unsigned char * data;
+//    zweidee::FrameBuf2D * fbuf2d;
+//    unsigned char * data;
 
   public:
     bool bPause;

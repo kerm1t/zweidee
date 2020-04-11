@@ -5,9 +5,9 @@
 
 zweidee::Engine::Engine()
 {
-  m_game.fbuf2d.width  = FBUF2D_WIDTH; // 2do: this shall be from the input
-  m_game.fbuf2d.height = FBUF2D_HEIGHT;
-  m_game.fbuf2d.imagesize = m_game.fbuf2d.width * m_game.fbuf2d.height * 3;
+  fbuf2d.width  = FBUF2D_WIDTH; // 2do: this shall be from the input
+  fbuf2d.height = FBUF2D_HEIGHT;
+  fbuf2d.imagesize = m_game.fbuf2d.width * m_game.fbuf2d.height * 3;
   
   fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
   data = new unsigned char[fbuf2d->imagesize]; // data part of proj <-- 2do

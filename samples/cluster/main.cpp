@@ -9,7 +9,7 @@
 #include "resource.h"
 
 #include "zweidee.h"    // draw to 2D buffer
-#include "engine.h"     //   run a 2D game
+//#include "engine.h"     //   run a 2D game
 
 #include <windows.h>    // Header File For Windows
 //#include <windowsx.h>   // GET_X_LPARAM, GET_Y_LPARAM
@@ -23,15 +23,23 @@
 ATOM             MyRegisterClass(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-zweidee::Engine m_engine;
+//zweidee::Engine m_engine;
+zweidee::CRender m_render;
 
 // Galaga screen dimension, 2do --> hand over to zweide::engine/ ::render!!
-int playfield_w = 64;
-int playfield_h = 64;
+int playfield_w = 128;
+int playfield_h = 32;
 // windows dimension (the later may be changed with resize
-int win_w = 512;
-int win_h = 512;
+int win_w = 1024;
+int win_h = 256;
 bool b_WM_resized = false;
+
+
+///////////////
+// Init
+///////////////
+int FPA[4096];
+
 
 
 dword lasttickcount = 0;
@@ -53,24 +61,32 @@ void RenderThread(void *args)
     if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
     {
       accumulatedTimeSinceLastUpdate = 0;
+      ////////////////
+      // do stuff here
+      ////////////////
 
-      //      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // no rapid fire :-)
-      if (GetAsyncKeyState(VK_UP))    m_engine.up();
-      if (GetAsyncKeyState(VK_DOWN))  m_engine.down();
-      if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
-      if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
+      for (int i = 0; i < 4096; i++)
+      {
+        FPA[i] = rand() / 200;
+        int x = i % 128;
+        int y = i / 128;
+        zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
+      }
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 
-      m_engine.move();
+
+      ////////////////
+      // do stuff here
+      ////////////////
     }
 
     if (b_WM_resized)
     {
-      // 2do: move from engine to zweidee -->
-      m_engine.m_render.ReSizeGLScene(win_w, win_h);
+      m_render.ReSizeGLScene(win_w, win_h);
       b_WM_resized = false;
     }
 
-    m_engine.render(); // render update-rate independent from move() (s. above) 
+    m_render.Render(); // render update-rate independent from move() (s. above)
   }
   _endthread();
 }
@@ -97,28 +113,76 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   LoadString(hInstance, IDC_ZWEIDEE, zweidee::szWindowClass, MAX_LOADSTRING);
   MyRegisterClass(hInstance);
 
-  // init application
-  if (!zweidee::InitInstance(hInstance, nCmdShow, win_w, win_h))
+  ///////////////
+  // Init
+  ///////////////
+  if (!zweidee::InitInstance(hInstance, nCmdShow, win_w, win_h)) // init application
   {
     return FALSE;
   }
 
+
+
+  // from engine contructor!!
+  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
+  zweidee::fbuf2d.height = FBUF2D_HEIGHT;
+  zweidee::fbuf2d.imagesize = zweidee::fbuf2d.width * zweidee::fbuf2d.height * 3;
+//  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
+  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
+
+
+
+
   // 2do: this should be zweidee -->
-  m_engine.m_render.width = win_w; // this will size the viewport
-  m_engine.m_render.height = win_h;
-  zweidee::hDC = m_engine.m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
+  m_render.width = win_w; // this will size the viewport
+  m_render.height = win_h;
+  zweidee::hDC = m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
 
   glewExperimental = GL_TRUE; // <-- Nutzen?
   glewInit(); // <-- takes a little time
 
               // 2do: this should be zweidee -->
-  m_engine.init();	// <-- Textures erst nach glewInit() laden!!
+//  m_engine.init();	// <-- Textures erst nach glewInit() laden!!
                     // a) data loading + b) data description c) render.Init()
+  m_render.Init(); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
+  m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+                  //     beim LoadObjects(s.u.) call
+  GLuint texID = zweidee::fbuf2d.framebuf2D();
+  m_render.vGLTexture.push_back(texID);
+  m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
+  ///////////////
+  // Init
+  ///////////////
+
+  srand(12);
+  for (int i = 0; i < 4096; i++)
+  {
+    FPA[i] = rand()/200;
+  }
+//  FPA[5 * 128 + 10] = 1;
+//  FPA[5 * 128 + 11] = 1;
+//  FPA[5 * 128 + 12] = 1;
+
+  for (int i = 0; i < 4096; i++)
+  {
+    int x = i % 128;
+    int y = i / 128;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
+  }
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+
+  ///////////////
+  // Do stuff
+  ///////////////
+  _beginthread(RenderThread, 0, 0);
+  ///////////////
+  // Do stuff
+  ///////////////
+
+
+
 
   hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
-
-  _beginthread(RenderThread, 0, 0);
-
   // main message loop
   while (GetMessage(&msg, NULL, 0, 0))
   {
@@ -196,17 +260,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam)
     {
     case 32: // Space
-      m_engine.fire(); // single fire
+//      m_engine.fire(); // single fire
       break;
     case 37: // ARROW-LEFT
       break;
     case 39: // ARROW-RIGHT
       break;
     case 79: // O >> Step
-      m_engine.bStep = true;
+//      m_engine.bStep = true;
       break;
     case 80: // P >> Pause ON/OFF
-      m_engine.bPause = !(m_engine.bPause);
+//      m_engine.bPause = !(m_engine.bPause);
       break;
     case 87: // W
       break;

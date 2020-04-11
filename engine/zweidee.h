@@ -22,6 +22,7 @@
 
 namespace zweidee
 {
+//  class FrameBuf2D; // fwd declaration
 
   struct colrgb
   {
@@ -76,7 +77,7 @@ namespace zweidee
     int x = (rect.right - w) / 2;
     int y = (rect.bottom - h) / 2;
     // center on screen
-    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, x, y, h, h, NULL, NULL, hInstance, NULL);
+    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, x, y, w, h, NULL, NULL, hInstance, NULL);
 
     if (!hWnd)
     {
@@ -110,12 +111,12 @@ namespace zweidee
   }
 
 
-  class window
+  class CWindow
   {
   public:
   };
 
-  class ShaderMan // GLSL Shader manager
+  class CShader // GLSL Shader manager
   {
   public:
     GLuint program_zweidee;
@@ -219,7 +220,7 @@ namespace zweidee
   };
 
 
-  class Render : public zweidee::ShaderMan
+  class CRender : public zweidee::CShader
   {
   public:
     HGLRC hRC;         // Permanent Rendering Context
@@ -239,7 +240,7 @@ namespace zweidee
     std::vector<c_VAO>  vVAOs;
     std::vector<GLuint> vVertexArray;       // stores VAO's: a) Position(x,y,z), b1) color OR b2) u,v-Texture
 
-    Render() // constructor
+    CRender() // constructor
     {
       hRC = NULL;                           // Permanent Rendering Context
       hDC = NULL;                           // Private GDI Device Context
@@ -518,6 +519,14 @@ namespace zweidee
 
         //    if (b_PNG) FBO_to_PPM();
     }
+
+    void Render()
+    {
+      wglMakeCurrent(hDC, hRC); // ;-) now Tab-switching in MTS possible
+      DrawVAOs_NEU();      // Draw The Scene
+      SwapBuffers(hDC);    // Swap Buffers (Double Buffering)
+    }
+
   private:
     static int const fbo_width = 512;
     static int const fbo_height = 512;
@@ -535,6 +544,12 @@ namespace zweidee
 #ifdef GALAGA
 #define FBUF2D_WIDTH  64 // 2do: input parameter
 #define FBUF2D_HEIGHT 64
+#endif
+
+  //galaga
+#ifdef CLUSTER
+#define FBUF2D_WIDTH  128 // 2do: input parameter
+#define FBUF2D_HEIGHT 32
 #endif
 
   class FrameBuf2D // which is actually an animated (OpenGL-)Texture
@@ -571,7 +586,7 @@ namespace zweidee
       data = new unsigned char[imagesize];
       memset(data, 0, imagesize); // clear
 
-                                  // test: draw some stuff
+      // draw test pattern
       for (unsigned int i = 1; i < (height - 1); i++)
       {
         char r, g, b;
@@ -685,9 +700,8 @@ namespace zweidee
 #endif
   }; // Framebuf2D
 
-     //	FrameBuf2D    * fbuf2d;
-     //	unsigned char * data;
-
+  static FrameBuf2D    fbuf2d;
+  static unsigned char * data;
 }
 
 
