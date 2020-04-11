@@ -1,8 +1,6 @@
 ////////////////////////////
 // main.cpp
 // - independent render loop
-//   - engine.move
-//   - engine.render
 ////////////////////////////
 
 #include "stdafx.h"
@@ -27,12 +25,11 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 //zweidee::Engine m_engine;
 zweidee::CRender m_render;
 
-
-// Galaga screen dimension, 2do --> hand over to zweide::engine/ ::render!!
+// buffer dimension
 #define FBUF2D_WIDTH 64
 #define FBUF2D_HEIGHT 48
 #define FBUF2D_SIZE FBUF2D_WIDTH * FBUF2D_HEIGHT
-// windows dimension (the later may be changed with resize
+// windows dimension (the later may be changed with resize)
 int win_w = FBUF2D_WIDTH * 10;
 int win_h = FBUF2D_HEIGHT * 10;
 bool b_WM_resized = false;

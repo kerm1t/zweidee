@@ -103,22 +103,22 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   LoadString(hInstance, IDC_ZWEIDEE, zweidee::szWindowClass, MAX_LOADSTRING);
   MyRegisterClass(hInstance);
 
-  ///////////////
-  // Init
-  ///////////////
   if (!zweidee::InitInstance(hInstance, nCmdShow, win_w, win_h)) // init application
   {
     return FALSE;
   }
 
 
+  ///////////////
+  // Init
+  ///////////////
 
   // from engine contructor!!
-  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
-  zweidee::fbuf2d.height = FBUF2D_HEIGHT;
-  zweidee::fbuf2d.imagesize = zweidee::fbuf2d.width * zweidee::fbuf2d.height * 3;
+//  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
+//  zweidee::fbuf2d.height = FBUF2D_HEIGHT;
+//  zweidee::fbuf2d.imagesize = zweidee::fbuf2d.width * zweidee::fbuf2d.height * 3;
 //  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
-  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
+//  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
 
 
 
@@ -138,12 +138,16 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
   GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
+
+  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
+
   m_render.vGLTexture.push_back(texID);
   m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
   ///////////////
   // Init
   ///////////////
 
+  // background (dark)
   srand(12);
   for (int i = 0; i < 4096; i++)
   {
@@ -182,12 +186,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   FPA[16 * 128 + 91] = 255;
   FPA[16 * 128 + 92] = 255;
 
+  // write FPA to buf2d
   for (int i = 0; i < 4096; i++)
   {
     int x = i % 128;
     int y = i / 128;
     zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
   }
+  // map to texture --> shift to zweidee.h
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 
   ///////////////
