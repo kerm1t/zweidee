@@ -1,6 +1,7 @@
 4/11/2020
 - get rid of FBUF2D_WIDTH, FBUF2D_HEIGHT defines
   - in constructor?
+- Tetris
 
 4/8/2020
 - Galaga superhot mode, i.e. enemies only move upon moving self

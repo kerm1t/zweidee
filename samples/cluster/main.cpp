@@ -1,8 +1,6 @@
 ////////////////////////////
 // main.cpp
 // - independent render loop
-//   - engine.move
-//   - engine.render
 ////////////////////////////
 
 #include "stdafx.h"
@@ -26,12 +24,13 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 //zweidee::Engine m_engine;
 zweidee::CRender m_render;
 
-// Galaga screen dimension, 2do --> hand over to zweide::engine/ ::render!!
-int playfield_w = 128;
-int playfield_h = 32;
-// windows dimension (the later may be changed with resize
-int win_w = 1024;
-int win_h = 256;
+// buffer dimension
+#define FBUF2D_WIDTH 128
+#define FBUF2D_HEIGHT 32
+#define FBUF2D_SIZE FBUF2D_WIDTH * FBUF2D_HEIGHT
+// windows dimension (the later may be changed with resize)
+int win_w = FBUF2D_WIDTH * 10;
+int win_h = FBUF2D_HEIGHT * 10;
 bool b_WM_resized = false;
 
 
@@ -64,15 +63,6 @@ void RenderThread(void *args)
       ////////////////
       // do stuff here
       ////////////////
-
-      for (int i = 0; i < 4096; i++)
-      {
-        FPA[i] = rand() / 200;
-        int x = i % 128;
-        int y = i / 128;
-        zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
-      }
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 
 
       ////////////////
@@ -157,11 +147,40 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   srand(12);
   for (int i = 0; i < 4096; i++)
   {
-    FPA[i] = rand()/200;
+    FPA[i] = rand()/600;
   }
-//  FPA[5 * 128 + 10] = 1;
-//  FPA[5 * 128 + 11] = 1;
-//  FPA[5 * 128 + 12] = 1;
+  // obj.1
+  FPA[5 * 128 + 10] = 255;
+  FPA[5 * 128 + 11] = 255;
+  FPA[5 * 128 + 12] = 255;
+  FPA[6 * 128 + 10] = 255;
+  FPA[6 * 128 + 11] = 255;
+  FPA[6 * 128 + 12] = 255;
+  FPA[7 * 128 + 12] = 255;
+  FPA[8 * 128 + 12] = 200;
+  FPA[9 * 128 + 12] = 220;
+  FPA[10 * 128 + 12] = 220;
+
+  // obj.2
+  FPA[24 * 128 + 100] = 255;
+  FPA[24 * 128 + 101] = 255;
+  FPA[25 * 128 + 100] = 200;
+  FPA[25 * 128 + 101] = 200;
+  FPA[25 * 128 + 102] = 255;
+  FPA[26 * 128 + 100] = 255;
+  FPA[26 * 128 + 101] = 255;
+  FPA[26 * 128 + 102] = 255;
+
+  // obj.3
+  FPA[14 * 128 + 90] = 155;
+  FPA[14 * 128 + 91] = 155;
+  FPA[14 * 128 + 92] = 255;
+  FPA[15 * 128 + 90] = 255;
+  FPA[15 * 128 + 91] = 255;
+  FPA[15 * 128 + 92] = 155;
+  FPA[16 * 128 + 90] = 155;
+  FPA[16 * 128 + 91] = 255;
+  FPA[16 * 128 + 92] = 255;
 
   for (int i = 0; i < 4096; i++)
   {
