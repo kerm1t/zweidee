@@ -56,7 +56,7 @@ namespace zweidee
 
     // Functions
     
-    int init();
+    int init(FrameBuf2D * fb2, unsigned char * dta);
     int move();
     int render();
 

@@ -6,8 +6,8 @@
 namespace frogger1tap
 {
 
-#define PLAYFIELD_W         FBUF2D_WIDTH
-#define PLAYFIELD_H         FBUF2D_HEIGHT
+#define PLAYFIELD_W         600//do! make this variable !!    FBUF2D_WIDTH
+#define PLAYFIELD_H         800//FBUF2D_HEIGHT
 
 // Playfield:
 #define PLAYFIELD_X_MIN     0//30     // nur für's zeichnen!

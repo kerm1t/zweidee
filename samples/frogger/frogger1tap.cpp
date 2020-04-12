@@ -33,7 +33,7 @@ int frogger1tap::CFrogger::init()
 
   srand((unsigned int)time(NULL)); // initialize random seed
 
-  int obstwidthconst = FBUF2D_WIDTH / 6;
+  int obstwidthconst = PLAYFIELD_W / 6;
 
   // randomly create obstacles
   for (int z = 0; z < N_ZEILEN; z++)
@@ -88,7 +88,7 @@ void frogger1tap::CFrogger::draw_obst(unsigned char * data)
         int _x = x % (AREA_W - 1);
         for (int yinc = 0; yinc < OBJ_HEIGHT; yinc++)
         {
-          fbuf2d.setpixel(data, PLAYFIELD_X_MIN + _x, y+yinc, r, g, b);
+          fbuf2d->setpixel(data, PLAYFIELD_X_MIN + _x, y+yinc, r, g, b);
         }
       }
     }
@@ -106,7 +106,7 @@ void frogger1tap::CFrogger::draw_frog(unsigned char * data)
   {
     for (int x = 0; x < FROG_W; x++)
     {
-      fbuf2d.setpixel(data, PLAYFIELD_X_MIN + xs+x, ys+y, r, g, b);
+      fbuf2d->setpixel(data, PLAYFIELD_X_MIN + xs+x, ys+y, r, g, b);
     }
   }
 }
@@ -117,7 +117,7 @@ void frogger1tap::CFrogger::draw_area_start(unsigned char * data)
   {
     for (int x = 0; x < PLAYFIELD_X_MIN; x++) // pro Zeile
     {
-      fbuf2d.setpixel(data, x, y, 100, 100, 100);
+      fbuf2d->setpixel(data, x, y, 100, 100, 100);
     }
   }
 }
@@ -141,7 +141,7 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
   // --------------------------------------------------------------
 #define SPEED_VERT_MAX 10
   int speed_vert = 5; // 1..10
-  if ((fbuf2d.framecounter % (SPEED_VERT_MAX - speed_vert)) == 0)
+  if ((fbuf2d->framecounter % (SPEED_VERT_MAX - speed_vert)) == 0)
   {
     ystart++;
     if (ystart == PLAYFIELD_H) ystart = 0;
@@ -150,7 +150,7 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
 #define SPEED_HORIZ_MAX 10
   int speed_horiz = 8; // 1..10
   bool on_water = true;
-  if ((fbuf2d.framecounter % (SPEED_HORIZ_MAX - speed_horiz)) == 0)
+  if ((fbuf2d->framecounter % (SPEED_HORIZ_MAX - speed_horiz)) == 0)
   {
     for (int z = 0; z < N_ZEILEN; z++)
     {
@@ -180,7 +180,7 @@ int frogger1tap::CFrogger::doit(unsigned char * data)
     if ((frog.state == floating) && (on_water)) frog.init();
     // am Spielfeldrand: sterben (es sei denn ein magic item)
     if (frog.x == 0) frog.init();
-    if (frog.x == fbuf2d.width) frog.init();
+    if (frog.x == fbuf2d->width) frog.init();
   }
 
   return 0;

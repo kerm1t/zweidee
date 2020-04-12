@@ -20,28 +20,28 @@
 
 #include <process.h>    // _beginthread
 
-#define MAX_LOADSTRING 100
-
-// global variables
-HINSTANCE        hInst;                         // current instance
-TCHAR            szTitle[MAX_LOADSTRING];       // Titelleistentext
-TCHAR            szWindowClass[MAX_LOADSTRING]; // Klassenname des Hauptfensters
-
-// forward declaration of functions in thsi code module
+// forward declaration of functions in this code module
 ATOM             MyRegisterClass(HINSTANCE hInstance);
-BOOL             InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-//INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
-HGLRC            hRC=NULL;                      // Permanent Rendering Context
-HDC              hDC=NULL;                      // Private GDI Device Context
-HWND             hWnd=NULL;                     // Holds Our Window Handle
+zweidee::CEngine m_engine;
+zweidee::CRender m_render;
 
-zweidee::Engine m_engine;
-
-int win_h;
-int win_w;
+// buffer dimension
+#define FBUF2D_WIDTH  600
+#define FBUF2D_HEIGHT 800
+#define FBUF2D_PIXELS FBUF2D_WIDTH * FBUF2D_HEIGHT
+#define FBUF2D_SIZE   FBUF2D_PIXELS * 3 // r,g,b
+// windows dimension (the later may be changed with resize)
+int win_w = FBUF2D_WIDTH;
+int win_h = FBUF2D_HEIGHT;
 bool b_WM_resized = false;
+
+
+//////////////////////////
+// put your variables here
+//////////////////////////
+
 
 
 dword lasttickcount = 0;
@@ -63,6 +63,9 @@ void RenderThread(void *args)
     if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
     {
       accumulatedTimeSinceLastUpdate = 0;
+      ////////////////
+      // do stuff here
+      ////////////////
 
 //      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // rapid fire :-)
       if (GetAsyncKeyState(VK_UP))    m_engine.up();
@@ -70,17 +73,16 @@ void RenderThread(void *args)
       if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
       if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
 
-	    m_engine.move();
+      m_engine.move(); // and update fbuf2d
     }
 
     if (b_WM_resized)
     {
-// 2do: move from engine to zweidee -->
-		  m_engine.m_render.ReSizeGLScene(win_w,win_h);
+      m_render.ReSizeGLScene(win_w, win_h);
       b_WM_resized = false;
     }
 
-  	m_engine.render(); // render update-rate independent from move() (s. above) 
+    m_render.Render(); // render update-rate independent from move() (s. above)
   }
   _endthread();
 }
@@ -96,44 +98,68 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   MSG msg;
   HACCEL hAccelTable;
 
+  zweidee::hRC = NULL;
+  zweidee::hDC = NULL;
+  zweidee::hWnd = NULL;
+  zweidee::fps = 0.0f;
+  zweidee::lastTime = 0.0f;
+
   // init global strings
-  LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);  // window title etc. see .rc
-  LoadString(hInstance, IDC_ZWEIDEE, szWindowClass, MAX_LOADSTRING);
+  LoadString(hInstance, IDS_APP_TITLE, zweidee::szTitle, MAX_LOADSTRING);  // window title etc. see .rc
+  LoadString(hInstance, IDC_ZWEIDEE, zweidee::szWindowClass, MAX_LOADSTRING);
   MyRegisterClass(hInstance);
 
   // init application
-  if (!InitInstance (hInstance, nCmdShow))
+  if (!zweidee::InitInstance(hInstance, nCmdShow, win_w, win_h))
   {
     return FALSE;
   }
 
-  RECT rect; 
-  if (GetClientRect(hWnd, &rect))
-  { 
-    win_w = rect.right - rect.left; 
-    win_h = rect.bottom - rect.top; 
-  }
+  // 2do: this should be zweidee -->
+///  m_engine.m_render.width = win_w; // this will size the viewport
+///  m_engine.m_render.height = win_h;
+///  zweidee::hDC = m_engine.m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
 
-// 2do: this should be zweidee -->
-  m_engine.m_render.width = win_w; // this will size the viewport
-  m_engine.m_render.height = win_h;
-  hDC = m_engine.m_render.GL_attach_to_DC(hWnd); // <== NeHe    
+///  glewExperimental = GL_TRUE; // <-- Nutzen?
+///  glewInit(); // <-- takes a little time
 
-  glewExperimental = GL_TRUE; // <-- Nutzen?
-  glewInit(); // <-- takes a little time
-
-// 2do: this should be zweidee -->
-  m_engine.init();	// <-- Textures erst nach glewInit() laden!!
+              // 2do: this should be zweidee -->
+///  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
                     // a) data loading + b) data description c) render.Init()
-  
-  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
 
+
+  m_render.Init(win_w, win_h); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
+
+  zweidee::data = new unsigned char[FBUF2D_SIZE]; // size = pixels*3 (r,g,b)
+  GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
+
+  m_render.Setup_Geometry(texID); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+                             //     beim LoadObjects(s.u.) call
+
+  m_engine.init(&zweidee::fbuf2d, zweidee::data); // <-- Textures erst nach glewInit() laden!!
+
+
+
+
+  ///////////////
+  // Init
+  ///////////////
+
+
+
+
+
+  // stuff is done here
   _beginthread(RenderThread, 0, 0);
 
+
+
+
+  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
   // main message loop
   while (GetMessage(&msg, NULL, 0, 0))
   {
-    wglMakeCurrent(NULL,NULL); // <-- no other access to OpenGL here!! --> only in RenderThread 
+    wglMakeCurrent(NULL, NULL); // <-- no other access to OpenGL here!! --> only in RenderThread 
 
     if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
     {
@@ -144,7 +170,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     // --> rendering moved to RenderThread, otherwise no autonomous object-movement possible
   }
 
-  return (int) msg.wParam;
+  delete zweidee::data;
+
+  return (int)msg.wParam;
 }
 
 // autogenerated: register window class (mandatory)
@@ -154,55 +182,22 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
   wcex.cbSize = sizeof(WNDCLASSEX);
 
-  wcex.style			= CS_HREDRAW | CS_VREDRAW;
-  wcex.lpfnWndProc	= WndProc;
-  wcex.cbClsExtra		= 0;
-  wcex.cbWndExtra		= 0;
-  wcex.hInstance		= hInstance;
-  wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ZWEIDEE));
-  wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-  wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-  wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_ZWEIDEE);
-  wcex.lpszClassName	= szWindowClass;
-  wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+  wcex.style = CS_HREDRAW | CS_VREDRAW;
+  wcex.lpfnWndProc = WndProc;
+  wcex.cbClsExtra = 0;
+  wcex.cbWndExtra = 0;
+  wcex.hInstance = hInstance;
+  wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ZWEIDEE));
+  wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+  wcex.lpszMenuName = MAKEINTRESOURCE(IDC_ZWEIDEE);
+  wcex.lpszClassName = zweidee::szWindowClass;
+  wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
   return RegisterClassEx(&wcex);
 }
 
-// autogenerated: save instance handle and create main window
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-  hInst = hInstance; // store instance handle
-  // Nonsense:
-  // one is the viewport, i.e. window size
-  // the other is the internal texture size, i.e. the game playfield 
-//#define galaga
-//#ifdef frogger
-  int w = 600; // frogger: 600, other: 800
-  int h = 800;
-//#endif
-//#ifdef galaga
-//  int w = 512;
-//  int h = 512;
-//#endif
-  // center on screen
-  RECT rect;
-  GetClientRect(GetDesktopWindow(), &rect);
-  int x = (rect.right - w) / 2;
-  int y = (rect.bottom -h) / 2;
-  // center on screen
-  hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, x, y, w, h, NULL, NULL, hInstance, NULL);
-
-  if (!hWnd)
-  {
-    return FALSE;
-  }
-
-  ShowWindow(hWnd, nCmdShow);
-  UpdateWindow(hWnd);
-
-  return TRUE;
-}
+// moved to zweidee.h --> BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, int w, int h)
 
 // autogenerated: process main window's messages
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -224,7 +219,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wmId)
     {
     case IDM_ABOUT:
-      DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, zweidee::About);
+      DialogBox(zweidee::hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, zweidee::About);
       break;
     case IDM_EXIT:
       DestroyWindow(hWnd);
@@ -233,8 +228,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
     break;
- //	case WM_PAINT:
- // ... painting by OpenGL
+    // case WM_PAINT:
+    // ... painting by OpenGL
   case WM_KEYDOWN:
 
     switch (wParam)
@@ -276,24 +271,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   }
   return 0;
 }
-/*
-// Meldungshandler für Infofeld.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-  UNREFERENCED_PARAMETER(lParam);
-  switch (message)
-  {
-  case WM_INITDIALOG:
-    return (INT_PTR)TRUE;
 
-  case WM_COMMAND:
-    if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-    {
-      EndDialog(hDlg, LOWORD(wParam));
-      return (INT_PTR)TRUE;
-    }
-    break;
-  }
-  return (INT_PTR)FALSE;
-}
-*/
+// moved to zweidee.h --> INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

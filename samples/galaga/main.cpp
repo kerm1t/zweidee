@@ -140,9 +140,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   m_render.Setup_Geometry(texID); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                              //     beim LoadObjects(s.u.) call
 
-  m_engine.fbuf2d = &zweidee::fbuf2d;
-  m_engine.data = zweidee::data;
-  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
+  m_engine.init(&zweidee::fbuf2d, zweidee::data); // <-- Textures erst nach glewInit() laden!!
 
 
 
@@ -234,7 +232,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
     break;
-    //	case WM_PAINT:
+    // case WM_PAINT:
     // ... painting by OpenGL
   case WM_KEYDOWN:
 

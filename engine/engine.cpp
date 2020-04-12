@@ -18,7 +18,7 @@ zweidee::CEngine::~CEngine()
 //  delete data;
 }
 
-int zweidee::CEngine::init()
+int zweidee::CEngine::init(FrameBuf2D * fb2, unsigned char * dta)
 {
 //	m_render.Init(); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
 
@@ -34,7 +34,9 @@ int zweidee::CEngine::init()
 	// ---------------
   // init your game!
   // ---------------
-  m_game.fbuf2d = fbuf2d;
+  fbuf2d = fb2;
+  data = dta;
+  m_game.fbuf2d = fb2;
   m_game.init();
 
   return 0;

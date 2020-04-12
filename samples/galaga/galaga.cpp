@@ -148,11 +148,8 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
     r = ((i + 1) % 3) * 255;
     g = ( i      % 3) * 255;
     b = ((i - 1) % 3) * 255;
-    fbuf2d->setpixel(data, cos((float)i) *                      i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, cos((float)i) *                       i, (iloopy + i) % 64, r, g, b);
     fbuf2d->setpixel(data, cos((float)i) * (fbuf2d->width - 2) - i, (iloopy + i) % 64, r, g, b);
-    // funny effect:
-//    fbuf2d.setpixel(data, (unsigned int)cos(i) *                      i, (iloopy + i) % 64, r, g, b);
-//    fbuf2d.setpixel(data, (unsigned int)cos(i) * (fbuf2D.width - 2) - i, (iloopy + i) % 64, r, g, b);
   }
   return true;
 }
