@@ -1,7 +1,8 @@
-////////////////////////////
+//////////////////////////////
 // main.cpp
-// - independent render loop
-////////////////////////////
+// - fill data structure
+// - find cluster with k-means
+//////////////////////////////
 
 #include "stdafx.h"
 #include "resource.h"
@@ -35,7 +36,16 @@ bool b_WM_resized = false;
 //////////////////////////
 // put your variables here
 //////////////////////////
-int FPA[4096];
+#define FPA_SIZE  FBUF2D_PIXELS
+#define FPA_WIDTH FBUF2D_WIDTH
+int FPA[FPA_SIZE];
+
+zweidee::colrgb colcluster[3] = { {255,0,0},{0,225,0},{0,0,233} };
+
+
+//////////////////////////
+// put your variables here
+//////////////////////////
 
 
 
@@ -80,6 +90,11 @@ void RenderThread(void *args)
   _endthread();
 }
 
+float eudistance(zweidee::point p1, zweidee::point p2)
+{
+  return sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
+}
+
 int APIENTRY _tWinMain(HINSTANCE hInstance,
   HINSTANCE hPrevInstance,
   LPTSTR    lpCmdLine,
@@ -122,49 +137,49 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   // background (dark)
   srand(12);
-  for (int i = 0; i < 4096; i++)
+  for (int i = 0; i < FPA_SIZE; i++)
   {
     FPA[i] = rand()/600;
   }
 
   // obj.1
-  FPA[5 * 128 + 10] = 255;
-  FPA[5 * 128 + 11] = 255;
-  FPA[5 * 128 + 12] = 255;
-  FPA[6 * 128 + 10] = 255;
-  FPA[6 * 128 + 11] = 255;
-  FPA[6 * 128 + 12] = 255;
-  FPA[7 * 128 + 12] = 255;
-  FPA[8 * 128 + 12] = 200;
-  FPA[9 * 128 + 12] = 220;
-  FPA[10 * 128 + 12] = 220;
+  FPA[5 * FPA_WIDTH + 10] = 255;
+  FPA[5 * FPA_WIDTH + 11] = 255;
+  FPA[5 * FPA_WIDTH + 12] = 255;
+  FPA[6 * FPA_WIDTH + 10] = 255;
+  FPA[6 * FPA_WIDTH + 11] = 255;
+  FPA[6 * FPA_WIDTH + 12] = 255;
+  FPA[7 * FPA_WIDTH + 12] = 255;
+  FPA[8 * FPA_WIDTH + 12] = 200;
+  FPA[9 * FPA_WIDTH + 12] = 220;
+  FPA[10 * FPA_WIDTH + 12] = 220;
 
   // obj.2
-  FPA[24 * 128 + 100] = 255;
-  FPA[24 * 128 + 101] = 255;
-  FPA[25 * 128 + 100] = 200;
-  FPA[25 * 128 + 101] = 200;
-  FPA[25 * 128 + 102] = 255;
-  FPA[26 * 128 + 100] = 255;
-  FPA[26 * 128 + 101] = 255;
-  FPA[26 * 128 + 102] = 255;
+  FPA[24 * FPA_WIDTH + 100] = 255;
+  FPA[24 * FPA_WIDTH + 101] = 255;
+  FPA[25 * FPA_WIDTH + 100] = 200;
+  FPA[25 * FPA_WIDTH + 101] = 200;
+  FPA[25 * FPA_WIDTH + 102] = 255;
+  FPA[26 * FPA_WIDTH + 100] = 255;
+  FPA[26 * FPA_WIDTH + 101] = 255;
+  FPA[26 * FPA_WIDTH + 102] = 255;
 
   // obj.3
-  FPA[14 * 128 + 90] = 155;
-  FPA[14 * 128 + 91] = 155;
-  FPA[14 * 128 + 92] = 255;
-  FPA[15 * 128 + 90] = 255;
-  FPA[15 * 128 + 91] = 255;
-  FPA[15 * 128 + 92] = 155;
-  FPA[16 * 128 + 90] = 155;
-  FPA[16 * 128 + 91] = 255;
-  FPA[16 * 128 + 92] = 255;
+  FPA[14 * FPA_WIDTH + 90] = 155;
+  FPA[14 * FPA_WIDTH + 91] = 155;
+  FPA[14 * FPA_WIDTH + 92] = 255;
+  FPA[15 * FPA_WIDTH + 90] = 255;
+  FPA[15 * FPA_WIDTH + 91] = 255;
+  FPA[15 * FPA_WIDTH + 92] = 155;
+  FPA[16 * FPA_WIDTH + 90] = 155;
+  FPA[16 * FPA_WIDTH + 91] = 255;
+  FPA[16 * FPA_WIDTH + 92] = 255;
 
   // write FPA to buf2d
-  for (int i = 0; i < 4096; i++)
+  for (int i = 0; i < FPA_SIZE; i++)
   {
-    int x = i % 128;
-    int y = i / 128;
+    int x = i % FPA_WIDTH;
+    int y = i / FPA_WIDTH;
     zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
   }
   // map to texture --> shift to zweidee.h
@@ -172,6 +187,60 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   ///////////////
   // Init
   ///////////////
+
+
+// (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
+// (2) http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
+#define MAXCLUSTER 3
+  zweidee::point kmean[MAXCLUSTER];// = { {10,10},{100,30},{64,16} };
+  zweidee::point input[100];
+  int numinput = 0;
+  // a) get relevant points
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    if (FPA[i] > 150)
+    {
+      unsigned int x = i % FPA_WIDTH;
+      unsigned int y = i / FPA_WIDTH;
+      input[numinput] = { x, y };
+      numinput++;
+    }
+  }
+  // b) init k-means
+  for (int j = 0; j < MAXCLUSTER; j++)
+  {
+    int n = rand() % numinput;
+    kmean[j] = input[n];
+  }
+  // c) init
+  float mindist[FPA_SIZE];
+  int belongtocluster[FPA_SIZE];
+  for (int i = 0; i < FPA_SIZE; i++)
+    mindist[i] = 255.0f; // set to a value that is > max. distance      
+  memset(belongtocluster, 255, FPA_SIZE); // set to a value that is > #cluster
+  // c) loop 1
+  for (int i = 0; i < numinput; i++)
+  {
+    for (int j = 0; j < MAXCLUSTER; j++)
+    {
+        float dst = eudistance(input[i], kmean[j]);
+        if (dst < mindist[i])
+        {
+          mindist[i] = dst;
+          belongtocluster[i] = j;
+        }
+    }
+  }
+
+  for (int i = 0; i < numinput; i++)
+  {
+    zweidee::point pt = input[i];
+    zweidee::colrgb col = colcluster[belongtocluster[i]];
+    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, pt.y, col.r, col.g, col.b);
+  }
+  // map to texture --> shift to zweidee.h
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+
 
 
 
