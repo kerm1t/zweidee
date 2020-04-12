@@ -17,7 +17,7 @@
 namespace zweidee
 {
 
-  class Engine // formerly "proj"
+  class CEngine // formerly "proj"
   {
   private:
     // Variables
@@ -45,12 +45,14 @@ namespace zweidee
 
     // Constructor
 
-    Engine();
-    ~Engine();
+    CEngine();
+    ~CEngine();
 
     // Variables
+    zweidee::FrameBuf2D * fbuf2d;
+    unsigned char * data;
 
-    zweidee::Render m_render;
+//    zweidee::Render m_render;
 
     // Functions
     

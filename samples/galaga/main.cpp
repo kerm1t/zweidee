@@ -23,15 +23,24 @@
 ATOM             MyRegisterClass(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-zweidee::Engine m_engine;
+zweidee::CEngine m_engine;
+zweidee::CRender m_render;
 
-// Galaga screen dimension, 2do --> hand over to zweide::engine/ ::render!!
-int playfield_w = 64;
-int playfield_h = 64;
-// windows dimension (the later may be changed with resize
-int win_w = 512;
-int win_h = 512;
+// buffer dimension
+#define FBUF2D_WIDTH  64
+#define FBUF2D_HEIGHT 64
+#define FBUF2D_PIXELS FBUF2D_WIDTH * FBUF2D_HEIGHT
+#define FBUF2D_SIZE   FBUF2D_PIXELS * 3 // r,g,b
+// windows dimension (the later may be changed with resize)
+int win_w = FBUF2D_WIDTH * 10;
+int win_h = FBUF2D_HEIGHT * 10;
 bool b_WM_resized = false;
+
+
+//////////////////////////
+// put your variables here
+//////////////////////////
+
 
 
 dword lasttickcount = 0;
@@ -53,6 +62,9 @@ void RenderThread(void *args)
     if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
     {
       accumulatedTimeSinceLastUpdate = 0;
+      ////////////////
+      // do stuff here
+      ////////////////
 
       //      if (GetAsyncKeyState(VK_SPACE)) m_proj.fire(); // no rapid fire :-)
       if (GetAsyncKeyState(VK_UP))    m_engine.up();
@@ -60,17 +72,21 @@ void RenderThread(void *args)
       if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
       if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
 
-      m_engine.move();
+///      memset(zweidee::data, 0, zweidee::fbuf2d.imagesize); // clear
+      m_engine.move(); // and update fbuf2d
+///      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
+      ////////////////
+      // do stuff here
+      ////////////////
     }
 
     if (b_WM_resized)
     {
-      // 2do: move from engine to zweidee -->
-      m_engine.m_render.ReSizeGLScene(win_w, win_h);
+      m_render.ReSizeGLScene(win_w, win_h);
       b_WM_resized = false;
     }
 
-    m_engine.render(); // render update-rate independent from move() (s. above) 
+    m_render.Render(); // render update-rate independent from move() (s. above)
   }
   _endthread();
 }
@@ -104,21 +120,48 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   }
 
   // 2do: this should be zweidee -->
-  m_engine.m_render.width = win_w; // this will size the viewport
-  m_engine.m_render.height = win_h;
-  zweidee::hDC = m_engine.m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
+///  m_engine.m_render.width = win_w; // this will size the viewport
+///  m_engine.m_render.height = win_h;
+///  zweidee::hDC = m_engine.m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
 
-  glewExperimental = GL_TRUE; // <-- Nutzen?
-  glewInit(); // <-- takes a little time
+///  glewExperimental = GL_TRUE; // <-- Nutzen?
+///  glewInit(); // <-- takes a little time
 
               // 2do: this should be zweidee -->
-  m_engine.init();	// <-- Textures erst nach glewInit() laden!!
+///  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
                     // a) data loading + b) data description c) render.Init()
 
-  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
 
+  m_render.Init(win_w, win_h); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
+
+  zweidee::data = new unsigned char[FBUF2D_SIZE]; // size = pixels*3 (r,g,b)
+  GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
+
+  m_render.Setup_Geometry(texID); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+                             //     beim LoadObjects(s.u.) call
+
+  m_engine.fbuf2d = &zweidee::fbuf2d;
+  m_engine.data = zweidee::data;
+  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
+
+
+
+
+  ///////////////
+  // Init
+  ///////////////
+
+
+
+
+
+  // stuff is done here
   _beginthread(RenderThread, 0, 0);
 
+
+
+
+  hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
   // main message loop
   while (GetMessage(&msg, NULL, 0, 0))
   {
@@ -132,6 +175,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
     // --> rendering moved to RenderThread, otherwise no autonomous object-movement possible
   }
+
+  delete zweidee::data;
 
   return (int)msg.wParam;
 }

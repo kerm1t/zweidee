@@ -5,7 +5,7 @@
 
 int galaga::CGalaga::init()
 {
-  a_episode_len[0] = fbuf2d.width - (2 * 10); // size of progress bar ;-)
+  a_episode_len[0] = fbuf2d->width - (2 * 10); // size of progress bar ;-)
   a_episode_active[0] = false;
   iepisode = 0;
   iloopy = 0;
@@ -13,7 +13,7 @@ int galaga::CGalaga::init()
   spacecraft.state = spacecraft::normal;
   spacecraft.lives = 4;
   spacecraft.dir = 0;
-  spacecraft.box.x = (int)(fbuf2d.width/2) - (int)7/2;
+  spacecraft.box.x = (int)(fbuf2d->width/2) - (int)7/2;
   spacecraft.box.y = 60-1;
   spacecraft.box.w = 7;
   spacecraft.box.h = 3;
@@ -62,7 +62,7 @@ int galaga::CGalaga::doit(unsigned char * data)
   case 1:
 //     lib.draw_arrow(data);
     draw_starfield_vert(data);
-    for (unsigned int i = 0; i<spacecraft.lives; i++) fbuf2d.setpixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
+    for (unsigned int i = 0; i<spacecraft.lives; i++) fbuf2d->setpixel(data, 10 + i * 2, 5, 255, 255, 255); // bgr
     if (spacecraft.state == spacecraft::normal)
     {
       switch (spacecraft.dir)
@@ -114,7 +114,7 @@ int galaga::CGalaga::left()
 int galaga::CGalaga::right()
 {
   if (spacecraft.state == spacecraft::explode) return true;
-  if (spacecraft.box.x + spacecraft.box.w < fbuf2d.width) spacecraft.box.x++;
+  if (spacecraft.box.x + spacecraft.box.w < fbuf2d->width) spacecraft.box.x++;
   spacecraft.dir = 2;
   return true;
 }
@@ -143,13 +143,13 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
 {
   char r, g, b;
 
-  for (unsigned int i = 0; i < fbuf2d.height; i++)
+  for (unsigned int i = 0; i < fbuf2d->height; i++)
   {
     r = ((i + 1) % 3) * 255;
     g = ( i      % 3) * 255;
     b = ((i - 1) % 3) * 255;
-    fbuf2d.setpixel(data, cos((float)i) *                      i, (iloopy + i) % 64, r, g, b);
-    fbuf2d.setpixel(data, cos((float)i) * (fbuf2d.width - 2) - i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, cos((float)i) *                      i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, cos((float)i) * (fbuf2d->width - 2) - i, (iloopy + i) % 64, r, g, b);
     // funny effect:
 //    fbuf2d.setpixel(data, (unsigned int)cos(i) *                      i, (iloopy + i) % 64, r, g, b);
 //    fbuf2d.setpixel(data, (unsigned int)cos(i) * (fbuf2D.width - 2) - i, (iloopy + i) % 64, r, g, b);
@@ -171,7 +171,7 @@ int galaga::CGalaga::draw_obj(const rect box, const unsigned char * obj, unsigne
       if (obj[iA] > 0)
       {
         glm::vec3 col = cols[obj[iA]];
-        fbuf2d.setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
+        fbuf2d->setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
       }
     }
   }
@@ -206,7 +206,7 @@ int galaga::CGalaga::draw_spacecraft_explode(unsigned char * data)
   int x = spacecraft.box.x + (int)(spacecraft.box.w/2);
   int y = spacecraft.box.y + (int)(spacecraft.box.h/2);
   glm::vec3 col = glm::vec3(255,255,0);
-  Bresenham_Circle(&fbuf2d,x-5+(rand()%10),y-5+(rand()%10),rand()%10,col,data); // several circles with differtent pos, radius
+  Bresenham_Circle(fbuf2d,x-5+(rand()%10),y-5+(rand()%10),rand()%10,col,data); // several circles with differtent pos, radius
   return true;
 }
 
@@ -240,7 +240,7 @@ int galaga::CGalaga::draw_shots(unsigned char * data)
     {
       int x = a_shots[i].box.x;
       int y = a_shots[i].box.y;
-      fbuf2d.setpixel(data, x, y, r, g, b);
+      fbuf2d->setpixel(data, x, y, r, g, b);
     }
   }
   return true;
@@ -251,7 +251,7 @@ int galaga::CGalaga::draw_enemy_explosion(const unsigned int i, unsigned char * 
   int x = a_enemies[i].box.x + (int)(a_enemies[i].box.w/2);
   int y = a_enemies[i].box.y + (int)(a_enemies[i].box.h/2);
   glm::vec3 col = glm::vec3(255,100,0);
-  Bresenham_Circle(&fbuf2d,x,y,rand()%10,col,data);
+  Bresenham_Circle(fbuf2d,x,y,rand()%10,col,data);
   a_enemies[i].explode_counter--;
   if (a_enemies[i].explode_counter == 0) a_enemies[i].state = enemy::off;
   return true;

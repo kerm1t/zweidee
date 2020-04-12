@@ -3,43 +3,44 @@
 
 #include "engine.h"
 
-zweidee::Engine::Engine()
+zweidee::CEngine::CEngine()
 {
-  fbuf2d.width  = FBUF2D_WIDTH; // 2do: this shall be from the input
-  fbuf2d.height = FBUF2D_HEIGHT;
-  fbuf2d.imagesize = m_game.fbuf2d.width * m_game.fbuf2d.height * 3;
+//  fbuf2d.width  = FBUF2D_WIDTH; // 2do: this shall be from the input
+//  fbuf2d.height = FBUF2D_HEIGHT;
+//  fbuf2d.imagesize = m_game.fbuf2d.width * m_game.fbuf2d.height * 3;
   
-  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
-  data = new unsigned char[fbuf2d->imagesize]; // data part of proj <-- 2do
+//  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
+//  data = new unsigned char[fbuf2d->imagesize]; // data part of proj <-- 2do
 }
 
-zweidee::Engine::~Engine()
+zweidee::CEngine::~CEngine()
 {
-  delete data;
+//  delete data;
 }
 
-int zweidee::Engine::init()
+int zweidee::CEngine::init()
 {
-	m_render.Init(); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
+//	m_render.Init(); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
 
-	m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+//	m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
 				          //     beim LoadObjects(s.u.) call
 
-	GLuint texID = fbuf2d->framebuf2D();
-	m_render.vGLTexture.push_back(texID);
+//	GLuint texID = fbuf2d->framebuf2D();
+//	m_render.vGLTexture.push_back(texID);
 
 	// b) bind to VAO's
-	m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
+//	m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
 								  
 	// ---------------
   // init your game!
   // ---------------
+  m_game.fbuf2d = fbuf2d;
   m_game.init();
 
   return 0;
 }
 
-int zweidee::Engine::move()
+int zweidee::CEngine::move()
 {
   if (
       ((!bPause) || // key [p] pressed
@@ -63,42 +64,42 @@ int zweidee::Engine::move()
   return 0;
 }
 
-int zweidee::Engine::render()
+int zweidee::CEngine::render()
 {
-  wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
+//  wglMakeCurrent(m_render.hDC,m_render.hRC); // ;-) now Tab-switching in MTS possible
 
-  m_render.DrawVAOs_NEU();      // Draw The Scene
+//  m_render.DrawVAOs_NEU();      // Draw The Scene
 
-  SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
+//  SwapBuffers(m_render.hDC);    // Swap Buffers (Double Buffering)
 
   return 0;
 }
 
-int zweidee::Engine::fire()
+int zweidee::CEngine::fire()
 {
   m_game.fire();
   return true;
 }
 
-int zweidee::Engine::up()
+int zweidee::CEngine::up()
 {
   // not used
   return true;
 }
 
-int zweidee::Engine::down()
+int zweidee::CEngine::down()
 {
   // not used
   return true;
 }
 
-int zweidee::Engine::left()
+int zweidee::CEngine::left()
 {
   m_game.left();
   return true;
 }
 
-int zweidee::Engine::right()
+int zweidee::CEngine::right()
 {
   m_game.right();
   return true;
