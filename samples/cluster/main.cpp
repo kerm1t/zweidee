@@ -48,6 +48,8 @@ int FPA[FPA_SIZE];
 zweidee::colrgb colcluster[10] = { {255,0,0},{0,225,0},{0,0,255},{255,255,0},{0,255,255},
                                    {255,0,225},{125,0,0},{0,125,0},{0,0,125},{125,125,0} };
 
+bool bLetsStart = false;
+void startCluster(); // fwd declaration
 
 //////////////////////////
 // put your variables here
@@ -78,8 +80,11 @@ void RenderThread(void *args)
       ////////////////
       // do stuff here
       ////////////////
-
-
+      if (bLetsStart)
+      {
+        startCluster();
+        bLetsStart = false;
+      }
       ////////////////
       // do stuff here
       ////////////////
@@ -99,6 +104,230 @@ void RenderThread(void *args)
 float eudistance(zweidee::point p1, zweidee::point p2)
 {
   return sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
+}
+
+void fillData()
+{
+  srand(time(NULL));
+
+  // background (dark)
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    FPA[i] = rand() % 100;// 255;
+  }
+
+  // objects: set seeds and dilate them
+  int numgenclusters = rand() % 10;
+  for (int c = 0; c < numgenclusters; c++)
+  {
+    int x = rand() % FPA_WIDTH - 1;
+    int y = rand() % FPA_HEIGHT - 1;
+    FPA[y * FPA_WIDTH + x] = 255;
+    for (int d = 0; d < 25; d++)
+    {
+      int x1 = x + rand() % 4;
+      int y1 = y + rand() % 4;
+      FPA[y1 * FPA_WIDTH + x1] = 255;
+    }
+  }
+
+  // write FPA to buf2d
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    int x = i % FPA_WIDTH;
+    int y = i / FPA_WIDTH;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
+  }
+  // map to texture --> shift to zweidee.h
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+}
+
+// (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
+// (2) http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
+void startCluster()
+{
+#define MAXCLUSTER 10 // (pretend) we don't know the number of clusters, which is makes it much more difficult!
+  // prepare: init datastructures
+  int numinput = 0;
+  zweidee::point input[FPA_SIZE];
+  zweidee::point kmean[MAXCLUSTER];// = { {10,10},{100,30},{64,16} };
+  float mindist[FPA_SIZE];
+  int belongtocluster[FPA_SIZE];
+  for (int i = 0; i < FPA_SIZE; i++) mindist[i] = 255.0f; // set to a value that is > max. distance      
+  memset(belongtocluster, 255, FPA_SIZE); // set to a value that is > #cluster
+
+                                          // prepare: get relevant points
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    if (FPA[i] > 150)
+    {
+      unsigned int x = i % FPA_WIDTH;
+      unsigned int y = i / FPA_WIDTH;
+      input[numinput] = { x, y };
+      numinput++;
+    }
+  }
+
+  // a) init k-means
+  for (int j = 0; j < MAXCLUSTER; j++)
+  {
+    int n = rand() % numinput;
+    kmean[j] = input[n];
+  }
+  // b) measure eucl. distance for each datapt. to each k-mean
+  for (int i = 0; i < numinput; i++)
+  {
+    for (int j = 0; j < MAXCLUSTER; j++)
+    {
+      float dst = eudistance(input[i], kmean[j]);
+      if (dst < mindist[i])
+      {
+        mindist[i] = dst;
+        belongtocluster[i] = j;
+      }
+    }
+  }
+  // c) update k-mean (optional)
+#ifdef UPDATE_KMEAN
+  for (int j = 0; j < MAXCLUSTER; j++)
+  {
+    zweidee::point tmp = { 0,0 };
+    int numclusterpoints = 0;
+    for (int i = 0; i < numinput; i++)
+    {
+      if (j == belongtocluster[i])
+      {
+        tmp.x += input[i].x;
+        tmp.y += input[i].y;
+        numclusterpoints++;
+      }
+      kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
+      kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
+    }
+  }
+#endif
+
+  // d) merge clusters (i.e. dist < 2)
+  for (unsigned int j = 0; j < MAXCLUSTER; j++)
+  {
+    // run through all cluster points
+    zweidee::point pt1 = { 0,0 };
+    for (unsigned int p = 0; p < numinput; p++)
+    {
+      if (j == belongtocluster[p])
+      {
+        pt1.x = input[p].x;
+        pt1.y = input[p].y;
+
+        // run through all other cluster's points
+        for (unsigned int k = 0; k < MAXCLUSTER; k++)
+        {
+          if (k != j)
+          {
+            // do not run again through cluster 2-1, when 1-2 was done already
+            for (unsigned int q = 0; q < numinput; q++)
+            {
+              if (k == belongtocluster[q])
+              {
+                if ((input[q].x == pt1.x + 1) &&
+                  (input[q].y == pt1.y))
+                {
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
+                }
+                if ((input[q].x == pt1.x - 1) &&
+                  (input[q].y == pt1.y))
+                {
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
+                }
+                if ((input[q].x == pt1.x) &&
+                  (input[q].y == pt1.y + 1))
+                {
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
+                }
+                if ((input[q].x == pt1.x) &&
+                  (input[q].y == pt1.y - 1))
+                {
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        } // INNER LOOP: for (unsigned int k = 0; k < MAXCLUSTER; k++)
+      }
+    }
+  } // OUTER LOOP: for (unsigned int j = 0; j < MAXCLUSTER; j++)
+
+
+    // count clusters
+  int numclusters = 0;
+  int clusters[MAXCLUSTER];
+  for (unsigned int j = 0; j < MAXCLUSTER; j++) clusters[j] = 255;
+  for (unsigned int p = 0; p < numinput; p++)
+  {
+    if ((belongtocluster[p] == -1)) break;
+    bool found = false;
+    for (unsigned int j = 0; j < MAXCLUSTER; j++)
+    {
+      if (belongtocluster[p] == clusters[j])
+      {
+        found = true;
+      }
+    }
+    if (!found) clusters[numclusters++] = belongtocluster[p];
+  }
+
+
+  char buf[20];
+  sprintf(buf, "%d clusters found", numclusters);
+  int msgboxID = MessageBox(
+    NULL,
+    buf,
+    "k-means + dilation",
+    MB_ICONINFORMATION | MB_OK
+  );
+
+
+  // Fundamental problem: we do not know the number of clusters in advance!
+  // idea: make a connected component analysis, i.e.
+
+  // wrap up: i) color the pixel according to found clusters
+  for (int i = 0; i < numinput; i++)
+  {
+    zweidee::point pt = input[i];
+    zweidee::colrgb col = colcluster[belongtocluster[i]];
+    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, 32 + pt.y, col.r, col.g, col.b);
+  }
+  // ii) color cluster centers in white
+  //#define DRAW_CLUSTERCENTER
+#ifdef DRAW_CLUSTERCENTER
+  for (int j = 0; j < MAXCLUSTER; j++)
+  {
+    zweidee::fbuf2d.setpixel(zweidee::data, kmean[j].x, kmean[j].y, 255, 255, 255);
+    std::cout << j << kmean[j].x << kmean[j].y << std::endl;
+  }
+#endif
+  // map to texture --> shift to zweidee.h
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -141,227 +370,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   ///////////////
   // Init
   ///////////////
-  srand(time(NULL));
-
-  // background (dark)
-  for (int i = 0; i < FPA_SIZE; i++)
-  {
-    FPA[i] = rand() % 100;// 255;
-  }
-
-  // objects: set seeds and dilate them
-  int numgenclusters = rand() % 10;
-  for (int c = 0; c < numgenclusters; c++)
-  {
-    int x = rand() % FPA_WIDTH-1;
-    int y = rand() % FPA_HEIGHT-1;
-    FPA[y * FPA_WIDTH + x] = 255;
-    for (int d = 0; d < 25; d++)
-    {
-      int x1 = x + rand() % 4;
-      int y1 = y + rand() % 4;
-      FPA[y1 * FPA_WIDTH + x1] = 255;
-    }
-  }
-
-  // write FPA to buf2d
-  for (int i = 0; i < FPA_SIZE; i++)
-  {
-    int x = i % FPA_WIDTH;
-    int y = i / FPA_WIDTH;
-    zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
-  }
-  // map to texture --> shift to zweidee.h
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+  fillData();
   ///////////////
   // Init
   ///////////////
 
-
-// (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
-// (2) http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
-#define MAXCLUSTER 10 // (pretend) we don't know the number of clusters, which is makes it much more difficult!
-// prepare: init datastructures
-  int numinput = 0;
-  zweidee::point input[FPA_SIZE];
-  zweidee::point kmean[MAXCLUSTER];// = { {10,10},{100,30},{64,16} };
-  float mindist[FPA_SIZE];
-  int belongtocluster[FPA_SIZE];
-  for (int i = 0; i < FPA_SIZE; i++) mindist[i] = 255.0f; // set to a value that is > max. distance      
-  memset(belongtocluster, 255, FPA_SIZE); // set to a value that is > #cluster
-
-  // prepare: get relevant points
-  for (int i = 0; i < FPA_SIZE; i++)
-  {
-    if (FPA[i] > 150)
-    {
-      unsigned int x = i % FPA_WIDTH;
-      unsigned int y = i / FPA_WIDTH;
-      input[numinput] = { x, y };
-      numinput++;
-    }
-  }
-
-  // a) init k-means
-  for (int j = 0; j < MAXCLUSTER; j++)
-  {
-    int n = rand() % numinput;
-    kmean[j] = input[n];
-  }
-  // b) measure eucl. distance for each datapt. to each k-mean
-  for (int i = 0; i < numinput; i++)
-  {
-    for (int j = 0; j < MAXCLUSTER; j++)
-    {
-        float dst = eudistance(input[i], kmean[j]);
-        if (dst < mindist[i])
-        {
-          mindist[i] = dst;
-          belongtocluster[i] = j;
-        }
-    }
-  }
-  // c) update k-mean (optional)
-#ifdef UPDATE_KMEAN
-  for (int j = 0; j < MAXCLUSTER; j++)
-  {
-    zweidee::point tmp = {0,0};
-    int numclusterpoints = 0;
-    for (int i = 0; i < numinput; i++)
-    {
-      if (j == belongtocluster[i])
-      {
-        tmp.x += input[i].x;
-        tmp.y += input[i].y;
-        numclusterpoints++;
-      }
-      kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
-      kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
-    }
-  }
-#endif
-
-  // d) merge clusters (i.e. dist < 2)
-  for (unsigned int j = 0; j < MAXCLUSTER; j++)
-  {
-    // run through all cluster points
-    zweidee::point pt1 = { 0,0 };
-    for (unsigned int p = 0; p < numinput; p++)
-    {
-      if (j == belongtocluster[p])
-      {
-        pt1.x = input[p].x;
-        pt1.y = input[p].y;
-
-        // run through all other cluster's points
-        for (unsigned int k = 0; k < MAXCLUSTER; k++)
-        {
-          if (k != j)
-          {
-            // do not run again through cluster 2-1, when 1-2 was done already
-            for (unsigned int q = 0; q < numinput; q++)
-            {
-              if (k == belongtocluster[q])
-              {
-                if ((input[q].x == pt1.x+1) &&
-                    (input[q].y == pt1.y))
-                {
-                  // cluster-update
-                  for (unsigned int h = 0; h < numinput; h++)
-                  {
-                    if (belongtocluster[h] == k) belongtocluster[h] = j;
-                  }
-                  break;
-                }
-                if ((input[q].x == pt1.x-1) &&
-                  (input[q].y == pt1.y))
-                {
-                  // cluster-update
-                  for (unsigned int h = 0; h < numinput; h++)
-                  {
-                    if (belongtocluster[h] == k) belongtocluster[h] = j;
-                  }
-                  break;
-                }
-                if ((input[q].x == pt1.x) &&
-                  (input[q].y == pt1.y+1))
-                {
-                  // cluster-update
-                  for (unsigned int h = 0; h < numinput; h++)
-                  {
-                    if (belongtocluster[h] == k) belongtocluster[h] = j;
-                  }
-                  break;
-                }
-                if ((input[q].x == pt1.x) &&
-                  (input[q].y == pt1.y-1))
-                {
-                  // cluster-update
-                  for (unsigned int h = 0; h < numinput; h++)
-                  {
-                    if (belongtocluster[h] == k) belongtocluster[h] = j;
-                  }
-                  break;
-                }
-              }
-            }
-          }
-        } // INNER LOOP: for (unsigned int k = 0; k < MAXCLUSTER; k++)
-      }
-    }
-  } // OUTER LOOP: for (unsigned int j = 0; j < MAXCLUSTER; j++)
-
-
-  // count clusters
-  int numclusters = 0;
-  int clusters[MAXCLUSTER];
-  for (unsigned int j = 0; j < MAXCLUSTER; j++) clusters[j] = 255;
-  for (unsigned int p = 0; p < numinput; p++)
-  {
-    if ((belongtocluster[p] == -1)) break;
-    bool found = false;
-    for (unsigned int j = 0; j < MAXCLUSTER; j++)
-    {
-      if (belongtocluster[p] == clusters[j])
-      {
-        found = true;
-      }
-    }
-    if (!found) clusters[numclusters++] = belongtocluster[p];
-  }
-
-
-  char buf[20];
-  sprintf(buf, "%d clusters found", numclusters);
-  int msgboxID = MessageBox(
-    NULL,
-    buf,
-    "k-means + dilation",
-    MB_ICONINFORMATION | MB_OK
-  );
-
-
-// Fundamental problem: we do not know the number of clusters in advance!
-  // idea: make a connected component analysis, i.e.
-
-  // wrap up: i) color the pixel according to found clusters
-  for (int i = 0; i < numinput; i++)
-  {
-    zweidee::point pt = input[i];
-    zweidee::colrgb col = colcluster[belongtocluster[i]];
-    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, 32+pt.y, col.r, col.g, col.b);
-  }
-  // ii) color cluster centers in white
-//#define DRAW_CLUSTERCENTER
-#ifdef DRAW_CLUSTERCENTER
-  for (int j = 0; j < MAXCLUSTER; j++)
-  {
-    zweidee::fbuf2d.setpixel(zweidee::data, kmean[j].x, kmean[j].y, 255, 255, 255);
-    std::cout << j << kmean[j].x << kmean[j].y << std::endl;
-  }
-#endif
-  // map to texture --> shift to zweidee.h
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 
 
 
@@ -453,6 +466,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam)
     {
     case 32: // Space
+      bLetsStart = true;
       break;
     case 37: // ARROW-LEFT
       break;
