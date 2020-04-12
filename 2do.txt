@@ -1,3 +1,6 @@
+4/12/2020
+- k-means, here and then division by zero, around here:   // a) init k-means
+
 4/11/2020
 + get rid of FBUF2D_WIDTH, FBUF2D_HEIGHT defines
   - in constructor? --> no, as #define

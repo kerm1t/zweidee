@@ -44,6 +44,8 @@ bool b_WM_resized = false;
 #define FPA_WIDTH  FBUF2D_WIDTH
 #define FPA_SIZE   FPA_WIDTH*FPA_HEIGHT
 int FPA[FPA_SIZE];
+#define MAXCLUSTER 10 // (pretend) we don't know the number of clusters, which is makes it much more difficult!
+#define CLUSTER_GUI_ROW1 32
 
 zweidee::colrgb colcluster[10] = { {255,0,0},{0,225,0},{0,0,255},{255,255,0},{0,255,255},
                                    {255,0,225},{125,0,0},{0,125,0},{0,0,125},{125,125,0} };
@@ -146,7 +148,6 @@ void fillData()
 // (2) http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
 void startCluster()
 {
-#define MAXCLUSTER 10 // (pretend) we don't know the number of clusters, which is makes it much more difficult!
   // prepare: init datastructures
   int numinput = 0;
   zweidee::point input[FPA_SIZE];
@@ -188,24 +189,7 @@ void startCluster()
     }
   }
   // c) update k-mean (optional)
-#ifdef UPDATE_KMEAN
-  for (int j = 0; j < MAXCLUSTER; j++)
-  {
-    zweidee::point tmp = { 0,0 };
-    int numclusterpoints = 0;
-    for (int i = 0; i < numinput; i++)
-    {
-      if (j == belongtocluster[i])
-      {
-        tmp.x += input[i].x;
-        tmp.y += input[i].y;
-        numclusterpoints++;
-      }
-      kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
-      kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
-    }
-  }
-#endif
+  //  --> done after merging
 
   // d) merge clusters (i.e. dist < 2)
   for (unsigned int j = 0; j < MAXCLUSTER; j++)
@@ -278,7 +262,7 @@ void startCluster()
   } // OUTER LOOP: for (unsigned int j = 0; j < MAXCLUSTER; j++)
 
 
-    // count clusters
+  // e) count clusters
   int numclusters = 0;
   int clusters[MAXCLUSTER];
   for (unsigned int j = 0; j < MAXCLUSTER; j++) clusters[j] = 255;
@@ -297,14 +281,38 @@ void startCluster()
   }
 
 
-  char buf[20];
-  sprintf(buf, "%d clusters found", numclusters);
+  char buf[55];
+  sprintf(buf, "random k-mean initialization, k=%d:\r\n%d clusters found", MAXCLUSTER, numclusters);
   int msgboxID = MessageBox(
     NULL,
     buf,
     "k-means + dilation",
     MB_ICONINFORMATION | MB_OK
   );
+
+
+
+  // f) update k-mean (optional)
+#define UPDATE_KMEAN
+#ifdef UPDATE_KMEAN
+  for (int j = 0; j < MAXCLUSTER; j++)
+  {
+    zweidee::point tmp = { 0,0 };
+    int numclusterpoints = 0;
+    for (int i = 0; i < numinput; i++)
+    {
+      if (j == belongtocluster[i])
+      {
+        tmp.x += input[i].x;
+        tmp.y += input[i].y;
+        numclusterpoints++;
+      }
+      kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
+      kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
+    }
+  }
+#endif
+
 
 
   // Fundamental problem: we do not know the number of clusters in advance!
@@ -315,14 +323,14 @@ void startCluster()
   {
     zweidee::point pt = input[i];
     zweidee::colrgb col = colcluster[belongtocluster[i]];
-    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, 32 + pt.y, col.r, col.g, col.b);
+    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, CLUSTER_GUI_ROW1 + pt.y, col.r, col.g, col.b);
   }
   // ii) color cluster centers in white
-  //#define DRAW_CLUSTERCENTER
+#define DRAW_CLUSTERCENTER
 #ifdef DRAW_CLUSTERCENTER
   for (int j = 0; j < MAXCLUSTER; j++)
   {
-    zweidee::fbuf2d.setpixel(zweidee::data, kmean[j].x, kmean[j].y, 255, 255, 255);
+    zweidee::fbuf2d.setpixel(zweidee::data, kmean[j].x, CLUSTER_GUI_ROW1 + kmean[j].y, 255, 255, 255);
     std::cout << j << kmean[j].x << kmean[j].y << std::endl;
   }
 #endif
