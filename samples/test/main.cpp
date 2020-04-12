@@ -35,9 +35,9 @@ int win_h = FBUF2D_HEIGHT * 10;
 bool b_WM_resized = false;
 
 
-///////////////
-// Init
-///////////////
+//////////////////////////
+// put your variables here
+//////////////////////////
 
 
 
@@ -60,6 +60,7 @@ void RenderThread(void *args)
     if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
     {
       accumulatedTimeSinceLastUpdate = 0;
+
       ////////////////
       // do stuff here
       ////////////////
@@ -71,7 +72,6 @@ void RenderThread(void *args)
         zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
       }
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
-
 
       ////////////////
       // do stuff here
@@ -117,9 +117,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   }
 
 
-  ///////////////
-  // Init
-  ///////////////
 
   // from engine contructor!!
 //  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
@@ -132,17 +129,17 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 
   // 2do: this should be zweidee -->
-  m_render.width = win_w; // this will size the viewport
-  m_render.height = win_h;
-  zweidee::hDC = m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
+//  m_render.width = win_w; // this will size the viewport
+//  m_render.height = win_h;
+//  zweidee::hDC = m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
 
-  glewExperimental = GL_TRUE; // <-- Nutzen?
-  glewInit(); // <-- takes a little time
+//  glewExperimental = GL_TRUE; // <-- Nutzen?
+//  glewInit(); // <-- takes a little time
 
               // 2do: this should be zweidee -->
-//  m_engine.init();	// <-- Textures erst nach glewInit() laden!!
+//  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
                     // a) data loading + b) data description c) render.Init()
-  m_render.Init(); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
+  m_render.Init(win_w, win_h); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
   m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
                   //     beim LoadObjects(s.u.) call
   GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
@@ -151,6 +148,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   m_render.vGLTexture.push_back(texID);
   m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
+
+
+
+
   ///////////////
   // Init
   ///////////////

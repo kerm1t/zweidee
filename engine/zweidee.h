@@ -246,8 +246,15 @@ namespace zweidee
       hDC = NULL;                           // Private GDI Device Context
     }
 
-    int Init()
+    int Init(int w, int h)
     {
+      width = w; // this will size the viewport
+      height = h;
+      zweidee::hDC = GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
+
+      glewExperimental = GL_TRUE; // <-- Nutzen?
+      glewInit(); // <-- takes a little time
+
       glClearColor(0.3f, 0.5f, 1.0f, 0.0f);
 
       glClearDepth(1.0f);
