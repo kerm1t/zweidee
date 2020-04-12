@@ -1,8 +1,9 @@
-//////////////////////////////
+////////////////////////////////
 // main.cpp
 // - fill data structure
 // - find cluster with k-means
-//////////////////////////////
+// - estimate number of clusters
+////////////////////////////////
 
 #include "stdafx.h"
 #include "resource.h"
@@ -23,9 +24,11 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 zweidee::CRender m_render;
 
-// buffer dimension
+// buffer dimension, this has double the height to show
+// a) input,                 rows  0..31
+// b) cluster search result, rows 21..63
 #define FBUF2D_WIDTH 128
-#define FBUF2D_HEIGHT 32
+#define FBUF2D_HEIGHT 64
 #define FBUF2D_PIXELS FBUF2D_WIDTH * FBUF2D_HEIGHT
 #define FBUF2D_SIZE   FBUF2D_PIXELS * 3 // r,g,b
 // windows dimension (the later may be changed with resize)
@@ -37,12 +40,13 @@ bool b_WM_resized = false;
 //////////////////////////
 // put your variables here
 //////////////////////////
-#define FPA_SIZE   FBUF2D_PIXELS
-#define FPA_HEIGHT FBUF2D_HEIGHT
+#define FPA_HEIGHT 32
 #define FPA_WIDTH  FBUF2D_WIDTH
+#define FPA_SIZE   FPA_WIDTH*FPA_HEIGHT
 int FPA[FPA_SIZE];
 
-zweidee::colrgb colcluster[6] = { {255,0,0},{0,225,0},{0,0,233},{255,255,0},{0,150,255},{255,0,225} };
+zweidee::colrgb colcluster[10] = { {255,0,0},{0,225,0},{0,0,255},{255,255,0},{0,255,255},
+                                   {255,0,225},{125,0,0},{0,125,0},{0,0,125},{125,125,0} };
 
 
 //////////////////////////
@@ -128,6 +132,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   zweidee::data = new unsigned char[FBUF2D_SIZE]; // size = pixels*3 (r,g,b)
   GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
+  memset(zweidee::data, 0, FBUF2D_SIZE);
 
   m_render.Setup_Geometry(texID);
 
@@ -176,7 +181,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 // (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
 // (2) http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
 #define MAXCLUSTER 10 // (pretend) we don't know the number of clusters, which is makes it much more difficult!
-  // prepare: init datastructures
+// prepare: init datastructures
   int numinput = 0;
   zweidee::point input[FPA_SIZE];
   zweidee::point kmean[MAXCLUSTER];// = { {10,10},{100,30},{64,16} };
@@ -237,8 +242,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 #endif
 
   // d) merge clusters (i.e. dist < 2)
-  zweidee::point clustermerge[MAXCLUSTER];
-  unsigned int numclustermerge = 0;
   for (unsigned int j = 0; j < MAXCLUSTER; j++)
   {
     // run through all cluster points
@@ -263,47 +266,42 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
                 if ((input[q].x == pt1.x+1) &&
                     (input[q].y == pt1.y))
                 {
-                  // check, if this pair already in clustermerge-array
-                  bool pairfound = false;
-                  for (unsigned int l = 0; l < MAXCLUSTER; l++)
-                    if (((clustermerge[l].x == j) && (clustermerge[l].y == k)) ||
-                      ((clustermerge[l].x == k) && (clustermerge[l].y == j))) pairfound = true;
-                  if (!pairfound) clustermerge[numclustermerge++] = { j,k }; // merge j and k
-                  // 2do: update clusters right here!
-                  // and tag, that these clusters were merged
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
                 }
                 if ((input[q].x == pt1.x-1) &&
                   (input[q].y == pt1.y))
                 {
-                  // check, if this pair already in clustermerge-array
-                  bool pairfound = false;
-                  for (unsigned int l = 0; l < MAXCLUSTER; l++)
-                    if (((clustermerge[l].x == j) && (clustermerge[l].y == k)) ||
-                      ((clustermerge[l].x == k) && (clustermerge[l].y == j))) pairfound = true;
-                  if (!pairfound) clustermerge[numclustermerge++] = { j,k }; // merge j and k
-                  // 2do: update clusters right here!
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
                 }
                 if ((input[q].x == pt1.x) &&
                   (input[q].y == pt1.y+1))
                 {
-                  // check, if this pair already in clustermerge-array
-                  bool pairfound = false;
-                  for (unsigned int l = 0; l < MAXCLUSTER; l++)
-                    if (((clustermerge[l].x == j) && (clustermerge[l].y == k)) ||
-                      ((clustermerge[l].x == k) && (clustermerge[l].y == j))) pairfound = true;
-                  if (!pairfound) clustermerge[numclustermerge++] = { j,k }; // merge j and k
-                  // 2do: update clusters right here!
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
                 }
                 if ((input[q].x == pt1.x) &&
                   (input[q].y == pt1.y-1))
                 {
-                  // check, if this pair already in clustermerge-array
-                  bool pairfound = false;
-                  for (unsigned int l = 0; l < MAXCLUSTER; l++)
-                    if (((clustermerge[l].x == j) && (clustermerge[l].y == k)) ||
-                      ((clustermerge[l].x == k) && (clustermerge[l].y == j))) pairfound = true;
-                  if (!pairfound) clustermerge[numclustermerge++] = { j,k }; // merge j and k
-                  // 2do: update clusters right here!
+                  // cluster-update
+                  for (unsigned int h = 0; h < numinput; h++)
+                  {
+                    if (belongtocluster[h] == k) belongtocluster[h] = j;
+                  }
+                  break;
                 }
               }
             }
@@ -313,16 +311,26 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     }
   } // OUTER LOOP: for (unsigned int j = 0; j < MAXCLUSTER; j++)
 
-  // update clusters
-  for (unsigned int j = 0; j < MAXCLUSTER; j++)
+
+  // count clusters
+  int numclusters = 0;
+  int clusters[MAXCLUSTER];
+  for (unsigned int j = 0; j < MAXCLUSTER; j++) clusters[j] = 255;
+  for (unsigned int p = 0; p < numinput; p++)
   {
-    for (unsigned int p = 0; p < numinput; p++)
+    if ((belongtocluster[p] == -1)) break;
+    bool found = false;
+    for (unsigned int j = 0; j < MAXCLUSTER; j++)
     {
-      if (belongtocluster[p] == clustermerge[j].y) belongtocluster[p] = clustermerge[j].x;
+      if (belongtocluster[p] == clusters[j])
+      {
+        found = true;
+      }
     }
+    if (!found) clusters[numclusters++] = belongtocluster[p];
   }
 
-  int numclusters = MAXCLUSTER - numclustermerge; // YEP, done it!
+
   char buf[20];
   sprintf(buf, "%d clusters found", numclusters);
   int msgboxID = MessageBox(
@@ -341,7 +349,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   {
     zweidee::point pt = input[i];
     zweidee::colrgb col = colcluster[belongtocluster[i]];
-    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, pt.y, col.r, col.g, col.b);
+    zweidee::fbuf2d.setpixel(zweidee::data, pt.x, 32+pt.y, col.r, col.g, col.b);
   }
   // ii) color cluster centers in white
 //#define DRAW_CLUSTERCENTER
