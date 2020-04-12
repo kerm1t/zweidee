@@ -7,10 +7,8 @@
 #include "resource.h"
 
 #include "zweidee.h"    // draw to 2D buffer
-//#include "engine.h"     //   run a 2D game
 
 #include <windows.h>    // Header File For Windows
-//#include <windowsx.h>   // GET_X_LPARAM, GET_Y_LPARAM
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -21,8 +19,6 @@
 ATOM             MyRegisterClass(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-
-//zweidee::Engine m_engine;
 zweidee::CRender m_render;
 
 // buffer dimension
@@ -117,38 +113,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     return FALSE;
   }
 
-
-
-  // from engine contructor!!
-//  zweidee::fbuf2d.width = FBUF2D_WIDTH; // 2do: this shall be from the input
-//  zweidee::fbuf2d.height = FBUF2D_HEIGHT;
-//  zweidee::fbuf2d.imagesize = zweidee::fbuf2d.width * zweidee::fbuf2d.height * 3;
-//  fbuf2d = &m_game.fbuf2d;                     // fbuf part of game (e.g. galaga)
-//  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
-
-
-
-
-  // 2do: this should be zweidee -->
-//  m_render.width = win_w; // this will size the viewport
-//  m_render.height = win_h;
-//  zweidee::hDC = m_render.GL_attach_to_DC(zweidee::hWnd); // <== NeHe    
-
-//  glewExperimental = GL_TRUE; // <-- Nutzen?
-//  glewInit(); // <-- takes a little time
-
-              // 2do: this should be zweidee -->
-//  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
-                    // a) data loading + b) data description c) render.Init()
-
-
-  m_render.Init(win_w, win_h); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
+  m_render.Init(win_w, win_h);
 
   zweidee::data = new unsigned char[FBUF2D_SIZE]; // size = pixels*3 (r,g,b)
   GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
 
-  m_render.Setup_Geometry(texID); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
-                             //     beim LoadObjects(s.u.) call
+  m_render.Setup_Geometry(texID);
+
 
 
 
