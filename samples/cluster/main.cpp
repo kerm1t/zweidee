@@ -15,6 +15,7 @@
 #include <GL/glew.h>
 
 #include <process.h>    // _beginthread
+#include <time.h>       // srand()
 
 // forward declaration of functions in this code module
 ATOM             MyRegisterClass(HINSTANCE hInstance);
@@ -36,8 +37,9 @@ bool b_WM_resized = false;
 //////////////////////////
 // put your variables here
 //////////////////////////
-#define FPA_SIZE  FBUF2D_PIXELS
-#define FPA_WIDTH FBUF2D_WIDTH
+#define FPA_SIZE   FBUF2D_PIXELS
+#define FPA_HEIGHT FBUF2D_HEIGHT
+#define FPA_WIDTH  FBUF2D_WIDTH
 int FPA[FPA_SIZE];
 
 zweidee::colrgb colcluster[6] = { {255,0,0},{0,225,0},{0,0,233},{255,255,0},{0,150,255},{255,0,225} };
@@ -134,47 +136,28 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   ///////////////
   // Init
   ///////////////
+  srand(time(NULL));
 
   // background (dark)
-  srand(12);
   for (int i = 0; i < FPA_SIZE; i++)
   {
     FPA[i] = rand() % 100;// 255;
   }
 
-  // alternative: set seeds and dilate them
-  // obj.1
-  FPA[5 * FPA_WIDTH + 10] = 255;
-  FPA[5 * FPA_WIDTH + 11] = 255;
-  FPA[5 * FPA_WIDTH + 12] = 255;
-  FPA[6 * FPA_WIDTH + 10] = 255;
-  FPA[6 * FPA_WIDTH + 11] = 255;
-  FPA[6 * FPA_WIDTH + 12] = 255;
-  FPA[7 * FPA_WIDTH + 12] = 255;
-  FPA[8 * FPA_WIDTH + 12] = 200;
-  FPA[9 * FPA_WIDTH + 12] = 220;
-  FPA[10 * FPA_WIDTH + 12] = 220;
-
-  // obj.2
-  FPA[24 * FPA_WIDTH + 100] = 255;
-  FPA[24 * FPA_WIDTH + 101] = 255;
-  FPA[25 * FPA_WIDTH + 100] = 200;
-  FPA[25 * FPA_WIDTH + 101] = 200;
-  FPA[25 * FPA_WIDTH + 102] = 255;
-  FPA[26 * FPA_WIDTH + 100] = 255;
-  FPA[26 * FPA_WIDTH + 101] = 255;
-  FPA[26 * FPA_WIDTH + 102] = 255;
-
-  // obj.3
-  FPA[14 * FPA_WIDTH + 90] = 155;
-  FPA[14 * FPA_WIDTH + 91] = 155;
-  FPA[14 * FPA_WIDTH + 92] = 255;
-  FPA[15 * FPA_WIDTH + 90] = 255;
-  FPA[15 * FPA_WIDTH + 91] = 255;
-  FPA[15 * FPA_WIDTH + 92] = 155;
-  FPA[16 * FPA_WIDTH + 90] = 155;
-  FPA[16 * FPA_WIDTH + 91] = 255;
-  FPA[16 * FPA_WIDTH + 92] = 255;
+  // objects: set seeds and dilate them
+  int numgenclusters = rand() % 10;
+  for (int c = 0; c < numgenclusters; c++)
+  {
+    int x = rand() % FPA_WIDTH-1;
+    int y = rand() % FPA_HEIGHT-1;
+    FPA[y * FPA_WIDTH + x] = 255;
+    for (int d = 0; d < 25; d++)
+    {
+      int x1 = x + rand() % 4;
+      int y1 = y + rand() % 4;
+      FPA[y1 * FPA_WIDTH + x1] = 255;
+    }
+  }
 
   // write FPA to buf2d
   for (int i = 0; i < FPA_SIZE; i++)
@@ -361,6 +344,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     zweidee::fbuf2d.setpixel(zweidee::data, pt.x, pt.y, col.r, col.g, col.b);
   }
   // ii) color cluster centers in white
+//#define DRAW_CLUSTERCENTER
 #ifdef DRAW_CLUSTERCENTER
   for (int j = 0; j < MAXCLUSTER; j++)
   {
