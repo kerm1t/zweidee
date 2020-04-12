@@ -27,7 +27,8 @@ zweidee::CRender m_render;
 // buffer dimension
 #define FBUF2D_WIDTH 128
 #define FBUF2D_HEIGHT 32
-#define FBUF2D_SIZE FBUF2D_WIDTH * FBUF2D_HEIGHT
+#define FBUF2D_PIXELS FBUF2D_WIDTH * FBUF2D_HEIGHT
+#define FBUF2D_SIZE   FBUF2D_PIXELS * 3 // r,g,b
 // windows dimension (the later may be changed with resize)
 int win_w = FBUF2D_WIDTH * 10;
 int win_h = FBUF2D_HEIGHT * 10;
@@ -132,15 +133,16 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
               // 2do: this should be zweidee -->
 //  m_engine.init(); // <-- Textures erst nach glewInit() laden!!
                     // a) data loading + b) data description c) render.Init()
+
+
   m_render.Init(win_w, win_h); // InitGL + Initshaders, kann auch spaeter aufgerufen werden...
-  m_render.FPS(); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
-                  //     beim LoadObjects(s.u.) call
+
+  zweidee::data = new unsigned char[FBUF2D_SIZE]; // size = pixels*3 (r,g,b)
   GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
 
-  zweidee::data = new unsigned char[zweidee::fbuf2d.imagesize]; // data part of proj <-- 2do
+  m_render.Setup_Geometry(texID); // <-- wenn ich das ins VAO fuelle, gibt's nen Fehler (erst mit dem neuen ShaderFPS)
+                             //     beim LoadObjects(s.u.) call
 
-  m_render.vGLTexture.push_back(texID);
-  m_render.Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
 
 
 
@@ -225,6 +227,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
     // --> rendering moved to RenderThread, otherwise no autonomous object-movement possible
   }
+
+  delete zweidee::data;
 
   return (int)msg.wParam;
 }

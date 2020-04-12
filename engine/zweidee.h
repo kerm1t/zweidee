@@ -246,7 +246,7 @@ namespace zweidee
       hDC = NULL;                           // Private GDI Device Context
     }
 
-    int Init(int w, int h)
+    int Init(int w, int h)///, GLuint texID)
     {
       width = w; // this will size the viewport
       height = h;
@@ -262,6 +262,8 @@ namespace zweidee
       glEnable(GL_DEPTH_TEST);
 
       InitShader(); // vertices to texture zweidee framebuffer
+
+///      vGLTexture.push_back(texID);
 
       return 0;
     }
@@ -362,7 +364,7 @@ namespace zweidee
       glViewport(0, 0, width, height);   // Reset The Current Viewport
     }
 
-    void FPS()
+    void Setup_Geometry(GLuint texID)
     {
       std::vector<GLfloat> coords;
 
@@ -408,6 +410,9 @@ namespace zweidee
       fps.ui_idTexture = TEX_ARIALFONT;
       fps.uiVertexCount = 6;
       vVAOs.push_back(fps);
+
+      vGLTexture.push_back(texID);
+      Bind_VBOs_to_VAOs(); // now hand over VBO's to VAO's
     }
 
     /* Bind vertex buffers to VAO's
@@ -540,13 +545,20 @@ namespace zweidee
     GLuint fb, color, depth; // <--- nicer names!
   };
 
+  static unsigned char * data;
+
   class FrameBuf2D // which is actually an animated (OpenGL-)Texture
   {
   public:
     unsigned int width, height;
     unsigned int imagesize;   // = width*height*3
     unsigned int framecounter;
-
+/*
+    ~FrameBuf2D()
+    {
+      delete data;
+    }
+*/
     // (0,0): rgb (1,0): rgb (2,0): rgb
     void setpixel(unsigned char * data, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
     {
@@ -564,14 +576,14 @@ namespace zweidee
     GLuint Init(int w, int h) // purpose: get texture-ID
     {
       // Actual RGB data
-      unsigned char * data;
+///      unsigned char * data;
 
       width = w;
       height = h;
       imagesize = width*height * 3;
 
       // Create a buffer
-      data = new unsigned char[imagesize];
+///      data = new unsigned char[imagesize];
       memset(data, 0, imagesize); // clear
 
       // draw test pattern
@@ -598,7 +610,7 @@ namespace zweidee
       // Give the image to OpenGL
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);  // hier gibt es Schwierigkeiten mit .bmp,
 
-      delete data;
+///      delete data;
 
       return textureID;
     }
@@ -689,7 +701,6 @@ namespace zweidee
   }; // Framebuf2D
 
   static FrameBuf2D    fbuf2d;
-  static unsigned char * data;
 }
 
 
