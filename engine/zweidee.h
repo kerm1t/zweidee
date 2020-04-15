@@ -35,8 +35,8 @@ namespace zweidee
   {
     unsigned int x;
     unsigned int y;
-    // this seems to be no proper default constructor -->
-//    point(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) { }
+    point() { } // default constructor
+    point(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) { } // constructor for change after declaration
   };
 
   static float fps;                        // This will store our fps

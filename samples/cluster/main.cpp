@@ -307,9 +307,9 @@ void startCluster()
         tmp.y += input[i].y;
         numclusterpoints++;
       }
-      kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
-      kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
     }
+    kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
+    kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
   }
 #endif
 
