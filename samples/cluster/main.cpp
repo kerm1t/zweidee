@@ -50,103 +50,18 @@ int FPA[FPA_SIZE];
 zweidee::colrgb colcluster[10] = { {255,0,0},{0,225,0},{0,0,255},{255,255,0},{0,255,255},
                                    {255,0,225},{125,0,0},{0,125,0},{0,0,125},{125,125,0} };
 
-bool bLetsStart = false;
-void startCluster(); // fwd declaration
+bool bCluster = false;
+bool bRefill = false;
 
-//////////////////////////
-// put your variables here
-//////////////////////////
-
-
-
-dword lasttickcount = 0;
-dword accumulatedTimeSinceLastUpdate = 0;
-
-// Fix Timing
-// https://gafferongames.com/post/fix_your_timestep/
-
-// OpenGL calls moved to own thread
-// s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
-void RenderThread(void *args)
-{
-  lasttickcount = GetTickCount();
-  while (true)
-  {
-    accumulatedTimeSinceLastUpdate += (GetTickCount() - lasttickcount); // GetTickCount [ms] dword
-    lasttickcount = GetTickCount();
-
-    if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
-    {
-      accumulatedTimeSinceLastUpdate = 0;
-
-      ////////////////
-      // do stuff here
-      ////////////////
-      if (bLetsStart)
-      {
-        startCluster();
-        bLetsStart = false;
-      }
-      ////////////////
-      // do stuff here
-      ////////////////
-    }
-
-    if (b_WM_resized)
-    {
-      m_render.ReSizeGLScene(win_w, win_h);
-      b_WM_resized = false;
-    }
-
-    m_render.Render(); // render update-rate independent from move() (s. above)
-  }
-  _endthread();
-}
 
 float eudistance(zweidee::point p1, zweidee::point p2)
 {
   return sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
 }
 
-void fillData()
-{
-  srand(time(NULL));
-
-  // background (dark)
-  for (int i = 0; i < FPA_SIZE; i++)
-  {
-    FPA[i] = rand() % 100;// 255;
-  }
-
-  // objects: set seeds and dilate them
-  int numgenclusters = rand() % 10;
-  for (int c = 0; c < numgenclusters; c++)
-  {
-    int x = rand() % FPA_WIDTH - 1;
-    int y = rand() % FPA_HEIGHT - 1;
-    FPA[y * FPA_WIDTH + x] = 255;
-    for (int d = 0; d < 25; d++)
-    {
-      int x1 = x + rand() % 4;
-      int y1 = y + rand() % 4;
-      FPA[y1 * FPA_WIDTH + x1] = 255;
-    }
-  }
-
-  // write FPA to buf2d
-  for (int i = 0; i < FPA_SIZE; i++)
-  {
-    int x = i % FPA_WIDTH;
-    int y = i / FPA_WIDTH;
-    zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
-  }
-  // map to texture --> shift to zweidee.h
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
-}
-
 // (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
 // (2) http://www.goldsborough.me/c++/python/cuda/2017/09/10/20-32-46-exploring_k-means_in_python,_c++_and_cuda/
-void startCluster()
+void kmeans_merge()
 {
   // prepare: init datastructures
   int numinput = 0;
@@ -190,6 +105,9 @@ void startCluster()
   }
   // c) update k-mean (optional)
   //  --> done after merging
+
+  // Fundamental problem: we do not know the number of clusters in advance!
+  // idea: make a connected component analysis, i.e.
 
   // d) merge clusters (i.e. dist < 2)
   for (unsigned int j = 0; j < MAXCLUSTER; j++)
@@ -291,7 +209,6 @@ void startCluster()
   );
 
 
-
   // f) update k-mean (optional)
 #define UPDATE_KMEAN
 #ifdef UPDATE_KMEAN
@@ -314,10 +231,6 @@ void startCluster()
 #endif
 
 
-
-  // Fundamental problem: we do not know the number of clusters in advance!
-  // idea: make a connected component analysis, i.e.
-
   // wrap up: i) color the pixel according to found clusters
   for (int i = 0; i < numinput; i++)
   {
@@ -334,6 +247,359 @@ void startCluster()
     std::cout << j << kmean[j].x << kmean[j].y << std::endl;
   }
 #endif
+  // map to texture --> shift to zweidee.h
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+}
+
+// --------- DB SCAN -----------
+//#if 0
+#define TMP_GRID_DIMENSION_U 128 // V ???
+#define TMP_GRID_DIMENSION_V 32 // U ??
+#define TMP_GRID_CELLS_PER_BUCKET 1 // :-)
+#define TMP_MAX_NUM_CLUSTERS 10
+
+typedef struct
+{
+  uint8  b_cells_square; // 1 if all cells are squares; 0 otherwise         
+  uint32 ui_celldim;     // dimension of the coarse grid cell in the initial grid
+  uint32 ui_ncell;       // number of relevant coarse grid cells
+  uint16 a_cellcount[TMP_GRID_DIMENSION_U*TMP_GRID_DIMENSION_V / TMP_GRID_CELLS_PER_BUCKET]; // <-- 64 = 8x8 ?, depending on celldim ? 
+} s_CoarseGrid_t;
+
+typedef struct
+{
+  uint8           Pvisit[TMP_GRID_DIMENSION_U * TMP_GRID_DIMENSION_V];
+  uint16          neighbors[TMP_GRID_DIMENSION_U * TMP_GRID_DIMENSION_V + 3];
+} s_DBSCAN_TMP_t;
+
+typedef struct
+{
+  uint32 ui_id;
+  uint32 ui_startIndex;
+  uint32 ui_numPoints;
+} s_Cluster_t;
+
+//  on coarse grid
+//  ... also used on std-grid?
+//
+//    clusterList               cellIDList (grdIndex)
+//    ===========               ==========
+//
+//    clu    iCellList          iCell
+//    ----+----                 ----------
+//     1  |  0  -------------->  1381
+//        |  2 (length)          1382
+//     2  |  2  -------------->  1584
+//        |  3 (length)          1585
+//        |                      1586
+//    ... |                      ...
+//
+typedef struct
+{
+  uint16 ui_numClusters;
+  s_Cluster_t  as_clusters[TMP_MAX_NUM_CLUSTERS];  // max number of clusters
+  uint32       a_grdIndex[TMP_GRID_DIMENSION_U * TMP_GRID_DIMENSION_V]; // can be adapted to something smaller <-- bullshit!
+} s_ClusterList_t;
+
+typedef struct
+{
+  // computation memory to large for stack
+  s_CoarseGrid_t   coarse_grid;     // in
+  s_DBSCAN_TMP_t   tmp_dbscan;
+  s_ClusterList_t  coarse_clusterlist; // out
+} s_DBGridSCAN_t;
+
+// DBSCAN = dbscangrid ; input: coarse grid, min points in cell
+//                       output: s_clusterList of indices of the coarse grid
+
+/*int ceil(float f)
+{
+  return (int)(f)+1;
+}*/
+
+// -------------------------------------------------------------------
+// browse through Grid in waterfall like fashion,
+// i.e. start from upper left and visit the right + three lower neighbours, i.e.
+//
+//     | X | N
+//  ---+---+---
+//   N | N | N
+//
+// plus special handling for left, right and lower boarder of Grid
+// -------------------------------------------------------------------
+void gridNeighbours(
+  const s_CoarseGrid_t& coarseGrid,
+  const uint32          ui_minPointsCluster,
+  s_DBSCAN_TMP_t&       tmp_dbscan,
+  s_ClusterList_t&      s_clusterList)
+{
+  const uint32 npts = coarseGrid.ui_ncell;
+
+  const uint32 nhcells = (uint32)ceil((float)TMP_GRID_DIMENSION_U / (float)coarseGrid.ui_celldim);
+
+  uint32 nClu = 0;      // 1st list: clusters
+  uint32 nCells = 0;    // 2nd list: cells
+
+                        // Reset Pvisit array.
+  memset(tmp_dbscan.Pvisit, 0, sizeof(tmp_dbscan.Pvisit));
+
+  for (uint32 n = 0; n < (npts - 1); ++n)
+  {
+    if (tmp_dbscan.Pvisit[n] == 0) // s_compMem has input grid-size (e.g. 1024 x 1024) ??
+    {
+      tmp_dbscan.Pvisit[n] = 1;  // mark as visited
+
+      if (coarseGrid.a_cellcount[n] >= ui_minPointsCluster) // form a cluster..
+      {
+        s_clusterList.as_clusters[nClu].ui_id = nClu;
+        s_clusterList.as_clusters[nClu].ui_startIndex = nCells;//n;
+        s_clusterList.as_clusters[nClu].ui_numPoints = 1;
+
+        s_clusterList.a_grdIndex[nCells] = n;
+        nCells++;
+
+        // Init Neighbours
+        memset(tmp_dbscan.neighbors, 0, sizeof(tmp_dbscan.neighbors));
+
+        uint32 nNeigh = 0;  // size of neighbor list
+        uint32 idxN = 0;    // index for neighbors
+        uint32 nb;          // neighbour
+
+        if (n >= (npts - nhcells)) // if it's a lower horizontal border point
+        {
+          tmp_dbscan.neighbors[nNeigh++] = n + 1;
+        }
+        else if ((n % nhcells) == 0) // if it's a vertical border point on the left side
+        {
+          tmp_dbscan.neighbors[nNeigh++] = n + 1;
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells;
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells + 1;
+        }
+        else if ((n % nhcells) == (nhcells - 1)) // if it's a vertical border point on the right side
+        {
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells - 1;
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells;
+        }
+        else
+        {
+          tmp_dbscan.neighbors[nNeigh++] = n + 1;
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells - 1;
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells;
+          tmp_dbscan.neighbors[nNeigh++] = n + nhcells + 1;
+        }
+
+        while (idxN < nNeigh) // nNeigh can increase within this loop
+        {
+          nb = tmp_dbscan.neighbors[idxN];
+
+          if (tmp_dbscan.Pvisit[nb] == 0) // if this neighbor has not been visited
+          {
+            tmp_dbscan.Pvisit[nb] = 1; // mark it as visited
+            if (coarseGrid.a_cellcount[nb] >= ui_minPointsCluster)
+            {
+              if (nb == (npts - 1)) // last cell
+              {
+                // do nothing
+              }
+              else if (nb >= (npts - nhcells)) // if it's a horizontal border point
+              {
+                tmp_dbscan.neighbors[nNeigh++] = nb + 1;
+              }
+              else if ((nb % nhcells) == 0) // if it's a vertical border point on the left side
+              {
+                tmp_dbscan.neighbors[nNeigh++] = nb + 1;
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells;
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells + 1;
+              }
+              else if ((nb % nhcells) == (nhcells - 1)) // if it's a vertical border point on the right side
+              {
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells - 1;
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells;
+              }
+              else
+              {
+                tmp_dbscan.neighbors[nNeigh++] = nb + 1;
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells - 1;
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells;
+                tmp_dbscan.neighbors[nNeigh++] = nb + nhcells + 1;
+              }
+              s_clusterList.as_clusters[nClu].ui_numPoints++;
+              s_clusterList.a_grdIndex[nCells] = nb;
+              nCells++;
+            }
+          }
+          idxN++;
+        }
+        nClu++;
+      }
+    }
+  }
+  s_clusterList.ui_numClusters = nClu;
+}
+
+// CoarseGrid
+//      I: array = init grid
+//         cell dim of the coarse grid
+//      O: s_CoarseGrid_t, holding the number of occupied cells
+
+// ---------------------------------------
+// Grid-Sweep = lightning fast clustering!
+// ---------------------------------------
+void gridSweep()
+{
+}
+//#endif // #if 0
+
+//////////////////////////
+// put your variables here
+//////////////////////////
+
+
+
+
+dword lasttickcount = 0;
+dword accumulatedTimeSinceLastUpdate = 0;
+
+// Fix Timing
+// https://gafferongames.com/post/fix_your_timestep/
+
+// OpenGL calls moved to own thread
+// s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
+void RenderThread(void *args)
+{
+  lasttickcount = GetTickCount();
+  while (true)
+  {
+    accumulatedTimeSinceLastUpdate += (GetTickCount() - lasttickcount); // GetTickCount [ms] dword
+    lasttickcount = GetTickCount();
+
+    if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
+    {
+      accumulatedTimeSinceLastUpdate = 0;
+
+      ////////////////
+      // do stuff here
+      ////////////////
+      if (bCluster)
+      {
+//        kmeans_merge();
+
+        s_CoarseGrid_t   coarsegrid;
+        s_ClusterList_t  s_clusterList;           // clusters of grid indices
+        const uint32      ui_minPointsCluster = 1; // set to 1 if coarsegrid is grid!!
+        s_DBSCAN_TMP_t   tmp_dbscan;
+        
+        memset(&coarsegrid, 0, sizeof(s_CoarseGrid_t));
+        memset(&s_clusterList, 0, sizeof(s_ClusterList_t));
+        memset(&tmp_dbscan, 0, sizeof(s_DBSCAN_TMP_t));
+
+        for (int i = 0; i < FPA_SIZE; i++)
+        {
+          if (FPA[i] > 155)
+            coarsegrid.a_cellcount[i] = 1;
+        }
+        coarsegrid.b_cells_square = true;
+        coarsegrid.ui_celldim = 1;
+        coarsegrid.ui_ncell = FPA_SIZE;
+
+        gridNeighbours(
+          coarsegrid,
+          ui_minPointsCluster,
+          tmp_dbscan, // <-- 2do, erst dort!!
+          s_clusterList);
+
+        char buf[55];
+        sprintf(buf, "%d clusters found", MAXCLUSTER, s_clusterList.ui_numClusters);
+        int msgboxID = MessageBox(
+          NULL,
+          buf,
+          "gridsweep",
+          MB_ICONINFORMATION | MB_OK
+        );
+
+        uint32 i, j, Nc, col, row;
+        Nc = s_clusterList.ui_numClusters;
+
+        for (i = 0; i < Nc; ++i)
+        {
+          s_clusterList.as_clusters[i].ui_id = s_clusterList.as_clusters[i].ui_id;
+          uint32 iCoarseStart = s_clusterList.as_clusters[i].ui_startIndex;
+          uint32 iCoarseCells = s_clusterList.as_clusters[i].ui_numPoints;
+          for (j = iCoarseStart; j < (iCoarseStart + iCoarseCells); ++j)
+          {
+            uint32 jj = s_clusterList.a_grdIndex[j];
+            row = jj / TMP_GRID_DIMENSION_U;
+            col = jj % TMP_GRID_DIMENSION_U;
+
+            char color_ = s_clusterList.as_clusters[i].ui_id;
+            zweidee::point pt = zweidee::point(col, row);
+            zweidee::colrgb color = colcluster[color_];
+            zweidee::fbuf2d.setpixel(zweidee::data, pt.x, CLUSTER_GUI_ROW1 + pt.y, color.r, color.g, color.b);
+          }
+        }
+
+        // map to texture --> shift to zweidee.h
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+
+
+        bCluster = false;
+      }
+
+      if (bRefill)
+      {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+        bRefill = false;
+      }
+
+      ////////////////
+      // do stuff here
+      ////////////////
+    }
+
+    if (b_WM_resized)
+    {
+      m_render.ReSizeGLScene(win_w, win_h);
+      b_WM_resized = false;
+    }
+
+    m_render.Render(); // render update-rate independent from move() (s. above)
+  }
+  _endthread();
+}
+
+
+void fillData()
+{
+  srand(time(NULL));
+
+  // background (dark)
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    FPA[i] = rand() % 100;// 255;
+  }
+
+  // objects: set seeds and dilate them
+  int numgenclusters = rand() % 10;
+  for (int c = 0; c < numgenclusters; c++)
+  {
+    int x = rand() % FPA_WIDTH - 1;
+    int y = rand() % FPA_HEIGHT - 1;
+    FPA[y * FPA_WIDTH + x] = 255;
+    for (int d = 0; d < 25; d++)
+    {
+      int x1 = x + rand() % 4;
+      int y1 = y + rand() % 4;
+      FPA[y1 * FPA_WIDTH + x1] = 255;
+    }
+  }
+
+  // write FPA to buf2d
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    int x = i % FPA_WIDTH;
+    int y = i / FPA_WIDTH;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
+  }
   // map to texture --> shift to zweidee.h
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 }
@@ -474,7 +740,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam)
     {
     case 32: // Space
-      bLetsStart = true;
+      bCluster = true;
       break;
     case 37: // ARROW-LEFT
       break;
@@ -491,6 +757,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 83: // S
       break;
     case 68: // D
+      break;
+    case 70: // F-Fill
+      fillData();
+      bRefill = true;
       break;
     }
     break;
