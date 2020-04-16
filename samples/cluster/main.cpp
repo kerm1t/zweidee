@@ -473,9 +473,9 @@ void gridSweep()
   for (i = 0; i < Nc; ++i)
   {
     s_clusterList.as_clusters[i].ui_id = s_clusterList.as_clusters[i].ui_id;
-    uint32 iCoarseStart = s_clusterList.as_clusters[i].ui_startIndex;
-    uint32 iCoarseCells = s_clusterList.as_clusters[i].ui_numPoints;
-    for (j = iCoarseStart; j < (iCoarseStart + iCoarseCells); ++j)
+    uint32 iStart = s_clusterList.as_clusters[i].ui_startIndex;
+    uint32 iCells = s_clusterList.as_clusters[i].ui_numPoints;
+    for (j = iStart; j < (iStart + iCells); ++j)
     {
       uint32 jj = s_clusterList.a_grdIndex[j];
       row = jj / TMP_GRID_DIMENSION_U;
@@ -586,6 +586,13 @@ void fillData()
     int x = i % FPA_WIDTH;
     int y = i / FPA_WIDTH;
     zweidee::fbuf2d.setpixel(zweidee::data, x, y, FPA[i], FPA[i], FPA[i]);
+  }
+  // clear result area
+  for (int i = 0; i < FPA_SIZE; i++)
+  {
+    int x = i % FPA_WIDTH;
+    int y = i / FPA_WIDTH;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, CLUSTER_GUI_ROW1+y, 0, 0, 0);
   }
   // map to texture --> shift to zweidee.h
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,

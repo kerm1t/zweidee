@@ -1,5 +1,8 @@
 4/16/2020
 - fix : exception, wenn program close in DrawVAOs_NEU()
+- fix: dscan always find 10 clusters
+- fix: upper right pixel forms new cluster
+- fix: single "boppels" clusters
 
 4/12/2020
 - k-means, here and then division by zero, around here: a) init k-means
