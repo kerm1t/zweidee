@@ -36,6 +36,18 @@ bool b_WM_resized = false;
 // put your variables here
 //////////////////////////
 
+void (*doit)();      // a) function pointer
+
+void do_stuff_here() // b) function
+{
+  for (int i = 0; i < FBUF2D_PIXELS; i++)
+  {
+    int x = i % FBUF2D_WIDTH;
+    int y = i / FBUF2D_WIDTH;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
+  }
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
+}
 
 
 dword lasttickcount = 0;
@@ -62,13 +74,7 @@ void RenderThread(void *args)
       // do stuff here
       ////////////////
 
-      for (int i = 0; i < FBUF2D_PIXELS; i++)
-      {
-        int x = i % FBUF2D_WIDTH;
-        int y = i / FBUF2D_WIDTH;
-        zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
-      }
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
+      doit(); // d) call function pointer
 
       ////////////////
       // do stuff here
@@ -123,12 +129,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 
 
-
-
   ///////////////
   // Init
   ///////////////
 
+  doit = do_stuff_here; // c) init function pointer
 
 
 
