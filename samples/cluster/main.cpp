@@ -50,9 +50,8 @@ int FPA[FPA_SIZE];
 zweidee::colrgb colcluster[10] = { {255,0,0},{0,225,0},{0,0,255},{255,255,0},{0,255,255},
                                    {255,0,225},{125,0,0},{0,125,0},{0,0,125},{125,125,0} };
 
-bool bCluster = false;
-bool bRefill = false;
-
+enum doit_mode { dmInit, dmCluster, dmDone, dmRefill };
+doit_mode mode = dmInit;
 
 float eudistance(zweidee::point p1, zweidee::point p2)
 {
@@ -492,69 +491,6 @@ void gridSweep()
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 }
 
-
-//////////////////////////
-// put your variables here
-//////////////////////////
-
-
-
-
-dword lasttickcount = 0;
-dword accumulatedTimeSinceLastUpdate = 0;
-
-// Fix Timing
-// https://gafferongames.com/post/fix_your_timestep/
-
-// OpenGL calls moved to own thread
-// s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
-void RenderThread(void *args)
-{
-  lasttickcount = GetTickCount();
-  while (true)
-  {
-    accumulatedTimeSinceLastUpdate += (GetTickCount() - lasttickcount); // GetTickCount [ms] dword
-    lasttickcount = GetTickCount();
-
-    if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
-    {
-      accumulatedTimeSinceLastUpdate = 0;
-
-      ////////////////
-      // do stuff here
-      ////////////////
-      if (bCluster)
-      {
-//        kmeans_merge();
-        
-        gridSweep();
-
-        bCluster = false;
-      }
-
-      if (bRefill)
-      {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
-        bRefill = false;
-      }
-
-      ////////////////
-      // do stuff here
-      ////////////////
-    }
-
-    if (b_WM_resized)
-    {
-      m_render.ReSizeGLScene(win_w, win_h);
-      b_WM_resized = false;
-    }
-
-    m_render.Render(); // render update-rate independent from move() (s. above)
-  }
-  _endthread();
-}
-
-
 void fillData()
 {
   srand(time(NULL));
@@ -592,11 +528,74 @@ void fillData()
   {
     int x = i % FPA_WIDTH;
     int y = i / FPA_WIDTH;
-    zweidee::fbuf2d.setpixel(zweidee::data, x, CLUSTER_GUI_ROW1+y, 0, 0, 0);
+    zweidee::fbuf2d.setpixel(zweidee::data, x, CLUSTER_GUI_ROW1 + y, 0, 0, 0);
   }
   // map to texture --> shift to zweidee.h
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
 }
+
+//////////////////////////
+// put your variables here
+//////////////////////////
+
+
+
+
+dword lasttickcount = 0;
+dword accumulatedTimeSinceLastUpdate = 0;
+
+// Fix Timing
+// https://gafferongames.com/post/fix_your_timestep/
+
+// OpenGL calls moved to own thread
+// s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
+void RenderThread(void *args)
+{
+  lasttickcount = GetTickCount();
+  while (true)
+  {
+    accumulatedTimeSinceLastUpdate += (GetTickCount() - lasttickcount); // GetTickCount [ms] dword
+    lasttickcount = GetTickCount();
+
+    if (accumulatedTimeSinceLastUpdate > 12) // indep. from gfx-card -> update every 12 [ms]
+    {
+      accumulatedTimeSinceLastUpdate = 0;
+
+      ////////////////
+      // do stuff here
+      ////////////////
+      if (mode == dmCluster)
+      {
+        // method a)
+//        kmeans_merge();
+        // method b)
+        gridSweep();
+
+        mode = dmDone;
+      }
+
+      if (mode == dmRefill)
+      {
+        fillData();
+        mode = dmInit;
+      }
+
+      ////////////////
+      // do stuff here
+      ////////////////
+    }
+
+    if (b_WM_resized)
+    {
+      m_render.ReSizeGLScene(win_w, win_h);
+      b_WM_resized = false;
+    }
+
+    m_render.Render(); // render update-rate independent from move() (s. above)
+  }
+  _endthread();
+}
+
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
   HINSTANCE hPrevInstance,
@@ -638,7 +637,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   ///////////////
   // Init
   ///////////////
+
   fillData();
+  
   ///////////////
   // Init
   ///////////////
@@ -734,7 +735,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (wParam)
     {
     case 32: // Space
-      bCluster = true;
+      if      (mode == dmInit) mode = dmCluster;
+      else if (mode == dmDone) mode = dmRefill;
       break;
     case 37: // ARROW-LEFT
       break;
@@ -751,10 +753,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case 83: // S
       break;
     case 68: // D
-      break;
-    case 70: // F-Fill
-      fillData();
-      bRefill = true;
       break;
     }
     break;
