@@ -6,8 +6,11 @@
 #include "stdafx.h"
 #include "resource.h"
 
-#include "zweidee.h"    // draw to 2D buffer
+// buffer dimension - need to define before include zweidee.h, 2do: fix!!
+#define FBUF2D_WIDTH  64
+#define FBUF2D_HEIGHT 48
 
+#include "zweidee.h"
 
 //////////////////////////
 // put your variables here
@@ -31,15 +34,15 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   LPTSTR    lpCmdLine,
   int       nCmdShow)
 {
-  zweidee::app_init(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+  // window dimension can be scaled to FBuf, e.g. by 10
+  zweidee::app_init(FBUF2D_WIDTH * 10, FBUF2D_HEIGHT * 10, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 
-  ///////////////
-  // Init
-  ///////////////
+  /////////////////
+  // hand over code
+  /////////////////
 
-  zweidee::doit = do_stuff_here; // c) init function pointer
-  // stuff is done here
+  zweidee::doit = do_stuff_here; // your function -> function pointer
   _beginthread(zweidee::RenderThread, 0, 0);
 
 

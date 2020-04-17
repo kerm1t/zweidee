@@ -685,14 +685,12 @@ namespace zweidee
   static FrameBuf2D    fbuf2d;
 
   zweidee::CRender m_render;
-  // buffer dimension
-#define FBUF2D_WIDTH  64
-#define FBUF2D_HEIGHT 48
+
 #define FBUF2D_PIXELS FBUF2D_WIDTH * FBUF2D_HEIGHT
 #define FBUF2D_SIZE   FBUF2D_PIXELS * 3 // r,g,b
   // windows dimension (the later may be changed with resize)
-  int win_w = FBUF2D_WIDTH * 10;
-  int win_h = FBUF2D_HEIGHT * 10;
+  int win_w;
+  int win_h;
 
   // --------- render thread ---------
   void(*doit)();      // a) function pointer
@@ -723,9 +721,9 @@ namespace zweidee
 
         doit(); // d) call function pointer
 
-                ////////////////
-                // do stuff here
-                ////////////////
+        ////////////////
+        // do stuff here
+        ////////////////
       }
 
       if (b_WM_resized)
@@ -829,14 +827,15 @@ namespace zweidee
     return RegisterClassEx(&wcex);
   }
 
-  bool app_init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+  bool app_init(int w, int h, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
   {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
 //    MSG msg;
 //    HACCEL hAccelTable;
-
+    win_w = w;
+    win_h = h;
     zweidee::hRC = NULL;
     zweidee::hDC = NULL;
     zweidee::hWnd = NULL;
