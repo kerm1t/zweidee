@@ -17,12 +17,6 @@
 
 void randomnoise()
 {
-  for (int i = 0; i < FBUF2D_PIXELS; i++)
-  {
-    int x = i % FBUF2D_WIDTH;
-    int y = i / FBUF2D_WIDTH;
-    zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
-  }
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -33,12 +27,21 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 
+  for (int i = 0; i < FBUF2D_PIXELS; i++)
+  {
+    int x = i % FBUF2D_WIDTH;
+    int y = i / FBUF2D_WIDTH;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
+  }
+
   ////////////////
-  // run in thread 
+  // do not :-) run in thread 
   ////////////////
 
-  zweidee::repeat = randomnoise;
+  zweidee::repeat = NULL; // 2do: initialize in zweidee.h (need some class)
 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+  zweidee::m_render.Render();
 
   return zweidee::app_run(hInstance);
 }

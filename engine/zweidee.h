@@ -28,17 +28,18 @@ namespace zweidee
 {
   struct colrgb
   {
-    uint8 r;
-    uint8 g;
-    uint8 b;
+    char r;
+    char g;
+    char b;
   };
 
   struct point
   {
-    uint32 x;
-    uint32 y;
+  public:
+    int x; // do not use unsigned int (except bitfields). this causes unsigned arithmetic, which is pretty bad
+    int y;
     point() { } // default constructor
-    point(const uint32 _x, const uint32 _y) : x(_x), y(_y) { } // constructor for change after declaration
+    point(const int _x, const int _y) : x(_x), y(_y) { } // constructor for change after declaration
   };
 
   static float fps;                        // This will store our fps
@@ -685,7 +686,7 @@ namespace zweidee
   static bool b_WM_resized;
 
   // --------- render thread ---------
-  static void(*doit)();      // a) function pointer
+  static void(*repeat)();      // a) function pointer
 
   static dword lasttickcount = 0;
   static dword accumulatedTimeSinceLastUpdate = 0;
@@ -711,7 +712,7 @@ namespace zweidee
         // do stuff here
         ////////////////
 
-        doit(); // d) call function pointer
+        repeat(); // d) call function pointer
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
       }
 
@@ -883,7 +884,7 @@ namespace zweidee
 
   static int app_run(HINSTANCE hInstance)
   {
-    _beginthread(zweidee::RenderThread, 0, 0);
+    if (repeat != NULL) _beginthread(zweidee::RenderThread, 0, 0);
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
     

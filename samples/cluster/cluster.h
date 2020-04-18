@@ -16,9 +16,9 @@ zweidee::colrgb colcluster[10] = { { 255,0,0 },{ 0,225,0 },{ 0,0,255 },{ 255,255
 enum doit_mode { dmInit, dmCluster, dmDone, dmRefill };
 doit_mode mode = dmInit;
 
-float eudistance(zweidee::point p1, zweidee::point p2)
+float eudistance(zweidee::point p1, zweidee::point p2) // cast to int for negative subtraction results!
 {
-  return sqrtf((float)(p2.x - p1.x)*(p2.x - p1.x) + (float)(p2.y - p1.y)*(p2.y - p1.y));
+  return sqrtf((float)((int)p2.x - (int)p1.x)*((int)p2.x - (int)p1.x) + (float)((int)p2.y - (int)p1.y)*((int)p2.y - (int)p1.y));
 }
 
 // (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
