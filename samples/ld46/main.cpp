@@ -19,8 +19,10 @@ enum ecolor {RED,GREEN,BLUE};
 zweidee::colrgb color[11] = { { 0,0,0 }, { 255,0,0 },{ 0,225,0 },{ 0,0,255 },{ 255,255,0 },
                               { 0,255,255 },{ 255,0,225 },{ 125,0,0 },{ 0,125,0 },{ 0,0,125 },
                               { 125,125,0 } };
-int lvl_w = 32;
-int lvl_h = 24;
+zweidee::colrgb gray[4] = { { 0,0,0 },{ 150,150,150 },{ 150,150,150 },{ 0,0,0 } };
+
+int lvl_w = 60; // 32
+int lvl_h = 44; // 24
 int lvl_size = lvl_w*lvl_h;
 uint8 * lvl;
 struct lpoint {//: zweidee::point {
@@ -111,20 +113,39 @@ rect prep_lvl2(rect r)
   {
     for (int x = __max(0,seed.x - w / 2); x < __min(lvl_h,seed.x + w / 2); x++)
     {
-      lvl[y*lvl_w + x] = 55+_color;// BLUE;// 150; // just for visualization, may remove later
+      lvl[y*lvl_w + x] = 55+_color;// BLUE;// 150;
     }
   }
   return rtmp;
-/*  int side = rand() % 4;
-  int tmp;
-  switch (side) {
-    case 0: tmp = rtmp.l; break;
-    case 1: tmp = rtmp.r; break;
-    case 2: tmp = rtmp.t; break;
-    case 3: tmp = rtmp.b; break;
+}
+zweidee::point prep_lvl3(zweidee::point seed)
+{
+  int w = 5 + rand() % (lvl_w - 20);
+  int h = 5 + rand() % (lvl_h - 20);
+  rect r = {
+    __max(0,seed.x - w / 2),
+    __min(lvl_h,seed.x + w / 2),
+    __max(0,seed.y - h / 2),
+    __min(lvl_h,seed.y + h / 2)
+  };
+  int _gray = rand() % 4;
+  for (int y = r.t; y < r.b; y++)
+  {
+    for (int x = r.l; x < r.r; x++)
+    {
+      lvl[y*lvl_w + x] = 125;
+//      lvl[y*lvl_w + x] = gray[_gray].r;
+    }
   }
-  return rect{tmp,tmp,tmp,tmp};
-  */
+  int side = rand() % 4;
+  int xhalf = r.l + (r.r - r.l) / 2;
+  int yhalf = r.t + (r.b - r.t) / 2;
+  switch (side) {
+  case 0: return { r.l, yhalf};
+  case 1: return { r.r, yhalf };
+  case 2: return { r.t, xhalf };
+  case 3: return { r.b, xhalf };
+  }
 }
 int APIENTRY _tWinMain(HINSTANCE hInstance,
   HINSTANCE hPrevInstance,
@@ -132,33 +153,45 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   int       nCmdShow)
 {
   zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-// initialize once at program start to reproduce
-  srand(0);// (uint32)time(NULL));
+// initialize rand() once at progstart to reproduce
+//  srand(0);
+  srand((unsigned int)time(NULL));
 
   // random noise
   for (int i = 0; i < FBUF2D_PIXELS; i++)
   {
     int x = i % FBUF2D_WIDTH;
     int y = i / FBUF2D_WIDTH;
-    zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, 111, 111, 111);// rand(), rand(), rand());
   }
 
   lvl = new uint8[lvl_size];
   for (int i = 0; i < lvl_size; i++)
   {
-    lvl[i] = 0;
+    lvl[i] = 50+rand()%30;
   }
-  rect r = { 0,lvl_w,0,lvl_h };
+/*  rect r = { 0,lvl_w,0,lvl_h };
   r = prep_lvl2(r);
   r = prep_lvl2(r);
   r = prep_lvl2(r);
   r = prep_lvl2(r);
-//  prep_lvl2(r);
+  prep_lvl2(r);*/
+  zweidee::point pt = { lvl_w / 2,lvl_h / 2 };
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
+  pt = prep_lvl3(pt);
   for (int i = 0; i < lvl_size; i++)
   {
     int x = i % lvl_w;
     int y = i / lvl_w;
-    zweidee::fbuf2d.setpixel(zweidee::data, 16 + x, 12 + y, lvl[i], lvl[i], lvl[i]);
+    zweidee::fbuf2d.setpixel(zweidee::data, (FBUF2D_WIDTH-lvl_w)/2 + x, (FBUF2D_HEIGHT - lvl_h) / 2 + + y, lvl[i], lvl[i], lvl[i]);
 //    zweidee::fbuf2d.setpixel(zweidee::data, 16+x, 12+y, color[lvl[i]].r, color[lvl[i]].g, color[lvl[i]].b);
   }
   ////////////////
