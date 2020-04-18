@@ -1,4 +1,5 @@
 4/17/2020
+- Resource.h either from engine (if no own WndProc) or from samples
 - add a fancy fragment-shader effect, e.g. https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson5
 - add an imgui example
 - unsigned int --> uint32

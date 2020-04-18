@@ -16,7 +16,7 @@
 // put your code here
 /////////////////////
 
-void do_stuff_here() // b) function
+void randomnoise()
 {
   for (int i = 0; i < FBUF2D_PIXELS; i++)
   {
@@ -24,7 +24,6 @@ void do_stuff_here() // b) function
     int y = i / FBUF2D_WIDTH;
     zweidee::fbuf2d.setpixel(zweidee::data, x, y, rand(), rand(), rand());
   }
-//  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -39,9 +38,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   // hand over code
   /////////////////
 
-  zweidee::doit = do_stuff_here; // your function -> function pointer
-  _beginthread(zweidee::RenderThread, 0, 0);
-
+  zweidee::doit = randomnoise; // your function -> function pointer
 
 
   return zweidee::app_run(hInstance);

@@ -883,6 +883,8 @@ namespace zweidee
 
   static int app_run(HINSTANCE hInstance)
   {
+    _beginthread(zweidee::RenderThread, 0, 0);
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
     
     // main message loop
