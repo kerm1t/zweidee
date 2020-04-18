@@ -745,6 +745,7 @@ namespace zweidee
         ////////////////
 
         doit(); // d) call function pointer
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);
       }
 
       if (b_WM_resized)
