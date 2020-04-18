@@ -90,9 +90,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\common\lodepng.h" />
     <ClInclude Include="..\..\engine\zweidee.h" />
-    <ClInclude Include="..\..\engine\zweidee_draw.h" />
-    <ClInclude Include="..\..\engine\engine.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="..\..\engine\Resource.h" />
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />
     <ClInclude Include="types.h" />
