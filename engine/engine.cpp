@@ -1,6 +1,8 @@
 
 #include "stdafx.h"
 
+#define FBUF2D_WIDTH  64 // HACK!! remove!!
+#define FBUF2D_HEIGHT 64 // HACK!! remove!!
 #include "engine.h"
 
 zweidee::CEngine::CEngine()

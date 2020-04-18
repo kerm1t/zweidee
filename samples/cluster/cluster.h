@@ -1,6 +1,7 @@
 #pragma once
 
 //#include "zweidee.h"
+#include <time.h>       // srand()
 
 #define FPA_HEIGHT 32
 #define FPA_WIDTH  FBUF2D_WIDTH
@@ -17,7 +18,7 @@ doit_mode mode = dmInit;
 
 float eudistance(zweidee::point p1, zweidee::point p2)
 {
-  return sqrtf((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
+  return sqrtf((float)(p2.x - p1.x)*(p2.x - p1.x) + (float)(p2.y - p1.y)*(p2.y - p1.y));
 }
 
 // (1) https://medium.com/datadriveninvestor/how-the-simplest-clustering-algorithm-work-with-code-b8af21aabda2
@@ -25,11 +26,11 @@ float eudistance(zweidee::point p1, zweidee::point p2)
 void kmeans_merge()
 {
   // prepare: init datastructures
-  int numinput = 0;
+  uint32 numinput = 0;
   zweidee::point input[FPA_SIZE];
   zweidee::point kmean[MAXCLUSTER];// = { {10,10},{100,30},{64,16} };
   float mindist[FPA_SIZE];
-  int belongtocluster[FPA_SIZE];
+  uint32 belongtocluster[FPA_SIZE];
   for (int i = 0; i < FPA_SIZE; i++) mindist[i] = 255.0f; // set to a value that is > max. distance      
   memset(belongtocluster, 255, FPA_SIZE); // set to a value that is > #cluster
 
@@ -52,7 +53,7 @@ void kmeans_merge()
     kmean[j] = input[n];
   }
   // b) measure eucl. distance for each datapt. to each k-mean
-  for (int i = 0; i < numinput; i++)
+  for (uint32 i = 0; i < numinput; i++)
   {
     for (int j = 0; j < MAXCLUSTER; j++)
     {
@@ -71,11 +72,11 @@ void kmeans_merge()
   // idea: make a connected component analysis, i.e.
 
   // d) merge clusters (i.e. dist < 2)
-  for (unsigned int j = 0; j < MAXCLUSTER; j++)
+  for (uint32 j = 0; j < MAXCLUSTER; j++)
   {
     // run through all cluster points
     zweidee::point pt1 = { 0,0 };
-    for (unsigned int p = 0; p < numinput; p++)
+    for (uint32 p = 0; p < numinput; p++)
     {
       if (j == belongtocluster[p])
       {
@@ -177,7 +178,7 @@ void kmeans_merge()
   {
     zweidee::point tmp = { 0,0 };
     int numclusterpoints = 0;
-    for (int i = 0; i < numinput; i++)
+    for (uint32 i = 0; i < numinput; i++)
     {
       if (j == belongtocluster[i])
       {
@@ -186,14 +187,14 @@ void kmeans_merge()
         numclusterpoints++;
       }
     }
-    kmean[j].x = tmp.x / (GLfloat)numclusterpoints;
-    kmean[j].y = tmp.y / (GLfloat)numclusterpoints;
+    kmean[j].x = (uint32)(tmp.x / (GLfloat)numclusterpoints);
+    kmean[j].y = (uint32)(tmp.y / (GLfloat)numclusterpoints);
   }
 #endif
 
 
   // wrap up: i) color the pixel according to found clusters
-  for (int i = 0; i < numinput; i++)
+  for (uint32 i = 0; i < numinput; i++)
   {
     zweidee::point pt = input[i];
     zweidee::colrgb col = colcluster[belongtocluster[i]];
@@ -451,7 +452,7 @@ void gridSweep()
 
 void fillData()
 {
-  srand(time(NULL));
+  srand((uint32)time(NULL));
 
   // background (dark)
   for (int i = 0; i < FPA_SIZE; i++)

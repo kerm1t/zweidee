@@ -23,7 +23,7 @@ namespace zweidee
 	}
 
 	void Bresenham_Circle(FrameBuf2D * fbuf, int x0, int y0, int radius,
-    const glm::vec3 col, unsigned char * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+    const glm::vec3 col, uint8 * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 	{
 		int f = 1 - radius;
 		int ddF_x = 0;

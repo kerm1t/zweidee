@@ -1,3 +1,8 @@
+4/17/2020
+- add a fancy fragment-shader effect, e.g. https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson5
+- add an imgui example
+- unsigned int --> uint32
+
 4/16/2020
 - fix : exception, wenn program close in DrawVAOs_NEU()
 + fix: dbscan always find 10 clusters

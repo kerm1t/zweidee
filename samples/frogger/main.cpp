@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "resource.h"
+//#include "resource.h"
 
 #include "zweidee.h"    // draw to 2D buffer
 #include "engine.h"	    //   run a 2D game

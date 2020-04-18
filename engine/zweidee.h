@@ -1,5 +1,8 @@
+#pragma once
 #ifndef ZWEIDEE_H
 #define ZWEIDEE_H
+
+#include "resource.h" // bit ugly, as ressource is associated to the project
 
 #include <stdio.h>    // <-- sprintf
 #include <vector>
@@ -27,17 +30,17 @@ namespace zweidee
 
   struct colrgb
   {
-    char r;
-    char g;
-    char b;
+    uint8 r;
+    uint8 g;
+    uint8 b;
   };
 
   struct point
   {
-    unsigned int x;
-    unsigned int y;
+    uint32 x;
+    uint32 y;
     point() { } // default constructor
-    point(const unsigned int _x, const unsigned int _y) : x(_x), y(_y) { } // constructor for change after declaration
+    point(const uint32 _x, const uint32 _y) : x(_x), y(_y) { } // constructor for change after declaration
   };
 
   static float fps;                        // This will store our fps
@@ -123,12 +126,26 @@ namespace zweidee
         "  gl_Position.xy *= 1.0;\n"
         "}"
       };
+// https://stackoverflow.com/questions/2437977/fragment-shader-blur-how-does-this-work
       const GLchar * fshd_src_FPS[] = {
         "#version 330 core\n"
         "in vec2 UV;\n"
         "out vec3 color;\n"
         "uniform sampler2D myTexSampler;\n"
-        "void main()\n"
+/*        "    uniform sampler2D myTexSampler;\n"
+      "   uniform vec2 tc_offset[9];\n"
+      "     void main()\n"
+        "   {\n"
+        "   vec4 sample[9];\n"
+        "   for (int i = 0; i < 9; ++i)\n"
+//          " sample[i] = texture2D(sampler0, gl_TexCoord[0].st + tc_offset[i]);\n"
+        " sample[i] = texture2D(myTexSampler, UV.rgb + tc_offset[i]);\n"
+        "\n"
+        "  color = (sample[0] + (2.0 * sample[1]) + sample[2] +"
+          "  (2.0 * sample[3]) + sample[4] + 2.0 * sample[5] +"
+          "    sample[6] + 2.0 * sample[7] + sample[8]) / 13.0;\n"
+      "}\n"
+*/      "void main()\n"
         "{\n"
         "  color = texture(myTexSampler, UV).rgb;\n" // texture2D ist deprecated
         "}"
@@ -532,9 +549,9 @@ namespace zweidee
   class FrameBuf2D // which is actually an animated (OpenGL-)Texture
   {
   public:
-    unsigned int width, height;
-    unsigned int imagesize;   // = width*height*3
-    unsigned int framecounter;
+    uint32 width, height;
+    uint32 imagesize;      // = width*height*3
+    uint32 framecounter;
 /*
     ~FrameBuf2D()
     {
@@ -542,17 +559,25 @@ namespace zweidee
     }
 */
     // (0,0): rgb (1,0): rgb (2,0): rgb
-    void setpixel(unsigned char * data, const unsigned int x, const unsigned int y, const unsigned char r, const unsigned char g, const unsigned char b)
+    void setpixel(uint8 * data, const uint32 x, const uint32 y, const uint8 r, const uint8 g, const uint8 b)
     {
-      unsigned int _y = height - 1 - y; // hack, texture upside down? 2do: check!!
+      uint32 _y = height - 1 - y; // hack, texture upside down? 2do: check!!
                                         //    unsigned int _y = y;
-      unsigned int pos = 3 * (_y * width + x);
+      uint32 pos = 3 * (_y * width + x);
       //    assert(pos < imageSize);
       if (pos >= imagesize) return;
       if (x > width) return; // test < 0 ?? <-- need signed then
       data[pos] = b; // r ?
       data[pos + 1] = g;
       data[pos + 2] = r; // b ?
+    }
+    void setpixel(uint8 * data, const uint32 x, const uint32 y, const float r, const float g, const float b) // overload
+    {
+      setpixel(data, x, y, (uint8)r, (uint8)g, (uint8)b);
+    }
+    void setpixel(uint8 * data, const uint32 x, const uint32 y, const int r, const int g, const int b) // overload
+    {
+      setpixel(data, x, y, (uint8)r, (uint8)g, (uint8)b);
     }
 
     GLuint Init(int w, int h) // purpose: get texture-ID
@@ -569,9 +594,9 @@ namespace zweidee
       memset(data, 0, imagesize); // clear
 
       // draw test pattern
-      for (unsigned int i = 1; i < (height - 1); i++)
+      for (uint32 i = 1; i < (height - 1); i++)
       {
-        char r, g, b;
+        uint8 r, g, b;
         r = ((i + 1) % 3) * 255;
         g = (i % 3) * 255;
         b = ((i - 1) % 3) * 255;
@@ -684,26 +709,26 @@ namespace zweidee
 
   static FrameBuf2D    fbuf2d;
 
-  zweidee::CRender m_render;
+  static zweidee::CRender m_render;
 
 #define FBUF2D_PIXELS FBUF2D_WIDTH * FBUF2D_HEIGHT
 #define FBUF2D_SIZE   FBUF2D_PIXELS * 3 // r,g,b
   // windows dimension (the later may be changed with resize)
-  int win_w;
-  int win_h;
+  static int win_w;
+  static int win_h;
 
   // --------- render thread ---------
-  void(*doit)();      // a) function pointer
+  static void(*doit)();      // a) function pointer
 
-  dword lasttickcount = 0;
-  dword accumulatedTimeSinceLastUpdate = 0;
+  static dword lasttickcount = 0;
+  static dword accumulatedTimeSinceLastUpdate = 0;
 
   // Fix Timing
   // https://gafferongames.com/post/fix_your_timestep/
 
   // OpenGL calls moved to own thread
   // s. http://stackoverflow.com/questions/9833852/opengl-game-loop-multithreading
-  void RenderThread(void *args)
+  static void RenderThread(void *args)
   {
     lasttickcount = GetTickCount();
     while (true)
@@ -720,10 +745,6 @@ namespace zweidee
         ////////////////
 
         doit(); // d) call function pointer
-
-        ////////////////
-        // do stuff here
-        ////////////////
       }
 
       if (b_WM_resized)
@@ -765,8 +786,10 @@ namespace zweidee
     return TRUE;
   }
 
+//  void(*WndProc)(); // function pointer
+
   // autogenerated: process main window's messages
-  LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+  static LRESULT CALLBACK WndProcZweidee(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   {
     int wmId, wmEvent;
 
@@ -806,7 +829,7 @@ namespace zweidee
   }
 
   // autogenerated: register window class (mandatory)
-  ATOM MyRegisterClass(HINSTANCE hInstance)
+  static ATOM MyRegisterClass(HINSTANCE hInstance, WNDPROC WndProc)
   {
     WNDCLASSEX wcex;
 
@@ -827,13 +850,11 @@ namespace zweidee
     return RegisterClassEx(&wcex);
   }
 
-  bool app_init(int w, int h, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+  static bool app_init(int w, int h, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, WNDPROC WndProc = NULL)
   {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-//    MSG msg;
-//    HACCEL hAccelTable;
     win_w = w;
     win_h = h;
     zweidee::hRC = NULL;
@@ -846,7 +867,10 @@ namespace zweidee
     // init global strings
     LoadString(hInstance, IDS_APP_TITLE, zweidee::szTitle, MAX_LOADSTRING);  // window title etc. see .rc
     LoadString(hInstance, IDC_ZWEIDEE, zweidee::szWindowClass, MAX_LOADSTRING);
-    zweidee::MyRegisterClass(hInstance);
+    if (WndProc == NULL)
+      zweidee::MyRegisterClass(hInstance, WndProcZweidee);
+    else
+      zweidee::MyRegisterClass(hInstance, WndProc);
 
     if (!zweidee::InitInstance(hInstance, nCmdShow, zweidee::win_w, zweidee::win_h)) // init application
     {
@@ -859,11 +883,13 @@ namespace zweidee
     GLuint texID = zweidee::fbuf2d.Init(FBUF2D_WIDTH, FBUF2D_HEIGHT);
 
     zweidee::m_render.Setup_Geometry(texID);
+    return true;
   }
 
-  int app_exit(HINSTANCE hInstance)
+  static int app_run(HINSTANCE hInstance)
   {
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ZWEIDEE));
+    
     // main message loop
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))

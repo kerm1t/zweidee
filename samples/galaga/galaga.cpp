@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#define FBUF2D_WIDTH  64 // HACK!! remove!!
+#define FBUF2D_HEIGHT 64 // HACK!! remove!!
 #include "zweidee_draw.h"
 #include "galaga.h"
 
@@ -141,15 +143,15 @@ int galaga::CGalaga::fire()
 
 int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ... 2do: replace with random starfield
 {
-  char r, g, b;
+  uint8 r, g, b;
 
   for (unsigned int i = 0; i < fbuf2d->height; i++)
   {
     r = ((i + 1) % 3) * 255;
     g = ( i      % 3) * 255;
     b = ((i - 1) % 3) * 255;
-    fbuf2d->setpixel(data, cos((float)i) *                       i, (iloopy + i) % 64, r, g, b);
-    fbuf2d->setpixel(data, cos((float)i) * (fbuf2d->width - 2) - i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, (uint32)cos((float)i) *                       i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, (uint32)cos((float)i) * (fbuf2d->width - 2) - i, (iloopy + i) % 64, r, g, b);
   }
   return true;
 }
