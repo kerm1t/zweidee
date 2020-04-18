@@ -145,24 +145,24 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
 {
   uint8 r, g, b;
 
-  for (unsigned int i = 0; i < fbuf2d->height; i++)
+  for (uint32 i = 0; i < fbuf2d->height; i++)
   {
     r = ((i + 1) % 3) * 255;
     g = ( i      % 3) * 255;
     b = ((i - 1) % 3) * 255;
-    fbuf2d->setpixel(data, (uint32)cos((float)i) *                       i, (iloopy + i) % 64, r, g, b);
-    fbuf2d->setpixel(data, (uint32)cos((float)i) * (fbuf2d->width - 2) - i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, cos((float)i) *                       i, (iloopy + i) % 64, r, g, b);
+    fbuf2d->setpixel(data, cos((float)i) * (fbuf2d->width - 2) - i, (iloopy + i) % 64, r, g, b);
   }
   return true;
 }
 
 int galaga::CGalaga::draw_obj(const rect box, const unsigned char * obj, unsigned char * data)
 {
-  const unsigned char _w = box.w;
-  const unsigned char _h = box.h;
-  for (unsigned char y=0; y<_h; y++)
+  const uint8 _w = box.w;
+  const uint8 _h = box.h;
+  for (uint8 y=0; y<_h; y++)
   {
-    for (unsigned char x=0; x<_w; x++)
+    for (uint8 x=0; x<_w; x++)
     {
       int _x = box.x + x; // upper ...
       int _y = box.y + y; // ... left

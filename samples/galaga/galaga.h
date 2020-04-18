@@ -13,41 +13,41 @@ namespace galaga
                               glm::vec3(190,190,255)  // very light blue
                             };
 
-  const unsigned char spacecraft_w = 7;
-  const unsigned char spacecraft_h = 3;
+  const uint8 spacecraft_w = 7;
+  const uint8 spacecraft_h = 3;
   // Anton's proposal
-  const unsigned char aSpacecraft[spacecraft_w*spacecraft_h] = {
+  const uint8 aSpacecraft[spacecraft_w*spacecraft_h] = {
     0,0,1,1,1,0,0,
     2,0,1,3,1,0,2,
     2,4,1,1,1,4,2
   };
 
-  const unsigned char spacecraft_turnleft_w = 5;
-  const unsigned char spacecraft_turnleft_h = 3;
-  const unsigned char aSpacecraft_turnleft[spacecraft_turnleft_w*spacecraft_turnleft_h] = {
+  const uint8 spacecraft_turnleft_w = 5;
+  const uint8 spacecraft_turnleft_h = 3;
+  const uint8 aSpacecraft_turnleft[spacecraft_turnleft_w*spacecraft_turnleft_h] = {
     0,1,1,1,0,
     2,1,3,1,5,
     2,1,1,1,5
   };
 
-  const unsigned char spacecraft_turnright_w = 5;
-  const unsigned char spacecraft_turnright_h = 3;
-  const unsigned char aSpacecraft_turnright[spacecraft_turnright_w*spacecraft_turnright_h] = {
+  const uint8 spacecraft_turnright_w = 5;
+  const uint8 spacecraft_turnright_h = 3;
+  const uint8 aSpacecraft_turnright[spacecraft_turnright_w*spacecraft_turnright_h] = {
     0,1,1,1,0,
     5,1,3,1,2,
     5,1,1,1,2
   };
 
-  const unsigned char enemy_w = 3;
-  const unsigned char enemy_h = 2;
-  const unsigned char aEnemy[enemy_w*enemy_h] = {
+  const uint8 enemy_w = 3;
+  const uint8 enemy_h = 2;
+  const uint8 aEnemy[enemy_w*enemy_h] = {
     3,3,3,
     0,3,0
   };
 
-  const unsigned char gameover_w = 17;
-  const unsigned char gameover_h = 9;
-  const unsigned char aGameover[gameover_w*gameover_h] = {
+  const uint8 gameover_w = 17;
+  const uint8 gameover_h = 9;
+  const uint8 aGameover[gameover_w*gameover_h] = {
     1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1,1, // Game
     1,0,0,0,1,0,1,0,1,1,0,1,1,0,1,0,0,
     1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,
@@ -61,10 +61,10 @@ namespace galaga
 
   typedef struct
   {
-    unsigned int x; // left
-    unsigned int y; // top
-    unsigned int w;
-    unsigned int h;
+    uint32 x; // left
+    uint32 y; // top
+    uint32 w;
+    uint32 h;
   } rect;
 
   typedef struct
@@ -88,7 +88,7 @@ namespace galaga
   typedef struct
   {
     enemy::enemy_state state;
-    unsigned char explode_counter;
+    uint8 explode_counter;
     rect box;
   } sEnemy;
 
@@ -96,9 +96,9 @@ namespace galaga
   {
     rect box;
     spacecraft::spacecraft_state state;
-    unsigned char explode_counter;
-    unsigned int dir;   // 0=fwd,1=lft,2=right
-    unsigned int lives; // 4
+    uint8 explode_counter;
+    uint32 dir;   // 0=fwd,1=lft,2=right
+    uint32 lives; // 4
   } sSpaceCraft;
 
   bool DoBoxesIntersect(rect a, rect b);
