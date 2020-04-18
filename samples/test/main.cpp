@@ -4,9 +4,8 @@
 //////////////////////////////
 
 #include "stdafx.h"
-//#include "resource.h"
 
-// buffer dimension - need to define before include zweidee.h, 2do: fix!!
+// buffer dimension - define before include zweidee.h!
 #define FBUF2D_WIDTH  64
 #define FBUF2D_HEIGHT 48
 
@@ -31,7 +30,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   LPTSTR    lpCmdLine,
   int       nCmdShow)
 {
-  zweidee::app_init(FBUF2D_WIDTH * 10, FBUF2D_HEIGHT * 10, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+  zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 
   /////////////////
