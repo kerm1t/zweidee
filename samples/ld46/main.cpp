@@ -10,16 +10,13 @@
 #define FBUF2D_HEIGHT 48
 
 #include "zweidee.h"
+#include "engine.h"
+#include "ld46.h"
 #include <time.h> // rand()
 
 /////////////////////
 // put your code here
 /////////////////////
-
-int lvl_w = 60; // 32
-int lvl_h = 44; // 24
-int lvl_size = lvl_w*lvl_h;
-char * lvl;
 
 struct rect {
   int l;
@@ -30,20 +27,20 @@ struct rect {
 
 zweidee::point prep_lvl3(zweidee::point seed)
 {
-  int w = 5 + rand() % (lvl_w - 20);
-  int h = 5 + rand() % (lvl_h - 20);
+  int w = 5 + rand() % (ld46::lvl_w - 20);
+  int h = 5 + rand() % (ld46::lvl_h - 20);
   rect r = {
     __max(0,seed.x - w / 2),
-    __min(lvl_h,seed.x + w / 2),
+    __min(ld46::lvl_h,seed.x + w / 2),
     __max(0,seed.y - h / 2),
-    __min(lvl_h,seed.y + h / 2)
+    __min(ld46::lvl_h,seed.y + h / 2)
   };
   int _gray = rand() % 4;
   for (int y = r.t; y < r.b; y++)
   {
     for (int x = r.l; x < r.r; x++)
     {
-      lvl[y*lvl_w + x] = 125;
+      ld46::lvl[y*ld46::lvl_w + x] = 125;
     }
   }
   int side = rand() % 4;
@@ -55,6 +52,20 @@ zweidee::point prep_lvl3(zweidee::point seed)
   case 2: return { r.t, xhalf };
   case 3: return { r.b, xhalf };
   }
+  return {0,0};
+}
+
+zweidee::CEngine m_engine;
+
+void do_stuff_here() // b) function
+{
+  // no rapid fire :-)
+  if (GetAsyncKeyState(VK_UP))    m_engine.up();
+  if (GetAsyncKeyState(VK_DOWN))  m_engine.down();
+  if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
+  if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
+
+  m_engine.move(); // move (i.e. increase playengine step) and update fbuf2d
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -63,6 +74,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   int       nCmdShow)
 {
   zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+
+  m_engine.init(&zweidee::fbuf2d, zweidee::data);
+
 // initialize rand() once at progstart to reproduce
 //  srand(0);
   srand((unsigned int)time(NULL));
@@ -75,12 +89,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     zweidee::fbuf2d.setpixel(zweidee::data, x, y, 111, 111, 111);
   }
   // level
-  lvl = new char[lvl_size];
-  for (int i = 0; i < lvl_size; i++)
+  ld46::lvl = new char[ld46::lvl_size];
+  for (int i = 0; i < ld46::lvl_size; i++)
   {
-    lvl[i] = 50+rand()%30;
+    ld46::lvl[i] = 50+rand()%30;
   }
-  zweidee::point pt = { lvl_w / 2,lvl_h / 2 };
+  zweidee::point pt = { ld46::lvl_w / 2, ld46::lvl_h / 2 };
   pt = prep_lvl3(pt);
   pt = prep_lvl3(pt);
   pt = prep_lvl3(pt);
@@ -92,22 +106,23 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   pt = prep_lvl3(pt);
   pt = prep_lvl3(pt);
   
-  for (int i = 0; i < lvl_size; i++)
+  for (int i = 0; i < ld46::lvl_size; i++)
   {
-    int x = i % lvl_w;
-    int y = i / lvl_w;
-    zweidee::fbuf2d.setpixel(zweidee::data, (FBUF2D_WIDTH-lvl_w)/2 + x, (FBUF2D_HEIGHT - lvl_h) / 2 + + y, lvl[i], lvl[i], lvl[i]);
+    int x = i % ld46::lvl_w;
+    int y = i / ld46::lvl_w;
+    zweidee::fbuf2d.setpixel(zweidee::data, (FBUF2D_WIDTH- ld46::lvl_w)/2 + x, (FBUF2D_HEIGHT - ld46::lvl_h) / 2 + + y, ld46::lvl[i], ld46::lvl[i], ld46::lvl[i]);
   }
+
   ////////////////
   // do not :-) run in thread 
   ////////////////
 
-  zweidee::repeat = NULL; // 2do: initialize in zweidee.h (need some class)
+  zweidee::repeat = do_stuff_here;
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
   zweidee::m_render.Render();
 
-  delete lvl;
+  delete ld46::lvl;
 
   return zweidee::app_run(hInstance);
 }

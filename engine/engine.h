@@ -13,6 +13,9 @@
 #ifdef FROGGER
 #include "../samples/frogger/frogger1tap.h"
 #endif
+#ifdef LD46
+#include "../samples/ld46/ld46.h"
+#endif
 
 namespace zweidee
 {
@@ -34,6 +37,9 @@ namespace zweidee
 #endif
 #ifdef FROGGER
     frogger1tap::CFrogger m_game;
+#endif
+#ifdef LD46
+    ld46::CLD46 m_game; // ugly!!.. 2do, das muss hier 'raus
 #endif
 
 //    zweidee::FrameBuf2D * fbuf2d;

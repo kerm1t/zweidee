@@ -45,12 +45,27 @@
     <ClInclude Include="..\..\engine\Resource.h">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\engine\engine.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="ld46.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\game.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\stdafx.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engine\engine.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="ld46.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

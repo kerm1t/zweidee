@@ -89,13 +89,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\lodepng.h" />
+    <ClInclude Include="..\..\engine\engine.h" />
+    <ClInclude Include="..\..\engine\game.h" />
     <ClInclude Include="..\..\engine\zweidee.h" />
     <ClInclude Include="..\..\engine\Resource.h" />
     <ClInclude Include="..\..\common\stdafx.h" />
     <ClInclude Include="..\..\common\targetver.h" />
+    <ClInclude Include="ld46.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\engine\engine.cpp" />
+    <ClCompile Include="ld46.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\..\common\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

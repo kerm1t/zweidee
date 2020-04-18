@@ -1,4 +1,5 @@
 4/18/2020
+- remove class engine (former proj) and directly use CGame
 - add project: tool to draw blocks
 - add project: tool to draw levels with mouse
 - static example (ohne renderthread) muss auf resize event reagieren

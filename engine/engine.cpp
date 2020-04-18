@@ -87,13 +87,15 @@ int zweidee::CEngine::fire()
 
 int zweidee::CEngine::up()
 {
-  // not used
+  // not used ?????
+  m_game.up();
   return true;
 }
 
 int zweidee::CEngine::down()
 {
-  // not used
+  // not used ??
+  m_game.down();
   return true;
 }
 
