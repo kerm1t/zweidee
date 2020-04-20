@@ -9,7 +9,11 @@ namespace ld46
   static int lvl_w = 60; // 32
   static int lvl_h = 44; // 24
   static int lvl_size = lvl_w*lvl_h;
-  static char * lvl;
+//  static char * lvl; // cannot access this from renderthread !!??
+  static volatile char * lvl; // cannot access this from renderthread !!??
+//       each thread has its own stack
+// s. https://stackoverflow.com/questions/17500259/static-variables-in-multithreading
+// 2do: use mutex: https://www.modernescpp.com/index.php/c-core-guidelines-sharing-data-between-threads
 
   const glm::vec3 cols[6] = {
     glm::vec3(0,0,0),       // none
@@ -48,6 +52,7 @@ namespace ld46
   {
   public:
     // ------------ Specific Variables ------------
+// LNK error:    static char * lvl; // cannot access this from renderthread !!??
     sHero hero;
 
     int init();
@@ -59,5 +64,6 @@ namespace ld46
     int fire();
   private:
     int draw_hero(unsigned char * data);
+    int draw_bg(unsigned char * data);
   };
 }

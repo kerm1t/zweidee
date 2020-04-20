@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #define FBUF2D_WIDTH  64 // HACK!! remove!!
-#define FBUF2D_HEIGHT 64 // HACK!! remove!!
+#define FBUF2D_HEIGHT 48 // HACK!! remove!! individual per game!!!!!!!!!!!!!!!!! 2fix!!
 #include "engine.h"
 
 zweidee::CEngine::CEngine()
@@ -51,7 +51,7 @@ int zweidee::CEngine::move()
         (bStep))    // key [o] pressed
      )
   {
-    memset(data, 0, fbuf2d->imagesize); // clear
+///    memset(data, 0, fbuf2d->imagesize); // clear
 
     // -----------
     // game cycle

@@ -65,6 +65,14 @@ void do_stuff_here() // b) function
   if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
   if (GetAsyncKeyState(VK_RIGHT)) m_engine.right();
 
+  // draw bg
+  for (int i = 0; i < ld46::lvl_size; i++)
+  {
+    int x = (FBUF2D_WIDTH - ld46::lvl_w) / 2 + i % ld46::lvl_w;
+    int y = (FBUF2D_HEIGHT - ld46::lvl_h) / 2 + i / ld46::lvl_w;
+    zweidee::fbuf2d.setpixel(zweidee::data, x, y, ld46::lvl[i], ld46::lvl[i], ld46::lvl[i]);
+  }
+
   m_engine.move(); // move (i.e. increase playengine step) and update fbuf2d
 }
 
@@ -77,8 +85,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   m_engine.init(&zweidee::fbuf2d, zweidee::data);
 
-// initialize rand() once at progstart to reproduce
-//  srand(0);
+  // initialize rand() once at progstart to reproduce, use e.g. srand(0) to get to a defined chain;
   srand((unsigned int)time(NULL));
 
   // background / frame
@@ -95,24 +102,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     ld46::lvl[i] = 50+rand()%30;
   }
   zweidee::point pt = { ld46::lvl_w / 2, ld46::lvl_h / 2 };
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  pt = prep_lvl3(pt);
-  
-  for (int i = 0; i < ld46::lvl_size; i++)
+  for (int i = 0; i < 11; i++)
   {
-    int x = i % ld46::lvl_w;
-    int y = i / ld46::lvl_w;
-    zweidee::fbuf2d.setpixel(zweidee::data, (FBUF2D_WIDTH- ld46::lvl_w)/2 + x, (FBUF2D_HEIGHT - ld46::lvl_h) / 2 + + y, ld46::lvl[i], ld46::lvl[i], ld46::lvl[i]);
+    pt = prep_lvl3(pt);
   }
-
+  
   ////////////////
   // do not :-) run in thread 
   ////////////////
@@ -122,7 +116,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
   zweidee::m_render.Render();
 
+  int res = zweidee::app_run(hInstance);
   delete ld46::lvl;
-
-  return zweidee::app_run(hInstance);
+  return res;
 }
