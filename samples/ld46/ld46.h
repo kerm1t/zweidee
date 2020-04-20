@@ -31,6 +31,13 @@ namespace ld46
     uint32 w;
     uint32 h;
   } rect;
+  
+  struct rect_ { // 2do: somehow harmonize with above rect (or choose good naming) --> game.h
+    int l;
+    int r;
+    int t;
+    int b;
+  };
 
   namespace hero { // --> game.h
     enum hero_state { normal, explode };
@@ -55,6 +62,7 @@ namespace ld46
 // LNK error:    static char * lvl; // cannot access this from renderthread !!??
     sHero hero;
 
+    zweidee::point prep_lvl3(zweidee::point seed);
     int init();
     int doit(unsigned char * data);
     int left();
