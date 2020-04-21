@@ -6,8 +6,9 @@
 
 namespace ld46
 {
-  static int lvl_w = 60; // 32
-  static int lvl_h = 44; // 24
+#define LVL_FRAME 6
+  static int lvl_w = FBUF2D_WIDTH - LVL_FRAME;
+  static int lvl_h = FBUF2D_HEIGHT - LVL_FRAME;
   static int lvl_size = lvl_w*lvl_h;
 //  static char * lvl; // cannot access this from renderthread !!??
   static volatile char * lvl; // cannot access this from renderthread !!??

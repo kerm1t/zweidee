@@ -50,6 +50,11 @@ int ld46::CLD46::init()
     pt = prep_lvl3(pt);
   }
 
+
+  hero.box.x = 32;
+  hero.box.y = 24;
+
+
   return TRUE;
 }
 
@@ -62,11 +67,12 @@ int ld46::CLD46::doit(unsigned char * data)
   draw_hero(data);
   return TRUE;
 }
-
+#define MIN_MOVABLE 112
 int ld46::CLD46::left()
 {
   if (hero.state == hero::explode) return true;
-  if (hero.box.x > 0) hero.box.x--;
+  bool hitwall = lvl[hero.box.y*lvl_w + hero.box.x - 1] < MIN_MOVABLE;
+  if ((hero.box.x > 0) && (!hitwall)) hero.box.x--;
   hero.dir = 1;
   return true;
 }
@@ -74,7 +80,8 @@ int ld46::CLD46::left()
 int ld46::CLD46::right()
 {
   if (hero.state == hero::explode) return true;
-  if (hero.box.x + hero.box.w < fbuf2d->width-1) hero.box.x++;
+  bool hitwall = lvl[hero.box.y*lvl_w + hero.box.x+1] < MIN_MOVABLE;
+  if ((hero.box.x + hero.box.w < fbuf2d->width-1) && (!hitwall)) hero.box.x++;
   hero.dir = 2;
   return true;
 }
@@ -84,7 +91,7 @@ int ld46::CLD46::up()
   if (hero.state == hero::explode) return true;
 //  bool hitwall = false;
 //  for (int i = 0; i < lvl_size; i++) if (lvl[(hero.box.y - 1)*lvl_w + hero.box.x] != 0) hitwall = true; // <-- stupid!!
-  bool hitwall = lvl[(hero.box.y - 1)*lvl_w + hero.box.x] < 100;
+  bool hitwall = lvl[(hero.box.y - 1)*lvl_w + hero.box.x] < MIN_MOVABLE;
   if ((hero.box.y > 0) && (!hitwall)) hero.box.y--;
   hero.dir = 1;
   return true;
@@ -93,11 +100,12 @@ int ld46::CLD46::up()
 int ld46::CLD46::down()
 {
   if (hero.state == hero::explode) return true;
-  bool hitwall = false;// lvl[(hero.box.y + 1)*lvl_w + hero.box.x] < 100;
+  bool hitwall = lvl[(hero.box.y + 1)*lvl_w + hero.box.x] < MIN_MOVABLE;
   if ((hero.box.y + hero.box.w < fbuf2d->height-1) && (!hitwall)) hero.box.y++;
   hero.dir = 2;
   return true;
 }
+
 int ld46::CLD46::fire()
 {
   return true;
@@ -105,9 +113,9 @@ int ld46::CLD46::fire()
 
 int ld46::CLD46::draw_hero(unsigned char * data)
 {
-  int _x = hero.box.x;
-  int _y = hero.box.y;
-  glm::vec3 col = {255,155,155};
+  int _x = (FBUF2D_WIDTH - lvl_w) / 2 + hero.box.x; // (FBUF2D_WIDTH - lvl_w) / 2  == LVL_FRAME
+  int _y = (FBUF2D_HEIGHT - lvl_h) / 2 + hero.box.y;
+  glm::vec3 col = {0,255,0};
   fbuf2d->setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
   return true;
 }

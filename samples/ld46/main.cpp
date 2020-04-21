@@ -22,7 +22,7 @@ zweidee::CEngine m_engine;
 
 void do_stuff_here() // b) function
 {
-  // no rapid fire :-)
+  // no (rapid) fire :-)
   if (GetAsyncKeyState(VK_UP))    m_engine.up();
   if (GetAsyncKeyState(VK_DOWN))  m_engine.down();
   if (GetAsyncKeyState(VK_LEFT))  m_engine.left();
@@ -38,10 +38,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
   zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
-  m_engine.init(&zweidee::fbuf2d, zweidee::data);
-
   // initialize rand() once at progstart to reproduce, use e.g. srand(0) to get to a defined chain;
   srand((unsigned int)time(NULL));
+
+  m_engine.init(&zweidee::fbuf2d, zweidee::data);
 
   // background / frame
   for (int i = 0; i < FBUF2D_PIXELS; i++)
