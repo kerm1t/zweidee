@@ -39,8 +39,8 @@ void kmeans_merge()
   {
     if (FPA[i] > 150)
     {
-      unsigned int x = i % FPA_WIDTH;
-      unsigned int y = i / FPA_WIDTH;
+      int x = i % FPA_WIDTH;
+      int y = i / FPA_WIDTH;
       input[numinput] = { x, y };
       numinput++;
     }
