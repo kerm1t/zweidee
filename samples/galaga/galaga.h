@@ -59,25 +59,6 @@ namespace galaga
     0,1,1,0,0,0,1,0,0,1,1,1,0,1,0,1,1
   };
 
-  typedef struct
-  {
-    uint32 x; // left
-    uint32 y; // top
-    uint32 w;
-    uint32 h;
-  } rect;
-
-  typedef struct
-  {
-    rect box;
-  } sPoint;
-
-  typedef struct
-  {
-    bool on;
-    rect box;
-  } sShot;
-
   namespace spacecraft {
     enum spacecraft_state {normal, explode};
   }
@@ -89,19 +70,19 @@ namespace galaga
   {
     enemy::enemy_state state;
     uint8 explode_counter;
-    rect box;
+    game::rect box;
   } sEnemy;
 
   typedef struct
   {
-    rect box;
+    game::rect box;
     spacecraft::spacecraft_state state;
     uint8 explode_counter;
     uint32 dir;   // 0=fwd,1=lft,2=right
     uint32 lives; // 4
   } sSpaceCraft;
 
-  bool DoBoxesIntersect(rect a, rect b);
+//  bool DoBoxesIntersect(rect a, rect b);
 
   class CGalaga : public game::CGame
   {
@@ -110,7 +91,7 @@ namespace galaga
     sSpaceCraft spacecraft;
 
 #define NUM_SHOTS  100
-    sShot a_shots[NUM_SHOTS]; // ringbuffer
+    game::sShot a_shots[NUM_SHOTS]; // ringbuffer
     char idx_shots;
 
 #define NUM_ENEMIES  8
@@ -121,10 +102,12 @@ namespace galaga
     int left();
     int right();
     int fire();
+    int up();
+    int down();
   private:
     int draw_starfield_vert(unsigned char * data); // 2do: replace with random starfield
 
-    int draw_obj(const rect r, const unsigned char * obj, unsigned char * data);
+    int draw_obj(const game::rect r, const unsigned char * obj, unsigned char * data);
         
     int draw_spacecraft(unsigned char * data);
     int draw_spacecraft_turnleft(unsigned char * data);

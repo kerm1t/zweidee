@@ -40,7 +40,7 @@ int galaga::CGalaga::init()
   }
 
   return TRUE;
-}
+ }                    
 
 // ---------------
 // main game cycle
@@ -121,6 +121,15 @@ int galaga::CGalaga::right()
   return true;
 }
 
+int galaga::CGalaga::up()
+{
+  return true;
+}
+int galaga::CGalaga::down()
+{
+  return true;
+}
+
 int galaga::CGalaga::fire()
 {
   if (iepisode == 2)
@@ -156,7 +165,7 @@ int galaga::CGalaga::draw_starfield_vert(unsigned char * data) // cheap trick ..
   return true;
 }
 
-int galaga::CGalaga::draw_obj(const rect box, const unsigned char * obj, unsigned char * data)
+int galaga::CGalaga::draw_obj(const game::rect box, const unsigned char * obj, unsigned char * data)
 {
   const uint8 _w = box.w;
   const uint8 _h = box.h;
@@ -188,14 +197,14 @@ int galaga::CGalaga::draw_spacecraft(unsigned char * data)
 
 int galaga::CGalaga::draw_spacecraft_turnleft(unsigned char * data)
 {
-  rect r = {spacecraft.box.x,spacecraft.box.y,5,3};
+  game::rect r = {spacecraft.box.x,spacecraft.box.y,5,3};
   draw_obj(r,aSpacecraft_turnleft,data);
   return true;
 }
 
 int galaga::CGalaga::draw_spacecraft_turnright(unsigned char * data)
 {
-  rect r = {spacecraft.box.x+2,spacecraft.box.y,5,3};
+  game::rect r = {spacecraft.box.x+2,spacecraft.box.y,5,3};
   draw_obj(r,aSpacecraft_turnright,data);
   return true;
 }
@@ -211,7 +220,7 @@ int galaga::CGalaga::draw_spacecraft_explode(unsigned char * data)
 
 int galaga::CGalaga::draw_gameover(unsigned char * data)
 {
-  rect r = {10,10,17,9};
+  game::rect r = {10,10,17,9};
   draw_obj(r,aGameover,data);
   return true;
 }
@@ -262,7 +271,7 @@ int galaga::CGalaga::draw_enemies(unsigned char * data)
   {
     if (a_enemies[i].state == enemy::on)
     {
-      rect r = {a_enemies[i].box.x,a_enemies[i].box.y,3,2};
+      game::rect r = {a_enemies[i].box.x,a_enemies[i].box.y,3,2};
       draw_obj(r,aEnemy,data);
     }
     else if (a_enemies[i].state == enemy::explode)
@@ -285,26 +294,6 @@ int galaga::CGalaga::move_enemies()
     }
   }
   return true;
-}
-
-// https://gamedev.stackexchange.com/questions/586/what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
-/*bool galaga::DoBoxesIntersect(rect a, rect b) // for center + width / height
-{
-  // translate (top,left,w,h) to (x,y,w,h) <--- optimize !!!
-  int ax = a.x + (int)(a.w/2);
-  int ay = a.y + (int)(a.h/2);
-  int bx = b.x + (int)(b.w/2);
-  int by = b.y + (int)(b.h/2);
-  return (abs(ax - bx) * 2 < (a.w + b.w)) &&
-         (abs(ay - by) * 2 < (a.h + b.h));
-}
-*/
-bool galaga::DoBoxesIntersect(rect a, rect b) // for top, left, "right", "bottom"
-{
-  return ! (b.x      > (a.x+a.w)
-        || (b.x+b.w) <  a.x
-        ||  b.y      > (a.y+a.h)
-        || (b.y+b.h) <  a.y);
 }
 
 int galaga::CGalaga::collisioncheck()
