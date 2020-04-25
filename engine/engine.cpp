@@ -51,7 +51,7 @@ int zweidee::CEngine::move()
         (bStep))    // key [o] pressed
      )
   {
-///    memset(data, 0, fbuf2d->imagesize); // clear
+    memset(data, 0, fbuf2d->imagesize); // clear
 
     // -----------
     // game cycle
@@ -85,16 +85,14 @@ int zweidee::CEngine::fire()
   return true;
 }
 
-int zweidee::CEngine::up()
+int zweidee::CEngine::up() // not used in every game (e.g. Galaga)
 {
-  // not used ?????
   m_game.up();
   return true;
 }
 
-int zweidee::CEngine::down()
+int zweidee::CEngine::down() //  not used in every game (e.g. Galaga)
 {
-  // not used ??
   m_game.down();
   return true;
 }
