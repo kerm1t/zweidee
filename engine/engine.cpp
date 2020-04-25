@@ -60,7 +60,7 @@ int zweidee::CEngine::move()
 
     // bindet sich an die letzte Textur :-)
     //  glBindTexture(GL_TEXTURE_2D, 1); // TEXTURE_ID shall be > 0 !     (-1!!)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbuf2d->width, fbuf2d->height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);   // hier gibt es Schwierigkeiten mit .bmp,
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbuf2d->width, fbuf2d->height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);   // hier gibt es Schwierigkeiten mit .bmp,
 
     fbuf2d->framecounter++;
     bStep = false;

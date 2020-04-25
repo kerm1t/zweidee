@@ -57,8 +57,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
   zweidee::repeat = do_stuff_here;
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
-  zweidee::m_render.Render();
+//  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, zweidee::fbuf2d.width, zweidee::fbuf2d.height, 0, GL_BGR, GL_UNSIGNED_BYTE, zweidee::data);   // hier gibt es Schwierigkeiten mit .bmp,
+//  zweidee::m_render.Render();
 
   int res = zweidee::app_run(hInstance);
   delete ld46::lvl;
