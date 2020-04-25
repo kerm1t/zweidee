@@ -57,7 +57,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   // hand over code
   /////////////////
 
-  zweidee::doit = do_stuff_here; // your function -> function pointer
+  zweidee::repeat = do_stuff_here; // your function -> function pointer
   _beginthread(zweidee::RenderThread, 0, 0);
 
 
