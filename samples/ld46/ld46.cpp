@@ -54,7 +54,12 @@ int ld46::CLD46::init()
   hero.box.x = 32;
   hero.box.y = 24;
 
+  ziel = { rand() % lvl_w, rand() % lvl_h };
 
+  for (int i = 0; i < 10; i++)
+  {
+    enemy[i] = { {rand() % lvl_w, rand() % lvl_h}, rand() % 2 };
+  }
   return TRUE;
 }
 
@@ -64,7 +69,9 @@ int ld46::CLD46::init()
 int ld46::CLD46::doit(unsigned char * data)
 {
   draw_bg(data);
-  draw_hero(data);
+  draw_ziel(data);
+  draw_enemies(data);
+  draw_hero(data); // draw hero after (on top of) ziel
   return TRUE;
 }
 #define MIN_MOVABLE 112
@@ -89,8 +96,6 @@ int ld46::CLD46::right()
 int ld46::CLD46::up()
 {
   if (hero.state == hero::explode) return true;
-//  bool hitwall = false;
-//  for (int i = 0; i < lvl_size; i++) if (lvl[(hero.box.y - 1)*lvl_w + hero.box.x] != 0) hitwall = true; // <-- stupid!!
   bool hitwall = lvl[(hero.box.y - 1)*lvl_w + hero.box.x] < MIN_MOVABLE;
   if ((hero.box.y > 0) && (!hitwall)) hero.box.y--;
   hero.dir = 1;
@@ -116,6 +121,27 @@ int ld46::CLD46::draw_hero(unsigned char * data)
   int _x = (FBUF2D_WIDTH - lvl_w) / 2 + hero.box.x; // (FBUF2D_WIDTH - lvl_w) / 2  == LVL_FRAME
   int _y = (FBUF2D_HEIGHT - lvl_h) / 2 + hero.box.y;
   glm::vec3 col = {0,255,0};
+  fbuf2d->setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
+  return true;
+}
+
+int ld46::CLD46::draw_enemies(unsigned char * data)
+{
+  for (int i = 0; i < 10; i++)
+  {
+    int _x = (FBUF2D_WIDTH - lvl_w) / 2 + enemy[i].p.x;
+    int _y = (FBUF2D_HEIGHT - lvl_h) / 2 + enemy[i].p.y;
+    glm::vec3 col = { 255,0,0 };
+    fbuf2d->setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
+  }
+  return true;
+}
+
+int ld46::CLD46::draw_ziel(unsigned char * data)
+{
+  int _x = (FBUF2D_WIDTH - lvl_w) / 2 + ziel.x;
+  int _y = (FBUF2D_HEIGHT - lvl_h) / 2 + ziel.y;
+  glm::vec3 col = { 255,255,0 };
   fbuf2d->setpixel(data, _x, _y, col.r, col.g, col.b); // bgr
   return true;
 }

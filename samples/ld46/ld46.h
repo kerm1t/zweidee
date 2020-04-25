@@ -47,6 +47,7 @@ namespace ld46
     enum enemy_state { on, off, explode };
   }
 
+  // 2do: enemy und hero vom gleichen struct ableiten und move operation schreiben (hitwall und within lvl)
   typedef struct // --> game.h
   {
     rect box;
@@ -56,12 +57,20 @@ namespace ld46
     uint32 lives; // 4
   } sHero;
 
+  typedef struct // --> game.h
+  {
+    zweidee::point p;
+    int dir;   // 0=fwd,1=lft,2=right,3=up,4=down
+  } sEnemy;
+
   class CLD46 : public game::CGame
   {
   public:
     // ------------ Specific Variables ------------
 // LNK error:    static char * lvl; // cannot access this from renderthread !!??
     sHero hero;
+    zweidee::point ziel;
+    sEnemy enemy[10];
 
     zweidee::point prep_lvl3(zweidee::point seed);
     int init();
@@ -73,6 +82,8 @@ namespace ld46
     int fire();
   private:
     int draw_hero(unsigned char * data);
+    int draw_enemies(unsigned char * data);
+    int draw_ziel(unsigned char * data);
     int draw_bg(unsigned char * data);
   };
 }
