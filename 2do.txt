@@ -1,3 +1,14 @@
+5/5/
+- clustering doesn't work properly yet
+- after some time cluster crashes, memory consumption goes from 55MB to >300MB
+
+5/2/2020
+- generate a Cmake project
+
+4/25/2020
+- remove class engine (former proj) and directly use CGame
+- replace FBUF_HEIGHT, -HEIGHT defines with variables (in game.h)
+ 
 4/18/2020
 - remove class engine (former proj) and directly use CGame
 - add project: tool to draw blocks

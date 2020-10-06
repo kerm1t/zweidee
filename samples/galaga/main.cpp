@@ -48,8 +48,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   // hand over code
   /////////////////
   zweidee::repeat = do_stuff_here; // your function -> function pointer
-// has moved to app_run!! -->  _beginthread(zweidee::RenderThread, 0, 0);
-
 
   return zweidee::app_run(hInstance);
 }
@@ -64,7 +62,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_COMMAND:
     wmId = LOWORD(wParam);
     wmEvent = HIWORD(wParam);
-    // process menu choice
     switch (wmId)
     {
     case IDM_ABOUT:
@@ -77,8 +74,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return DefWindowProc(hWnd, message, wParam, lParam);
     }
     break;
-    // case WM_PAINT:
-    // ... painting by OpenGL
+    // case WM_PAINT: ... painting by OpenGL
   case WM_KEYDOWN:
     switch (wParam)
     {
