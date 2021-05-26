@@ -16,7 +16,9 @@
 #ifdef LD46
 #include "../samples/ld46/ld46.h"
 #endif
-
+#ifdef GLENZ
+#include "../samples/glenz/glenz.h"
+#endif
 namespace zweidee
 {
 
@@ -41,7 +43,9 @@ namespace zweidee
 #ifdef LD46
     ld46::CLD46 m_game; // ugly!!.. 2do, das muss hier 'raus
 #endif
-
+#ifdef GLENZ
+    glenz::CGlenz m_game; // ugly!!.. 2do, das muss hier 'raus
+#endif
 //    zweidee::FrameBuf2D * fbuf2d;
 //    unsigned char * data;
 

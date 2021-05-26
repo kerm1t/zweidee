@@ -1,4 +1,8 @@
-5/5/
+5/25/2021
+- started glenz
+- write small script to generate a new project
+
+5/5/2020
 - clustering doesn't work properly yet
 - after some time cluster crashes, memory consumption goes from 55MB to >300MB
 

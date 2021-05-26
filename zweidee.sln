@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1321
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Frogger", "samples\frogger\frogger.vcxproj", "{D66D5637-8BB7-4815-A032-211DFB882945}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glenz", "samples\glenz\glenz.vcxproj", "{D66D5637-8BB7-4815-A032-211DFB882945}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Frogger", "samples\frogger\frogger.vcxproj", "{6446F65A-F7E5-4FC8-AC6D-E8C98292605E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Galaga", "samples\galaga\galaga.vcxproj", "{98418EC7-20CD-4387-8628-60013D1D6EC4}"
 EndProject
@@ -23,6 +25,10 @@ Global
 		{D66D5637-8BB7-4815-A032-211DFB882945}.Debug|Win32.Build.0 = Debug|Win32
 		{D66D5637-8BB7-4815-A032-211DFB882945}.Release|Win32.ActiveCfg = Release|Win32
 		{D66D5637-8BB7-4815-A032-211DFB882945}.Release|Win32.Build.0 = Release|Win32
+		{6446F65A-F7E5-4FC8-AC6D-E8C98292605E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6446F65A-F7E5-4FC8-AC6D-E8C98292605E}.Debug|Win32.Build.0 = Debug|Win32
+		{6446F65A-F7E5-4FC8-AC6D-E8C98292605E}.Release|Win32.ActiveCfg = Release|Win32
+		{6446F65A-F7E5-4FC8-AC6D-E8C98292605E}.Release|Win32.Build.0 = Release|Win32
 		{98418EC7-20CD-4387-8628-60013D1D6EC4}.Debug|Win32.ActiveCfg = Debug|Win32
 		{98418EC7-20CD-4387-8628-60013D1D6EC4}.Debug|Win32.Build.0 = Debug|Win32
 		{98418EC7-20CD-4387-8628-60013D1D6EC4}.Release|Win32.ActiveCfg = Release|Win32
@@ -42,5 +48,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DB3E6E6-88C9-48D4-B908-CB15229223EA}
 	EndGlobalSection
 EndGlobal
