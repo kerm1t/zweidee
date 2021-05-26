@@ -13,7 +13,7 @@ namespace zweidee
 
 		while (true)
 		{
-			fbuf->setpixel(data, x0, y0, 255, 255, 255);
+			fbuf->setpixel(data, x0, y0, col.r, col.g, col.b);
 
 			if (x0 == x1 && y0 == y1) break;
 			e2 = 2 * err;
@@ -58,4 +58,83 @@ namespace zweidee
 			fbuf->setpixel(data, x0 - y, y0 - x, col.r, col.g, col.b); // 8
 		}
 	}
+
+  // this one should be private
+  // it draws a ...
+  void Bresenham_arr(FrameBuf2D * fbuf, int x0, int y0, const int x1, const int y1, int * xarr,
+    const glm::vec3 col, uint8 * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+  {
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2; // error value e_xy
+
+    while (true)
+    {
+      fbuf->setpixel(data,x0,y0,col.r,col.g,col.b);
+      xarr[y0] = x0; // <-- wichtig! x-pos merken!
+
+      if (x0 == x1 && y0 == y1) break;
+      e2 = 2 * err;
+      if (e2 > dy) { err += dy; x0 += sx; } // e_xy+e_x > 0
+      if (e2 < dx) { err += dx; y0 += sy; } // e_xy+e_y < 0
+    }
+  }
+
+  struct vec2
+  {
+    vec2() : x(0.0f), y(0.0f) {}
+    vec2(float _x, float _y) : x(_x), y(_y) {}
+    struct { float x; float y; };
+
+  };
+  vec2 operator-(const vec2 v1, const vec2 v2)
+  {
+    return vec2(v2.x - v1.x, v2.y - v1.y);
+  }
+
+  void Triangle_filled(FrameBuf2D * fbuf, const vec2 p0, const vec2 p1, const vec2 p2,
+    const glm::vec3 col, uint8 * data)
+  {
+    // sortiere nach y
+    vec2 top, middle, bottom, tmp;
+    if (p1.y < p0.y)
+    {
+      top = p1;
+      middle = p0;
+    }
+    else
+    {
+      top = p0;
+      middle = p1;
+    }
+    if (p2.y < middle.y)
+    {
+      if (p2.y < top.y)
+      {
+        bottom = middle;
+        middle = top;
+        top = p2;
+      }
+      else
+      {
+        bottom = middle;
+        middle = p2;
+      }
+    }
+    else
+    {
+      bottom = p2;
+    }
+
+    int xarr[1000]; // 2do: vector instead of fixed array (depends on screen dimensions)
+    int xarr2[1000];
+    Bresenham_arr(fbuf, top.x, top.y, middle.x, middle.y, xarr, col, data);
+    Bresenham_arr(fbuf, top.x, top.y, bottom.x, bottom.y, xarr2, col, data);
+    Bresenham_arr(fbuf, middle.x, middle.y, bottom.x, bottom.y, xarr, col, data);
+    for (int y = top.y; y < bottom.y; y++)
+    {
+      Bresenham(fbuf, xarr[y], y, xarr2[y], y, col, data); // man kann sogar noch einfacher mit x-Schleife schreiben
+    }
+  }
+
 }
