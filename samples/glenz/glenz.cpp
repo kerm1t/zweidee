@@ -6,6 +6,7 @@
 #include "glenz.h"
 float z = 3.0;
 glm::vec3 tri[3] = { {5.,5.,z},{5.,21.,z},{25.,4.,z} };
+glm::vec3 tri2[3] = { {30.,28.,z},{7.,23.,z},{27.,6.,z} };
 
 int glenz::CGlenz::init()
 {
@@ -93,6 +94,18 @@ int glenz::CGlenz::doit(unsigned char * data)
   t0[2].x = xc + tri[2].x / tri[2].z * f;
   t0[2].y = yc + tri[2].y / tri[2].z * f;
   Triangle_filled(fbuf2d, t0[0], t0[1], t0[2], col, data);
+  
+  tri2[0] = rot3y(tri2[0], .03);
+  tri2[1] = rot3y(tri2[1], .03);
+  tri2[2] = rot3y(tri2[2], .03);
+  glm::vec3 white = { 255,255,255 };
+  t0[0].x = xc + tri2[0].x / tri2[0].z * f;
+  t0[0].y = yc + tri2[0].y / tri2[0].z * f;
+  t0[1].x = xc + tri2[1].x / tri2[1].z * f;
+  t0[1].y = yc + tri2[1].y / tri2[1].z * f;
+  t0[2].x = xc + tri2[2].x / tri2[2].z * f;
+  t0[2].y = yc + tri2[2].y / tri2[2].z * f;
+  Triangle_filled(fbuf2d, t0[0], t0[1], t0[2], white, data);
 
   return TRUE;
 }
