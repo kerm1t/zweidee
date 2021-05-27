@@ -4,7 +4,9 @@
 
 namespace zweidee
 {
-	void Bresenham(FrameBuf2D * fbuf, int x0, int y0, int x1, int y1,
+  #define BRES_ARR_MAX 1000
+
+  void Bresenham(FrameBuf2D * fbuf, int x0, int y0, int x1, int y1,
     const glm::vec3 col, unsigned char * data) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 	{
 		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
@@ -71,7 +73,8 @@ namespace zweidee
     while (true)
     {
       fbuf->setpixel(data,x0,y0,col.r,col.g,col.b);
-      xarr[y0] = x0; // <-- wichtig! x-pos merken!
+      if ((y0 > 0) && (y0 < BRES_ARR_MAX))
+        xarr[y0] = x0; // <-- wichtig! x-pos merken!
 
       if (x0 == x1 && y0 == y1) break;
       e2 = 2 * err;
@@ -126,13 +129,22 @@ namespace zweidee
       bottom = p2;
     }
 
-    int xarr[1000]; // 2do: vector instead of fixed array (depends on screen dimensions)
-    int xarr2[1000];
+    int xarr[BRES_ARR_MAX]; // 2do: vector instead of fixed array (depends on screen dimensions)
+    int xarr2[BRES_ARR_MAX];
     Bresenham_arr(fbuf, top.x, top.y, middle.x, middle.y, xarr, col, data);
     Bresenham_arr(fbuf, top.x, top.y, bottom.x, bottom.y, xarr2, col, data);
     Bresenham_arr(fbuf, middle.x, middle.y, bottom.x, bottom.y, xarr, col, data);
     for (int y = top.y; y < bottom.y; y++)
     {
+      if ( // quite a rough test
+        (y > 0) &&
+        (y < BRES_ARR_MAX) //&&
+//        (xarr[y] > -100) &&
+//        (xarr2[y] > -100) &&
+        // rough pos test
+//        (xarr[y] < 100) &&
+//        (xarr2[y] < 100)
+        )
       Bresenham(fbuf, xarr[y], y, xarr2[y], y, col, data); // man kann sogar noch einfacher mit x-Schleife schreiben
     }
   }
