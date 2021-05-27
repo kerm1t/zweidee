@@ -11,7 +11,38 @@ int glenz::CGlenz::init()
 {
   return TRUE;
 }
-
+// https://www.weizmann.ac.il/sci-tea/benari/sites/sci-tea.benari/files/uploads/softwareAndLearningMaterials/quaternion-tutorial-2-0-1.pdf
+glm::vec2 rot2(glm::vec2 v, float theta)
+{
+  glm::vec2 out;
+  out.x = v.x * cos(theta) - v.y * sin(theta);
+  out.y = v.x * sin(theta) + v.y * cos(theta);
+  return out;
+}
+glm::vec3 rot3x(glm::vec3 v, float theta)
+{
+  glm::vec3 out;
+  out.x = v.x * cos(theta) - v.y * sin(theta) + 0;
+  out.y = v.x * sin(theta) + v.y * cos(theta) + 0;
+  out.z = 0 + 0 + v.z;
+  return out;
+}
+glm::vec3 rot3y(glm::vec3 v, float theta)
+{
+  glm::vec3 out;
+  out.x = v.x + 0 + 0;
+  out.y = 0 + v.y * cos(theta) - v.z * sin(theta);
+  out.z = 0 + v.y * sin(theta) + v.z * cos(theta);
+  return out;
+}
+glm::vec3 rot3z(glm::vec3 v, float theta)
+{
+  glm::vec3 out;
+  out.x = v.x * cos(theta) + 0 + v.z * sin(theta);
+  out.y = 0 + v.y + 0;
+  out.z = -v.x * sin(theta) + 0 + v.z * cos(theta);
+  return out;
+}
 void glenz::CGlenz::lesson2(unsigned char * data) // draw 3 filled triangles
 {
   zweidee::vec2 t0[3] = { zweidee::vec2(10, 20), zweidee::vec2(50, 40), zweidee::vec2(20, 30) };
@@ -47,7 +78,14 @@ int glenz::CGlenz::doit(unsigned char * data)
   Bresenham(fbuf2d, xc + x2, yc + y2, xc + x3, yc + y3, col, data);
   Bresenham(fbuf2d, xc + x3, yc + y3, xc + x1, yc + y1, col, data);
 */
+//  tri[0].z -= 0.01;
+//  tri[1].z -= 0.01;
+//  tri[2].z -= 0.01;
   zweidee::vec2 t0[3];
+// there's a problem with rot3y and rot3z --> not anymore :-)
+  tri[0] = rot3x(tri[0], .1);
+  tri[1] = rot3x(tri[1], .1);
+  tri[2] = rot3x(tri[2], .1);
   t0[0].x = xc + tri[0].x / tri[0].z * f;
   t0[0].y = yc + tri[0].y / tri[0].z * f;
   t0[1].x = xc + tri[1].x / tri[1].z * f;
