@@ -526,7 +526,7 @@ namespace zweidee
       uint32 pos = 3 * (_y * width + x);
       //    assert(pos < imageSize);
       if (pos >= imagesize) return;
-      if (x > width) return; // test < 0 ?? <-- need signed then
+      if (x > width) return;
       data[pos] = b; // r ?
       data[pos + 1] = g;
       data[pos + 2] = r; // b ?
