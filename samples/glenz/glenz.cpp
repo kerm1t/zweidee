@@ -4,9 +4,9 @@
 #define FBUF2D_HEIGHT 64 // HACK!! remove!!
 #include "zweidee_draw.h"
 #include "glenz.h"
-float z = 3.0;
+float z = 1.0;
 glm::vec3 tri[3] = { {5.,5.,z},{5.,21.,z},{25.,4.,z} };
-glm::vec3 tri2[3] = { {30.,28.,z},{7.,23.,z},{27.,6.,z} };
+glm::vec3 tri2[3] = { {17.,22.,z},{4.,19.,z},{23.,5.,z} };
 
 int glenz::CGlenz::init()
 {
@@ -84,9 +84,9 @@ int glenz::CGlenz::doit(unsigned char * data)
 //  tri[2].z -= 0.01;
   zweidee::vec2 t0[3];
 // there's a problem with rot3y and rot3z --> not anymore :-)
-  tri[0] = rot3x(tri[0], .1);
-  tri[1] = rot3x(tri[1], .1);
-  tri[2] = rot3x(tri[2], .1);
+  tri[0] = rot3x(tri[0], .06);
+  tri[1] = rot3x(tri[1], .06);
+  tri[2] = rot3x(tri[2], .06);
   t0[0].x = xc + tri[0].x / tri[0].z * f;
   t0[0].y = yc + tri[0].y / tri[0].z * f;
   t0[1].x = xc + tri[1].x / tri[1].z * f;
@@ -95,9 +95,9 @@ int glenz::CGlenz::doit(unsigned char * data)
   t0[2].y = yc + tri[2].y / tri[2].z * f;
   Triangle_filled(fbuf2d, t0[0], t0[1], t0[2], col, data);
   
-  tri2[0] = rot3y(tri2[0], .03);
-  tri2[1] = rot3y(tri2[1], .03);
-  tri2[2] = rot3y(tri2[2], .03);
+  tri2[0] = rot3x(tri2[0], .03);
+  tri2[1] = rot3x(tri2[1], .03);
+  tri2[2] = rot3x(tri2[2], .03);
   glm::vec3 white = { 255,255,255 };
   t0[0].x = xc + tri2[0].x / tri2[0].z * f;
   t0[0].y = yc + tri2[0].y / tri2[0].z * f;
