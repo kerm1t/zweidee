@@ -542,10 +542,10 @@ namespace zweidee
       //    assert(pos < imageSize);
       if (pos >= imagesize) return;
       if (x > width) return;
-      int coladd = 50; // 50
-      if (data[pos] > 0) data[pos] = data[pos] + coladd; else data[pos] = (uint8)b; // r ?
-      if (data[pos + 1] > 0) data[pos + 1] = data[pos + 1] + coladd; else data[pos + 1] = (uint8)g;
-      if (data[pos + 2] > 0) data[pos + 2] = data[pos + 2] + coladd; else data[pos + 2] = (uint8)r; // b ?
+// seems better to hardcode colors, than to add a constant
+      if (data[pos] > 0) data[pos] = 252; else data[pos] = (uint8)b;
+      if (data[pos + 1] > 0) data[pos + 1] = 152; else data[pos + 1] = (uint8)g;
+      if (data[pos + 2] > 0) data[pos + 2] = 252; else data[pos + 2] = (uint8)r;
     }
     void setpixel(uint8 * data, const uint32 x, const uint32 y, const int r, const int g, const int b) // overload
     {
