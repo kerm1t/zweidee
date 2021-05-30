@@ -535,6 +535,18 @@ namespace zweidee
     {
       setpixel(data, x, y, (uint8)r, (uint8)g, (uint8)b);
     }
+    void setpixel_glenz(uint8 * data, const uint32 x, const uint32 y, const float r, const float g, const float b) // overload
+    {
+      uint32 _y = height - 1 - y;
+      uint32 pos = 3 * (_y * width + x);
+      //    assert(pos < imageSize);
+      if (pos >= imagesize) return;
+      if (x > width) return;
+      int coladd = 50; // 50
+      if (data[pos] > 0) data[pos] = data[pos] + coladd; else data[pos] = (uint8)b; // r ?
+      if (data[pos + 1] > 0) data[pos + 1] = data[pos + 1] + coladd; else data[pos + 1] = (uint8)g;
+      if (data[pos + 2] > 0) data[pos + 2] = data[pos + 2] + coladd; else data[pos + 2] = (uint8)r; // b ?
+    }
     void setpixel(uint8 * data, const uint32 x, const uint32 y, const int r, const int g, const int b) // overload
     {
       setpixel(data, x, y, (uint8)r, (uint8)g, (uint8)b);

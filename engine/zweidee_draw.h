@@ -15,7 +15,7 @@ namespace zweidee
 
 		while (true)
 		{
-			fbuf->setpixel(data, x0, y0, col.r, col.g, col.b);
+			fbuf->setpixel_glenz(data, x0, y0, col.r, col.g, col.b); // temp! put back to setpixel(...)
 
 			if (x0 == x1 && y0 == y1) break;
 			e2 = 2 * err;
