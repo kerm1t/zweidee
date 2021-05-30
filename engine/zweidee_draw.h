@@ -72,7 +72,7 @@ namespace zweidee
 
     while (true)
     {
-      fbuf->setpixel(data,x0,y0,col.r,col.g,col.b);
+      fbuf->setpixel_glenz(data,x0,y0,col.r,col.g,col.b);
       if ((y0 > 0) && (y0 < BRES_ARR_MAX))
         xarr[y0] = x0; // <-- wichtig! x-pos merken!
 
@@ -136,15 +136,11 @@ namespace zweidee
     Bresenham_arr(fbuf, middle.x, middle.y, bottom.x, bottom.y, xarr, col, data);
     for (int y = top.y; y < bottom.y; y++)
     {
-      if ( // quite a rough test
-        (y > 0) &&
-        (y < BRES_ARR_MAX) //&&
-//        (xarr[y] > -100) &&
-//        (xarr2[y] > -100) &&
-        // rough pos test
-//        (xarr[y] < 100) &&
-//        (xarr2[y] < 100)
+      if (
+        (y >= 0) &&
+        (y < BRES_ARR_MAX) // quite a rough test
         )
+// 2do: some points on the border are set double
       Bresenham(fbuf, xarr[y], y, xarr2[y], y, col, data); // man kann sogar noch einfacher mit x-Schleife schreiben
     }
   }
