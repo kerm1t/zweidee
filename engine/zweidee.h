@@ -521,12 +521,12 @@ namespace zweidee
     // (0,0): rgb (1,0): rgb (2,0): rgb
     void setpixel(uint8 * data, const uint32 x, const uint32 y, const uint8 r, const uint8 g, const uint8 b)
     {
-      uint32 _y = height - 1 - y; // hack, texture upside down? 2do: check!!
+      uint32 _y = height - y; // hack, texture upside down? 2do: check!!
                                         //    unsigned int _y = y;
       uint32 pos = 3 * (_y * width + x);
       //    assert(pos < imageSize);
       if (pos >= imagesize) return;
-      if (x > width) return;
+      if (x > width-1) return;
       data[pos] = b; // r ?
       data[pos + 1] = g;
       data[pos + 2] = r; // b ?
@@ -537,11 +537,11 @@ namespace zweidee
     }
     void setpixel_glenz(uint8 * data, const uint32 x, const uint32 y, const float r, const float g, const float b) // overload
     {
-      uint32 _y = height - 1 - y;
+      uint32 _y = height - y;
       uint32 pos = 3 * (_y * width + x);
       //    assert(pos < imageSize);
       if (pos >= imagesize) return;
-      if (x > width) return;
+      if (x > width-1) return;
 // seems better to hardcode colors, than to add a constant
       if (data[pos] > 0) data[pos] = 252; else data[pos] = (uint8)b;
       if (data[pos + 1] > 0) data[pos + 1] = 152; else data[pos + 1] = (uint8)g;
