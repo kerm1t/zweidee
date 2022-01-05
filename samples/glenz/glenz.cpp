@@ -5,16 +5,18 @@
 #include "zweidee_draw.h"
 #include "glenz.h"
 
-/*float z = .9;
-glm::vec3 tri[3] = { {5.,3.,z},{5.,21.,z},{25.,1.,z} }; // white
-float z2 = -.9; 
-glm::vec3 tri2[3] = { {17.,22.,z2},{4.,19.,z2},{23.,3.,z2} };
-*/
-glm::vec3 tri[3] = { {0.,0.,0.2},{5.,0.,0.2},{5.,5.,0.2} }; // pink
-glm::vec3 tri2[3] = { {5.,5.,0.2},{5.,5.,5.},{0.,5.,0.2} };
-//glm::vec3 tri2[3] = { {0.,0.,0.2},{-5.,0.,0.2},{-5.,0.,5.} };
 
+glm::vec3 tri[3] = { {0.,0.,0.},{.2,0.,0.},{.2,.2,0.} }; // pink
+glm::vec3 tri2[3] = { {.2,.2,0.},{0.,0.,0.},{0.,.2,0.} };
+//glm::vec3 tri2[3] = { {0.,0.,0.},{-.1,0.,0.},{-.1,0.,.1} };
 
+class camera
+{
+  glm::vec3 pos;
+  glm::vec3 dir;
+  glm::vec3 focal_plane;
+
+};
 
 int glenz::CGlenz::init()
 {
@@ -39,15 +41,17 @@ glm::vec3 rot3z(glm::vec3 v, float theta)
 glm::vec3 rot3x(glm::vec3 v, float theta)
 {
   glm::vec3 out;
+//  theta = 0.0f;
 //  theta = 3.145f/2.0f;
-  out.x = v.x + 0 + 0;
-  out.y = 0 + v.y * cos(theta) - v.z * sin(theta);
-  out.z = 0 + v.y * sin(theta) + v.z * cos(theta);
-/*  glm::mat3 r = { {1,0,0},
-                  {0,cos(theta),-sin(theta)},
-                  {0,sin(theta), cos(theta)} };
-  out =  r*v;
-  */return out;
+//  theta = 3.145f*3.0f / 2.0f;;
+  out.x = v.x + 0. + 0.;
+  out.y = 0. + v.y * cos(theta) - v.z * sin(theta);
+  out.z = 0. + v.y * sin(theta) + v.z * cos(theta);
+//  glm::mat3 r = { {1,0,0},
+//                  {0,cos(theta),-sin(theta)},
+//                  {0,sin(theta), cos(theta)} };
+//  out =  r*v;
+  return out;
 }
 glm::vec3 rot3y(glm::vec3 v, float theta)
 {
@@ -74,6 +78,8 @@ zweidee::vec2 persp(glm::vec3 v, glm::vec2 center, float focal)
 // main game cycle
 // ---------------
 // 2do:
+// - camera
+// - ImGUI
 // - better rotation, maybe doing translation first
 // + draw axes r,g,b
 // 
@@ -89,23 +95,32 @@ int glenz::CGlenz::doit(unsigned char * data)
   float f = 1.f;
   zweidee::vec2 t0[3];
 
-// there's a problem with rot3y and rot3z --> not anymore :-)
+// there's more problems with rot3y and rot3x
   zweidee::glenz = true;
-  float rot = 0.06;
-  tri[0] = rot3z(tri[0], rot);
-  tri[1] = rot3z(tri[1], rot);
-  tri[2] = rot3z(tri[2], rot);
+  float rot = 0.03f;
+  tri[0] = rot3x(tri[0], rot);
+  tri[1] = rot3x(tri[1], rot);
+  tri[2] = rot3x(tri[2], rot);
   t0[0] = persp(tri[0], center, f);
   t0[1] = persp(tri[1], center, f);
   t0[2] = persp(tri[2], center, f);
   Triangle_filled(fbuf2d, t0[0], t0[1], t0[2], pink, data);
-  
-  tri2[0] = rot3z(tri2[0], .03);
-  tri2[1] = rot3z(tri2[1], .03);
-  tri2[2] = rot3z(tri2[2], .03);
-  t0[0] = persp(tri2[0], center, f);
-  t0[1] = persp(tri2[1], center, f);
-  t0[2] = persp(tri2[2], center, f);
+
+  static float rot2;
+  glm::vec3 tmp[3];
+  rot2 += 0.01f;
+  tmp[0] = rot3y(tri2[0], rot2);
+  tmp[1] = rot3y(tri2[1], rot2);
+  tmp[2] = rot3y(tri2[2], rot2);
+//  tmp[0] = rot3y(tmp[0], 3.14f/2.0f);
+//  tmp[1] = rot3y(tmp[1], 3.14f / 2.0f);
+//  tmp[2] = rot3y(tmp[2], 3.14f / 2.0f);
+//  tmp[0].z = tmp[0].z - .1f;
+//  tmp[1].z = tmp[1].z - .1f;
+//  tmp[2].z = tmp[2].z - .1f;
+  t0[0] = persp(tmp[0], center, f);
+  t0[1] = persp(tmp[1], center, f);
+  t0[2] = persp(tmp[2], center, f);
   Triangle_filled(fbuf2d, t0[0], t0[1], t0[2], white, data);
 
   // draw axes

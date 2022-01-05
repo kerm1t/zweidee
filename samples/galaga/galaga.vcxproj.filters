@@ -42,9 +42,6 @@
     <ClInclude Include="galaga.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\lodepng.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -55,6 +52,9 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\engine.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\game.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

@@ -33,9 +33,6 @@
     <ClInclude Include="..\..\common\stdafx.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\Resource.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="types.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -43,6 +40,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\zweidee.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\Resource.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
