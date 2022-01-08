@@ -13,6 +13,10 @@ ii) rename all occurrences of "galaga" e.g. to "glenz"
     all virtual functions have to be implemented!
 iii) in engine.h add the game
 
+rotx
+x = 1*v.x;
+y = y*cos(theta)-z*sin(theta)
+z = y*sin(theta)+z*cos(theta)
 
 ===================
 --- deprecated: ---
