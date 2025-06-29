@@ -397,7 +397,7 @@ namespace zweidee
                                               // attach a) position and
                                               //        b) texture/uv-buffers
       glBindBuffer(GL_ARRAY_BUFFER, positionBuffer[iVAO]);
-      glVertexAttribPointer(sh_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu übergeben!
+      glVertexAttribPointer(sh_attr_pos, 2, GL_FLOAT, GL_FALSE, 0, (void*)0); // wichtig, hier das richtige Attrib (nicht 0 oder 1) zu ï¿½bergeben!
       glEnableVertexAttribArray(sh_attr_pos);
       err = glGetError();
 
@@ -433,7 +433,7 @@ namespace zweidee
     void DrawVAOs_NEU()
     {
       /*
-      Achtung, hier springt das Programm nochmal 'rein nach Drücken des Close Buttons,
+      Achtung, hier springt das Programm nochmal 'rein nach Drï¿½cken des Close Buttons,
       dann sind aber die vVAO-Inhalte schon beliebig "dirty"!!
       z.B. ist dann vVAOs[ui].b_moving = TRUE und die if Abfrage (s.u.) wird angesprungen
       */
@@ -480,7 +480,7 @@ namespace zweidee
 
                                              /*
                                              wenn's hier crasht, dann ist der Fehler vermutlich vorher beim buffern passiert und
-                                             glGetError hätte etwas melden sollen!!
+                                             glGetError hï¿½tte etwas melden sollen!!
                                              */
 
         glDrawArrays(GL_TRIANGLES, 0, vVAOs[ui].uiVertexCount); // <-- if error is thrown here,
@@ -775,7 +775,7 @@ namespace zweidee
   {
     terminated = false;
 
-    hInst = hInstance; // store instance handle
+//    hInst = hInstance; // store instance handle
                        // Nonsense:
                        // one is the viewport, i.e. window size
                        // the other is the internal texture size, i.e. the game playfield 
@@ -787,6 +787,7 @@ namespace zweidee
     int y = (rect.bottom - h) / 2;
     // center on screen
     hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, x, y, w, h, NULL, NULL, hInstance, NULL);
+//    hWnd = CreateWindow(109, "Zweidee", WS_OVERLAPPEDWINDOW, x, y, w, h, NULL, NULL, hInstance, NULL);
 
     if (!hWnd)
     {
@@ -885,6 +886,8 @@ namespace zweidee
       zweidee::MyRegisterClass(hInstance, WndProcZweidee);
     else
       zweidee::MyRegisterClass(hInstance, WndProc);
+///    zweidee::szTitle = "Zweidee";
+///    zweidee::szWindowClass = 109;
 
     if (!zweidee::InitInstance(hInstance, nCmdShow, zweidee::win_w, zweidee::win_h)) // init application
     {

@@ -29,9 +29,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   HINSTANCE hPrevInstance,
   LPTSTR    lpCmdLine,
   int       nCmdShow)
+//int main(int argc, char** argv) 
 {
-  zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-
+  if (!zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow))
+  {
+    std::cout << "init failed" << std::endl;
+    return false;
+  }
 
   ////////////////
   // run in thread 
