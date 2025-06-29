@@ -26,8 +26,11 @@ include_directories(.
   ${GLEW_INCLUDE_DIRS}
   ./lib/glm/glm
   ./src/common
-  ./src/engine
-  #./include/imgui
+  ./src/core
+if (MSVC)
+  ./src/win
+endif()
+#./include/imgui
   #./include/imgui/src
   #./include/imgui/debuggers
   #./src/features
@@ -55,13 +58,13 @@ add_executable (${CMAKE_PROJECT_NAME} WIN32
   ./src/glenz.h
   # uses ->
   ./src/common/lodepng.h
-  ./src/engine/engine.cpp
-  ./src/engine/engine.h
-  ./src/engine/game.h
-  ./src/engine/zweidee.h
-  ./src/engine/zweidee_draw.h
+  ./src/core/engine.cpp
+  ./src/core/engine.h
+  ./src/core/game.h
+  ./src/core/zweidee.h
+  ./src/core/zweidee_draw.h
   ./src/win/Resource.h
-  ./src/win/glenz.rc
+  ./src/win/zweidee.rc
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
