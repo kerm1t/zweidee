@@ -42,7 +42,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
   HINSTANCE hPrevInstance,
   LPTSTR    lpCmdLine,
   int       nCmdShow)
-//int main(int argc, char** argv) 
 {
   if (!zweidee::app_init(640, 480, hInstance, hPrevInstance, lpCmdLine, nCmdShow))
   {
